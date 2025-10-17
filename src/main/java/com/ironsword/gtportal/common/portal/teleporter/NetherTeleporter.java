@@ -1,0 +1,68 @@
+package com.ironsword.gtportal.common.portal.teleporter;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.ITeleporter;
+
+import java.util.function.Function;
+
+public class NetherTeleporter implements ITeleporter {
+    protected final ServerLevel level;
+    protected final BlockPos pos;
+
+    public NetherTeleporter(ServerLevel pLevel,BlockPos pos) {
+        this.level = pLevel;
+        this.pos = pos;
+    }
+
+    @Override
+    public Entity placeEntity(Entity entity, ServerLevel currentWorld, ServerLevel destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
+        Entity e = repositionEntity.apply(false);
+        if (e instanceof ServerPlayer player){
+            BlockPos targetPos;
+            if (level.dimension() == Level.NETHER){
+                targetPos = new BlockPos(pos.getX()/8,70,pos.getZ()/8);
+                placePlatform(targetPos, Blocks.NETHERRACK);
+            }else {
+                targetPos = new BlockPos(pos.getX()*8,64,pos.getZ()*8);
+                placePlatform(targetPos, Blocks.STONE);
+            }
+
+            player.teleportTo(targetPos.getX()+0.5,targetPos.getY(),targetPos.getZ()+0.5);
+
+            return player;
+        }else {
+            return e;
+        }
+    }
+
+
+    private void placePlatform(BlockPos targetPos, Block block){
+        for (int y=-1;y<3;y++){
+            for (int x=-1;x<2;x++){
+                for (int z=-1;z<2;z++){
+                    BlockPos pos = targetPos.offset(x,y,z);
+                    BlockState blockState = level.getBlockState(pos);
+                    if (blockState.hasBlockEntity()){
+                        continue;
+                    }
+                    if (y==-1){
+                        if (!blockState.isSolid()){
+                            level.setBlockAndUpdate(pos, block.defaultBlockState());
+                        }
+                    } else {
+                        level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                    }
+                }
+            }
+        }
+    }
+
+
+}
