@@ -1,4 +1,4 @@
-package com.ironsword.gtportal.common.portal;
+package com.ironsword.gtportal.common.block;
 
 import com.ironsword.gtportal.common.portal.teleporter.NetherTeleporter;
 import net.minecraft.core.BlockPos;
@@ -8,7 +8,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
 public class SimplePortalBlock extends Block {
 

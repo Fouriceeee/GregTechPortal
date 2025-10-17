@@ -1,3 +1,5 @@
 {
-  "block.gtportal.portal_block": "Portal Block"
+  "block.gtportal.nether_portal_block": "Nether Portal Block",
+  "block.gtportal.portal_block": "Portal Block",
+  "item.gtportal.recorder": "Recorder"
 }

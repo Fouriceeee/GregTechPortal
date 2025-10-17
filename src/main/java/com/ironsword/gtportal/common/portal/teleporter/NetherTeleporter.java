@@ -26,14 +26,20 @@ public class NetherTeleporter implements ITeleporter {
         Entity e = repositionEntity.apply(false);
         if (e instanceof ServerPlayer player){
             BlockPos targetPos;
+            Block block;
             if (level.dimension() == Level.NETHER){
                 targetPos = new BlockPos(pos.getX()/8,70,pos.getZ()/8);
-                placePlatform(targetPos, Blocks.NETHERRACK);
+                block = Blocks.NETHERRACK;
             }else {
                 targetPos = new BlockPos(pos.getX()*8,64,pos.getZ()*8);
-                placePlatform(targetPos, Blocks.STONE);
+                block = Blocks.STONE;
             }
 
+            BlockPos searchPos = searchPlatform(targetPos);
+            if (searchPos!=null)
+                targetPos = searchPos;
+
+            placePlatform2(targetPos,block);
             player.teleportTo(targetPos.getX()+0.5,targetPos.getY(),targetPos.getZ()+0.5);
 
             return player;
@@ -42,7 +48,35 @@ public class NetherTeleporter implements ITeleporter {
         }
     }
 
+    private BlockPos searchPlatform(BlockPos startingPos){
+        BlockPos pos1 = startingPos;
+        int flag = 0;
+        for (int y= startingPos.getY();y<level.getMaxBuildHeight()-2;y++){
+            if (level.getBlockState(pos1).isAir()&&level.getBlockState(pos1.above()).isAir()){
+                return pos1;
+            }
+            pos1 = pos1.above();
+        }
+        pos1 = startingPos;
+        for (int y = startingPos.getY();y>level.getMinBuildHeight();y++){
+            if (level.getBlockState(pos1).isAir()&&level.getBlockState(pos1.above()).isAir()){
+                return pos1;
+            }
+            pos1 = pos1.below();
+        }
+        return null;
+    }
 
+    private void placePlatform2(BlockPos targetPos, Block block){
+        level.setBlockAndUpdate(targetPos.below(), block.defaultBlockState());
+        BlockState blockState = level.getBlockState(targetPos.above().above());
+        if (!blockState.isSolid()&&!blockState.isAir()){
+            level.setBlockAndUpdate(targetPos.above().above(), block.defaultBlockState());
+        }
+    }
+
+
+    //de
     private void placePlatform(BlockPos targetPos, Block block){
         for (int y=-1;y<3;y++){
             for (int x=-1;x<2;x++){

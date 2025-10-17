@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "gtportal:block/nether_portal_block"
+    }
+  }
+}

@@ -1,6 +1,8 @@
 package com.ironsword.gtportal;
 
+import com.ironsword.gtportal.common.data.GTPBlockEntities;
 import com.ironsword.gtportal.common.data.GTPBlocks;
+import com.ironsword.gtportal.common.data.GTPItems;
 import com.ironsword.gtportal.common.data.GTPMachines;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
@@ -25,7 +27,9 @@ public class GTPortal
 
     private static void init() {
         GTPCreativeModeTabs.init();
+        GTPItems.init();
         GTPBlocks.init();
+        GTPBlockEntities.init();
         GTPMachines.init();
         GTPRegistries.REGISTRATE.registerRegistrate();
     }
