@@ -1,5 +1,6 @@
 package com.ironsword.gtportal.common.blockentity;
 
+import com.ironsword.gtportal.api.portal.PosData;
 import com.ironsword.gtportal.common.item.RecorderItem;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ public class PortalBlockEntity extends BlockEntity {
 
     @Getter
     @Setter
-    private RecorderItem.PosData recordedPos;
+    private PosData recordedPos;
 
     public PortalBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);

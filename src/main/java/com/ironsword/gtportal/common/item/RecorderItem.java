@@ -1,5 +1,6 @@
 package com.ironsword.gtportal.common.item;
 
+import com.ironsword.gtportal.api.portal.PosData;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -15,10 +16,13 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class RecorderItem extends Item {
     public RecorderItem(Properties pProperties) {
@@ -42,28 +46,14 @@ public class RecorderItem extends Item {
         return super.use(pLevel, pPlayer, pUsedHand);
     }
 
-    public record PosData(ResourceLocation dimension, Vec3i pos){
-        public CompoundTag toNbt(){
-            return Util.make(new CompoundTag(),tag->{
-                tag.putString("dimension",dimension.toString());
-                tag.putInt("x",pos.getX());
-                tag.putInt("y",pos.getY());
-                tag.putInt("z",pos.getZ());
-            });
-        }
-
-        public String toString(){
-            return "Dimension: "+dimension.toString()+" Position: "+pos.getX()+", "+pos.getY()+", "+pos.getZ();
-        }
-
-        public static PosData fromNbt(CompoundTag tag){
-            ResourceLocation dimension = new ResourceLocation(tag.getString("dimension"));
-            Vec3i pos = new Vec3i(tag.getInt("x"),tag.getInt("y"),tag.getInt("z"));
-            return new PosData(dimension,pos);
-        }
-
-        public ServerLevel getLevel(MinecraftServer server) {
-            return server.getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+        CompoundTag data = pStack.getTagElement("posData");
+        if (data!=null) {
+            pTooltipComponents.add(Component.literal(PosData.fromNbt(data).toString()));
         }
     }
+
+
 }

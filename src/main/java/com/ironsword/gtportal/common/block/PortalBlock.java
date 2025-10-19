@@ -1,5 +1,6 @@
 package com.ironsword.gtportal.common.block;
 
+import com.ironsword.gtportal.api.portal.PosData;
 import com.ironsword.gtportal.common.data.GTPBlockEntities;
 import com.ironsword.gtportal.common.item.RecorderItem;
 import com.ironsword.gtportal.common.blockentity.PortalBlockEntity;
@@ -36,7 +37,7 @@ public class PortalBlock extends BaseEntityBlock {
             if (pLevel.getBlockEntity(pPos) instanceof PortalBlockEntity portalBlockEntity){
                 CompoundTag posDataTag = item.getTagElement("posData");
                 if (posDataTag!=null){
-                    portalBlockEntity.setRecordedPos(RecorderItem.PosData.fromNbt(posDataTag));
+                    portalBlockEntity.setRecordedPos(PosData.fromNbt(posDataTag));
                     pPlayer.displayClientMessage(Component.literal("Success!"),true);
                     return InteractionResult.SUCCESS;
                 }
@@ -49,7 +50,7 @@ public class PortalBlock extends BaseEntityBlock {
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
         if(pLevel instanceof ServerLevel serverLevel && pEntity.canChangeDimensions()){
             if (pLevel.getBlockEntity(pPos) instanceof PortalBlockEntity portalBlockEntity){
-                RecorderItem.PosData posData = portalBlockEntity.getRecordedPos();
+                PosData posData = portalBlockEntity.getRecordedPos();
                 if (posData==null){
                     return;
                 }

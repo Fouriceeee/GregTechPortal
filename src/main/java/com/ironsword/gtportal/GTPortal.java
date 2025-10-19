@@ -1,5 +1,7 @@
 package com.ironsword.gtportal;
 
+import com.gregtechceu.gtceu.api.GTCEuAPI;
+import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.ironsword.gtportal.common.data.GTPBlockEntities;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.data.GTPItems;
@@ -7,10 +9,13 @@ import com.ironsword.gtportal.common.data.GTPMachines;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
+@SuppressWarnings({"unused"})
 @Mod(GTPortal.MODID)
 public class GTPortal
 {
@@ -23,6 +28,7 @@ public class GTPortal
         var bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.register(this);
 
+        bus.addGenericListener(MachineDefinition.class,this::registerMachines);
     }
 
     private static void init() {
@@ -30,9 +36,17 @@ public class GTPortal
         GTPItems.init();
         GTPBlocks.init();
         GTPBlockEntities.init();
-        GTPMachines.init();
+
         GTPRegistries.REGISTRATE.registerRegistrate();
     }
 
+    @SubscribeEvent
+    public void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event){
+        GTPMachines.init();
+    }
+
+    public static ResourceLocation id(String name){
+        return ResourceLocation.tryBuild(MODID,name);
+    }
 
 }
