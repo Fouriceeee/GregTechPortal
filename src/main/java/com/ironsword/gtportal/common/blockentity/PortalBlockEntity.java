@@ -1,7 +1,6 @@
 package com.ironsword.gtportal.common.blockentity;
 
 import com.ironsword.gtportal.api.portal.PosData;
-import com.ironsword.gtportal.common.item.RecorderItem;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;

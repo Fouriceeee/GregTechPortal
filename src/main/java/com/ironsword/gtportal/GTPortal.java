@@ -2,10 +2,11 @@ package com.ironsword.gtportal;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.ironsword.gtportal.common.data.GTPBlockEntities;
-import com.ironsword.gtportal.common.data.GTPBlocks;
-import com.ironsword.gtportal.common.data.GTPItems;
-import com.ironsword.gtportal.common.data.GTPMachines;
+import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
+import com.ironsword.gtportal.client.renderer.BlockAreaRender;
+import com.ironsword.gtportal.client.renderer.PortalBlockRender;
+import com.ironsword.gtportal.common.data.*;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.mojang.logging.LogUtils;
@@ -29,6 +30,7 @@ public class GTPortal
         bus.register(this);
 
         bus.addGenericListener(MachineDefinition.class,this::registerMachines);
+        bus.addGenericListener(GTRecipeType.class,this::registerRecipeTypes);
     }
 
     private static void init() {
@@ -37,12 +39,22 @@ public class GTPortal
         GTPBlocks.init();
         GTPBlockEntities.init();
 
+
+
+        DynamicRenderManager.register(id("block_area"), BlockAreaRender.TYPE);
+        DynamicRenderManager.register(id("portal_block"), PortalBlockRender.TYPE);
+
         GTPRegistries.REGISTRATE.registerRegistrate();
     }
 
     @SubscribeEvent
     public void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event){
         GTPMachines.init();
+    }
+
+    @SubscribeEvent
+    public void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event){
+        GTPRecipeTypes.init();
     }
 
     public static ResourceLocation id(String name){

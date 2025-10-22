@@ -2,11 +2,8 @@
   "parent": "minecraft:block/block",
   "dynamic_renders": [
     {
-      "type": "gtceu:fluid_area",
-      "block_light": 15,
-      "fixed_fluid": "minecraft:water",
-      "overwrite_light": true,
-      "sky_light": 15
+      "type": "gtportal:portal_block",
+      "block": "gtportal:nether_portal_block"
     }
   ],
   "loader": "gtceu:machine",

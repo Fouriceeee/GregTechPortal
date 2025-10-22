@@ -111,6 +111,7 @@ repositories {
             includeGroup "com.github.rtyley"
         }
     }
+    maven { url = "https://packages.aether-mod.net/The-Aether" }
 }
 
 dependencies {
@@ -132,6 +133,9 @@ dependencies {
     implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
     implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
     implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+
+    implementation fg.deobf("teamtwilight:twilightforest:${twilightforest_version}:universal")
+    implementation fg.deobf("com.aetherteam.aether:aether:${aether_version}")
 }
 
 tasks.named('processResources', ProcessResources).configure {

@@ -1,6 +1,5 @@
 package com.ironsword.gtportal.api.portal;
 
-import com.ironsword.gtportal.common.item.RecorderItem;
 import net.minecraft.Util;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;

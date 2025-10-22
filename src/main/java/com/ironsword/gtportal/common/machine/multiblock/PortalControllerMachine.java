@@ -1,16 +1,16 @@
 package com.ironsword.gtportal.common.machine.multiblock;
 
+import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IFluidRenderMulti;
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
-import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import com.gregtechceu.gtceu.common.machine.multiblock.electric.FusionReactorMachine;
+import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
+import com.ironsword.gtportal.api.portal.DimensionData;
 import com.ironsword.gtportal.api.portal.PosData;
-import com.ironsword.gtportal.common.item.RecorderItem;
-import com.ironsword.gtportal.common.portal.teleporter.NetherTeleporter;
+import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
+import com.ironsword.gtportal.common.machine.multiblock.part.DimensionDataHatchMachine;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -21,8 +21,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -37,12 +35,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PortalControllerMachine extends WorkableElectricMultiblockMachine implements IFluidRenderMulti {
+public class PortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(PortalControllerMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
-
-    private PosData destinationPos = null;
 
     @Getter
     @Setter
@@ -60,47 +56,29 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine i
         return MANAGED_FIELD_HOLDER;
     }
 
-    @Override
-    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack item = player.getItemInHand(hand);
-        if (item.getItem() instanceof RecorderItem){
-            CompoundTag posDataTag = item.getTagElement("posData");
-            if (posDataTag!=null){
-                destinationPos = PosData.fromNbt(posDataTag);
-                player.displayClientMessage(Component.literal("Success!"),true);
-                return InteractionResult.SUCCESS;
-            }
-        }
-        return super.onUse(state, world, pos, player, hand, hit);
+    public BlockPos getFrontPos(){
+        return getPos().relative(getFrontFacing());
     }
 
     @Override
     public void addDisplayText(List<Component> textList) {
-        if (this.destinationPos !=null){
-            textList.add(Component.literal("Dimension: "+this.destinationPos.dimension().toString()));
-            textList.add(Component.literal("Position: "+this.destinationPos.pos().getX()+", "+this.destinationPos.pos().getY()+", "+this.destinationPos.pos().getZ()));
-        }else {
-            textList.add(Component.literal("No Destination Set"));
+        DimensionData data = getDimensionData();
+        if (data != null){
+            textList.add(Component.literal("Dimension: "+data.dimension().toString()));
+            if (data.pos() != null){
+                textList.add(Component.literal("Position: "+data.pos().getX()+", "+data.pos().getY()+", "+data.pos().getZ()));
+            }
+            return;
         }
+        textList.add(Component.literal("No Destination Set"));
     }
 
-    @Override
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.saveCustomPersistedData(tag, forDrop);
-        tag.put("destination",destinationPos.toNbt());
-    }
-
-    @Override
-    public void loadCustomPersistedData(@NotNull CompoundTag tag) {
-        super.loadCustomPersistedData(tag);
-        if (tag.contains("destination")){
-            this.destinationPos = PosData.fromNbt(tag.getCompound("destination"));
+    private DimensionData getDimensionData(){
+        for(var part:getParts()){
+            if (part instanceof DimensionDataHatchMachine dimDataHatch)
+                return dimDataHatch.getDimensionData();
         }
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
+        return null;
     }
 
     @Override
@@ -110,13 +88,14 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine i
         teleportSubscription = null;
     }
 
+
     @Override
-    public @NotNull Set<BlockPos> getFluidBlockOffsets() {
+    public @NotNull Set<BlockPos> getBlockOffsets() {
         return portalBlockOffsets;
     }
 
     @Override
-    public void setFluidBlockOffsets(@NotNull Set<BlockPos> offsets) {
+    public void setBlockOffsets(@NotNull Set<BlockPos> offsets) {
         this.portalBlockOffsets = offsets;
     }
 
@@ -124,7 +103,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine i
     public void onStructureFormed() {
         super.onStructureFormed();
         teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
-        IFluidRenderMulti.super.onStructureFormed();
+        IBlockRenderMulti.super.onStructureFormed();
     }
 
     @Override
@@ -132,7 +111,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine i
         super.onStructureInvalid();
         unsubscribe(teleportSubscription);
         teleportSubscription = null;
-        IFluidRenderMulti.super.onStructureInvalid();
+        IBlockRenderMulti.super.onStructureInvalid();
     }
 
     @Override
@@ -159,29 +138,29 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine i
 
 
     private void teleportEntities(){
-        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction clockWise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction counterClockWise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(),
-                isFlipped());
-
-        BlockPos startingPos = getPos().relative(up).relative(clockWise),
-                endingPos = getPos().relative(up,3).relative(counterClockWise);
-        getLevel().getEntities(null, maxBox(startingPos,endingPos)).forEach(e->{
-            if (getLevel() instanceof ServerLevel && e.canChangeDimensions()){
-                if (this.destinationPos !=null){
-                    ServerLevel serverlevel = this.destinationPos.getLevel(((ServerLevel)getLevel()).getServer());
-                    if (serverlevel == null) {
-                        return;
-                    }
-                    if (serverlevel.dimension().location().equals(this.destinationPos.dimension())){
-                        Vec3i pos = this.destinationPos.pos();
-                        e.teleportTo(pos.getX()+0.5,pos.getY(),pos.getZ()+0.5);
-                    }else {
-                        e.changeDimension(serverlevel, new NetherTeleporter(serverlevel,new BlockPos(this.destinationPos.pos())));
-                    }
-                }
-            }
-        });
+//        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+//        Direction clockWise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+//        Direction counterClockWise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(),
+//                isFlipped());
+//
+//        BlockPos startingPos = getPos().relative(up).relative(clockWise),
+//                endingPos = getPos().relative(up,3).relative(counterClockWise);
+//        getLevel().getEntities(null, maxBox(startingPos,endingPos)).forEach(e->{
+//            if (getLevel() instanceof ServerLevel && e.canChangeDimensions()){
+//                if (this.destinationPos !=null){
+//                    ServerLevel serverlevel = this.destinationPos.getLevel(((ServerLevel)getLevel()).getServer());
+//                    if (serverlevel == null) {
+//                        return;
+//                    }
+//                    if (serverlevel.dimension().location().equals(this.destinationPos.dimension())){
+//                        Vec3i pos = this.destinationPos.pos();
+//                        e.teleportTo(pos.getX()+0.5,pos.getY(),pos.getZ()+0.5);
+//                    }else {
+//                        e.changeDimension(serverlevel, new NetherTeleporter(serverlevel,new BlockPos(this.destinationPos.pos())));
+//                    }
+//                }
+//            }
+//        });
     }
 
     private static AABB maxBox(Vec3i pos1, Vec3i pos2) {
@@ -195,10 +174,10 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine i
         );
     }
 
-    public class PortalControllerRecipeLogic extends RecipeLogic{
-
-        public PortalControllerRecipeLogic(IRecipeLogicMachine machine) {
-            super(machine);
-        }
-    }
+//    public class PortalControllerRecipeLogic extends RecipeLogic{
+//
+//        public PortalControllerRecipeLogic(IRecipeLogicMachine machine) {
+//            super(machine);
+//        }
+//    }
 }
