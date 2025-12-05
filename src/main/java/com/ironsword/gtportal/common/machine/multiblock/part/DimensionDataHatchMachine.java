@@ -29,7 +29,6 @@ public class DimensionDataHatchMachine extends MultiblockPartMachine {
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(DimensionDataHatchMachine.class,MultiblockPartMachine.MANAGED_FIELD_HOLDER);
 
-    @Getter
     private DimensionData dimensionData = null;
     @Persisted
     public final NotifiableItemStackHandler importItems;
@@ -46,6 +45,10 @@ public class DimensionDataHatchMachine extends MultiblockPartMachine {
             public void onContentsChanged() {
                 super.onContentsChanged();
                 readData();
+                PortalControllerMachine machine = getPortalController();
+                if (machine != null) {
+                    machine.refreshDimensionData(dimensionData);
+                }
             }
 
             @Override
@@ -62,6 +65,11 @@ public class DimensionDataHatchMachine extends MultiblockPartMachine {
         };
     }
 
+    public DimensionData getDimensionData(){
+        readData();
+        return dimensionData;
+    }
+
     private void readData(){
         if (getLevel() == null || getLevel().isClientSide()) return;
         ItemStack stack = importItems.getStackInSlot(0);
@@ -70,6 +78,15 @@ public class DimensionDataHatchMachine extends MultiblockPartMachine {
         }else {
             dimensionData = null;
         }
+    }
+
+    private PortalControllerMachine getPortalController(){
+        for (var controller: getControllers()){
+            if (controller instanceof PortalControllerMachine portalControllerMachine){
+                return portalControllerMachine;
+            }
+        }
+        return null;
     }
 
     @Override

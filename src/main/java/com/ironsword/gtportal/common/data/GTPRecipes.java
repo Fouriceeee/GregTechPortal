@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 
 public class GTPRecipes {
 
+
+    public static ResourceLocation OVERWORLD = Level.OVERWORLD.location();
     public static ResourceLocation NETHER = Level.NETHER.location();
     public static ResourceLocation END = Level.END.location();
     public static ResourceLocation TWILIGHT = TFGenerationSettings.DIMENSION;
@@ -54,6 +56,11 @@ public class GTPRecipes {
     }
 
     private static void scannerRecipes(Consumer<FinishedRecipe> provider){
+        createDefaultScannerRecipe("overworld",
+                Items.STONE.getDefaultInstance(),null,
+                GTPItems.DIM_RECORDER.asStack(), OVERWORLD,
+                20,8,provider);
+
         createDefaultScannerRecipe("nether",
                 Items.NETHERRACK.getDefaultInstance(),null,
                 GTPItems.DIM_RECORDER.asStack(), NETHER,
@@ -73,6 +80,7 @@ public class GTPRecipes {
                 Items.GLOWSTONE.getDefaultInstance(),null,
                 GTPItems.DIM_RECORDER.asStack(), AETHER,
                 20,2048,provider);
+
     }
 
     private static void teleportRecipes(Consumer<FinishedRecipe> provider){

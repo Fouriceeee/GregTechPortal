@@ -62,20 +62,6 @@ public class GTPMachines {
             .langValue("Portal Controller")
             .hasBER(true)
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
-//            .model(createWorkableCasingMachineModel(GTCEu.id("block/casings/gcym/atomic_casing"),
-//                    GTPortal.id("block/test"))
-//                    .andThen(b->b.addDynamicRenderer(()->
-//                            DynamicRenderHelper.makeFluidAreaRender(FluidBlockRenderer.Builder.create()
-//                                .setForcedLight(LightTexture.FULL_BRIGHT)
-//                                .getRenderer(), Optional.of(Fluids.WATER.getSource()), List.of(RelativeDirection.FRONT,RelativeDirection.BACK))
-//                    )))
-//            .model(createWorkableCasingMachineModel(GTCEu.id("block/casings/gcym/atomic_casing"),
-//                    GTPortal.id("block/test"))
-//                    .andThen(b->b.addDynamicRenderer(()->
-//                            new BlockAreaRender(FakeBlockRenderer.Builder.create()
-//                                    .setForcedLight(LightTexture.FULL_BRIGHT)
-//                                    .getRenderer(), Optional.of(Blocks.GLASS),BlockAreaRender.DEFAULT_FACES)
-//                    )))
             .model(createWorkableCasingMachineModel(GTCEu.id("block/casings/gcym/atomic_casing"),
                     GTPortal.id("block/test"))
                     .andThen(b->b.addDynamicRenderer(()->

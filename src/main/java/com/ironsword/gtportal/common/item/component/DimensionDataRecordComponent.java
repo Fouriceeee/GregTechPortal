@@ -30,7 +30,7 @@ public class DimensionDataRecordComponent extends DimensionDataComponent impleme
             if (entity instanceof MetaMachineBlockEntity machineEntity && machineEntity.getMetaMachine() instanceof PortalControllerMachine portalMachine){
                 ItemStack stack = context.getItemInHand();
                 changeDimensionData(stack,
-                        new DimensionData(level.dimension().location(),portalMachine.getFrontPos()));
+                        new DimensionData(level.dimension().location(),portalMachine.getPos()));
                 return InteractionResult.SUCCESS;
             }
         }

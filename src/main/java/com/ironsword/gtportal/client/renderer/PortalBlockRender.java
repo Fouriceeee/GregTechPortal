@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 import com.gregtechceu.gtceu.client.util.RenderUtil;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
+import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -25,7 +26,6 @@ import java.util.*;
 
 public class PortalBlockRender extends DynamicRender<IBlockRenderMulti,PortalBlockRender> {
 
-
     public static final Codec<PortalBlockRender> CODEC = RecordCodecBuilder.create(instance->instance.group(
             BuiltInRegistries.BLOCK.byNameCodec().optionalFieldOf("block").forGetter(PortalBlockRender::getBlock)
     ).apply(instance,PortalBlockRender::new));
@@ -33,8 +33,6 @@ public class PortalBlockRender extends DynamicRender<IBlockRenderMulti,PortalBlo
 
     @Getter
     private final Optional<Block> block;
-
-    //private static final float EPSILON = 1e-25f;
 
     public PortalBlockRender(Optional<Block> block){
         this.block = block;
@@ -76,22 +74,29 @@ public class PortalBlockRender extends DynamicRender<IBlockRenderMulti,PortalBlo
     @Override
     public void render(IBlockRenderMulti machine, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
-        if (!machine.isFormed()||machine.getRenderBlockOffsets()==null){
+        if (!machine.isFormed()||machine.getRenderBlockOffsets()==null||!machine.getRecipeLogic().isWorking()){
             return;
         }
 
-        BlockPos prevOffset = null;
-        for (BlockPos offset : machine.getRenderBlockOffsets()){
-            poseStack.pushPose();
+        if (machine instanceof PortalControllerMachine portalControllerMachine){
 
-            BlockPos currOffset = prevOffset == null ? offset : offset.subtract(prevOffset);
-            poseStack.translate(currOffset.getX(), currOffset.getY(), currOffset.getZ());
+            BlockPos prevOffset = null;
+            for (BlockPos offset : machine.getRenderBlockOffsets()){
+                poseStack.pushPose();
 
-            BlockPos pos = machine.self().getPos().offset(currOffset);
+                BlockPos currOffset = prevOffset == null ? offset : offset.subtract(prevOffset);
+                poseStack.translate(currOffset.getX(), currOffset.getY(), currOffset.getZ());
 
-            RenderUtil.drawBlock(machine.self().getLevel(),pos,block.get().defaultBlockState(),buffer,poseStack);
+                BlockPos pos = machine.self().getPos().offset(currOffset);
 
-            poseStack.popPose();
+                RenderUtil.drawBlock(machine.self().getLevel(),pos,block.get().defaultBlockState(),buffer,poseStack);
+
+                poseStack.popPose();
+            }
+        }else {
+            return;
         }
+
+
     }
 }

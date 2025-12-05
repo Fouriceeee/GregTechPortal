@@ -39,8 +39,6 @@ public class GTPortal
         GTPBlocks.init();
         GTPBlockEntities.init();
 
-
-
         DynamicRenderManager.register(id("block_area"), BlockAreaRender.TYPE);
         DynamicRenderManager.register(id("portal_block"), PortalBlockRender.TYPE);
 

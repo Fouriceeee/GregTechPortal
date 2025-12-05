@@ -1,6 +1,6 @@
 package com.ironsword.gtportal.common.block;
 
-import com.ironsword.gtportal.common.portal.teleporter.NetherTeleporter;
+import com.ironsword.gtportal.api.portal.teleporter.NetherTeleporter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;

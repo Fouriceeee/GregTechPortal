@@ -1,4 +1,4 @@
-package com.ironsword.gtportal.common.portal.teleporter;
+package com.ironsword.gtportal.api.portal.teleporter;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
