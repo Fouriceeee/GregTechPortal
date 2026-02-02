@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.ironsword.gtportal.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "TFPortalBlockMixin",
+    "DimensionHooksMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "gtportal.refmap.json"
+}

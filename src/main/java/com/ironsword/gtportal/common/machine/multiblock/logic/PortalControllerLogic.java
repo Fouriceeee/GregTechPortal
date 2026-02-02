@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import lombok.Setter;
@@ -37,15 +38,24 @@ public class PortalControllerLogic extends RecipeLogic implements IWorkable {
     public void serverTick(){
         if (duration > 0){
             if (!consumeEnergy()){
-                progress = 0;
+                if (progress > 0 && machine.regressWhenWaiting()) {
+                    progress = 1;
+                }
 
                 setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_in").append(": ")
                         .append(EURecipeCapability.CAP.getName()));
                 return;
             }
             setStatus(Status.WORKING);
-            progress = 1;
+            if (progress++ < getMaxProgress()) {
+                if (!machine.onWorking()) {
+                    this.interruptRecipe();
+                }
+                return;
+            }
+            progress = 0;
         }else {
+            progress = 0;
             setStatus(Status.IDLE);
             machine.afterWorking();
         }

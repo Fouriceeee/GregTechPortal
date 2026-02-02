@@ -34,7 +34,8 @@ public class GTPRecipeTypes {
 
     public static final GTRecipeType DIMENSION_TELEPORT_RECIPES = register("dimension_teleport_recipes", GTRecipeTypes.MULTIBLOCK)
             .setMaxIOSize(0,0,0,0)
-            .setProgressBar(GuiTextures.BLANK, ProgressTexture.FillDirection.ALWAYS_FULL)
+            .setProgressBar(GuiTextures.BLANK_TRANSPARENT, ProgressTexture.FillDirection.ALWAYS_FULL)
+            .setIconSupplier(()-> GTPMachines.PORTAL_CONTROLLER.asStack())
             .setEUIO(IO.IN);
 //
 //    public static final GTRecipeType DIMENSION_DATA_RECIPES = register("dimension_data_recipes", GTRecipeTypes.MULTIBLOCK)

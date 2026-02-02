@@ -1,74 +1,45 @@
 package com.ironsword.gtportal.common.block;
 
-import com.ironsword.gtportal.api.portal.PosData;
-import com.ironsword.gtportal.common.data.GTPBlockEntities;
-import com.ironsword.gtportal.common.blockentity.PortalBlockEntity;
-import com.ironsword.gtportal.api.portal.teleporter.SimplePosTelepoter;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class PortalBlock extends BaseEntityBlock {
-
+public class PortalBlock extends Block {
+    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
+    private static final VoxelShape
+            X = Block.box(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D),
+            Y = Block.box(0.0D, 6.0D, 0.0D, 16.0D, 10.0D, 16.0D),
+            Z = Block.box(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
 
     public PortalBlock(Properties pProperties) {
         super(pProperties);
-    }
-
-//    @Override
-//    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-//        ItemStack item = pPlayer.getItemInHand(pHand);
-//        if (item.getItem() instanceof RecorderItem){
-//            if (pLevel.getBlockEntity(pPos) instanceof PortalBlockEntity portalBlockEntity){
-//                CompoundTag posDataTag = item.getTagElement("posData");
-//                if (posDataTag!=null){
-//                    portalBlockEntity.setRecordedPos(PosData.fromNbt(posDataTag));
-//                    pPlayer.displayClientMessage(Component.literal("Success!"),true);
-//                    return InteractionResult.SUCCESS;
-//                }
-//            }
-//        }
-//        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
-//    }
-
-    @Override
-    public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-        if(pLevel instanceof ServerLevel serverLevel && pEntity.canChangeDimensions()){
-            if (pLevel.getBlockEntity(pPos) instanceof PortalBlockEntity portalBlockEntity){
-                PosData posData = portalBlockEntity.getRecordedPos();
-                if (posData==null){
-                    return;
-                }
-                ServerLevel serverlevel = portalBlockEntity.getRecordedPos().getLevel(serverLevel.getServer());
-                if (serverlevel == null) {
-                    return;
-                }
-                if (serverlevel.dimension().location().equals(posData.dimension())){
-                    Vec3i pos = posData.pos();
-                    pEntity.teleportTo(pos.getX()+0.5,pos.getY(),pos.getZ()+0.5);
-                }else {
-                    pEntity.changeDimension(serverlevel, new SimplePosTelepoter(serverlevel,new BlockPos(posData.pos())));
-                }
-
-
-            }
-        }
+        this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new PortalBlockEntity(GTPBlockEntities.PORTAL_BLOCK.get(), pPos, pState);
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return switch (pState.getValue(AXIS)) {
+            case X -> X;
+            case Y -> Y;
+            case Z -> Z;
+        };
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState pState) {
-        return RenderShape.MODEL;
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(AXIS);
     }
 }

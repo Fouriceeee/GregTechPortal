@@ -4,11 +4,11 @@ import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
-import com.ironsword.gtportal.client.renderer.BlockAreaRender;
 import com.ironsword.gtportal.client.renderer.PortalBlockRender;
 import com.ironsword.gtportal.common.data.*;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
+import com.ironsword.gtportal.data.GTPDatagen;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -31,15 +31,17 @@ public class GTPortal
 
         bus.addGenericListener(MachineDefinition.class,this::registerMachines);
         bus.addGenericListener(GTRecipeType.class,this::registerRecipeTypes);
+
     }
 
     private static void init() {
+        GTPDatagen.initPre();
         GTPCreativeModeTabs.init();
         GTPItems.init();
         GTPBlocks.init();
         GTPBlockEntities.init();
 
-        DynamicRenderManager.register(id("block_area"), BlockAreaRender.TYPE);
+
         DynamicRenderManager.register(id("portal_block"), PortalBlockRender.TYPE);
 
         GTPRegistries.REGISTRATE.registerRegistrate();

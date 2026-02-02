@@ -138,6 +138,11 @@ dependencies {
     implementation fg.deobf("com.aetherteam.aether:aether:${aether_version}")
 }
 
+mixin {
+    config "${mod_id}.mixins.json"
+    add sourceSets.main, "${mod_id}.refmap.json"
+}
+
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,

@@ -17,15 +17,15 @@ public class GTPItems {
         REGISTRATE.creativeModeTab(()-> GTPCreativeModeTabs.GTP_TAB);
     }
 
-    public static final ItemEntry<ComponentItem> RECORDER = REGISTRATE.item("recorder", ComponentItem::create)
+    public static final ItemEntry<ComponentItem> DIM_DATA_RECORDER = REGISTRATE.item("dim_data_recorder", ComponentItem::create)
             .initialProperties(()->new Item.Properties().stacksTo(1))
-            .lang("Recorder")
+            .lang("Dimension Data Recorder")
             .onRegister(attach(new DimensionDataRecordComponent()))
             .defaultModel()
             .register();
-    public static final ItemEntry<ComponentItem> DIM_RECORDER = REGISTRATE.item("dimension_data_recorder",ComponentItem::create)
+    public static final ItemEntry<ComponentItem> DIM_DATA_STICK = REGISTRATE.item("dim_data_stick",ComponentItem::create)
             .initialProperties(()->new Item.Properties().stacksTo(1))
-            .lang("Dimension Data Recorder")
+            .lang("Dimension Data Stick")
             .onRegister(attach(new DimensionDataComponent()))
             .defaultModel()
             .register();

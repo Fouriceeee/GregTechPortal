@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class DimensionDataRecordComponent extends DimensionDataComponent implements IInteractionItem{
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (context.getHand() == InteractionHand.MAIN_HAND){
+        if (context.getHand() == InteractionHand.MAIN_HAND ){
             Level level = context.getLevel();
             BlockPos pos = context.getClickedPos();
             BlockState state = level.getBlockState(context.getClickedPos());
@@ -37,19 +37,4 @@ public class DimensionDataRecordComponent extends DimensionDataComponent impleme
         return IInteractionItem.super.useOn(context);
     }
 
-//    @Override
-//    public InteractionResultHolder<ItemStack> use(Item item, Level level, Player player, InteractionHand usedHand) {
-//        if (player.isShiftKeyDown()){
-//            ItemStack itemStack = player.getItemInHand(usedHand);
-//            CompoundTag tag = itemStack.getOrCreateTag();
-//            if (tag.contains("dim_data")){
-//                tag.remove("dim_data");
-//            }
-//
-//            DimensionData dimData = new DimensionData(level.dimension().location(),player.blockPosition());
-//            tag.put("dim_data",dimData.toNbt());
-//        }
-//
-//        return IInteractionItem.super.use(item, level, player, usedHand);
-//    }
 }

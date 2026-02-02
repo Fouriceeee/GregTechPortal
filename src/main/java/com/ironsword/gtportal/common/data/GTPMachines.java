@@ -55,7 +55,7 @@ public class GTPMachines {
                     .where('X',blocks(Blocks.OBSIDIAN)
                             .or(blocks(DIMENSION_DATA_HATCH.get()).setExactLimit(1))
                             .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setExactLimit(1)))
-                    .where(' ', Predicates.air())
+                    .where(' ', Predicates.air().or(blocks(GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.get())))
                     .where('P',Predicates.controller(blocks(definition.getBlock())))
                     .build()
             )
@@ -63,10 +63,7 @@ public class GTPMachines {
             .hasBER(true)
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
             .model(createWorkableCasingMachineModel(GTCEu.id("block/casings/gcym/atomic_casing"),
-                    GTPortal.id("block/test"))
-                    .andThen(b->b.addDynamicRenderer(()->
-                            new PortalBlockRender(Optional.of(GTPBlocks.NETHER_PORTAL_BLOCK.get()))
-                    )))
+                    GTPortal.id("block/test")))
             .register();
 
 
