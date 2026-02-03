@@ -3,6 +3,7 @@ package com.ironsword.gtportal.common.data;
 import com.aetherteam.aether.Aether;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
+import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
 import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
 import com.ironsword.gtportal.common.block.PortalBlock;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
@@ -10,6 +11,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -22,21 +24,6 @@ public class GTPBlocks {
     static {
         REGISTRATE.creativeModeTab(()-> GTPCreativeModeTabs.GTP_TAB);
     }
-
-    public static final BlockEntry<PortalBlock> PORTAL_BLOCK = REGISTRATE
-            .block("portal_block",PortalBlock::new)
-            .initialProperties(()-> Blocks.NETHER_PORTAL)
-            .addLayer(()-> RenderType::translucent)
-            .lang("Portal Block")
-            .blockstate((ctx,prov)->
-                prov.getVariantBuilder(ctx.getEntry())
-                        .forAllStates(state->{
-                            ModelFile parent = prov.models().getExistingFile(prov.modLoc("block/portals/portal_"+state.getValue(BlockStateProperties.AXIS).getName()));
-                            ModelBuilder<?> model = prov.models().getBuilder("block/portal_"+state.getValue(BlockStateProperties.AXIS).getName()).parent(parent);
-                            model.texture("portal","block/"+ctx.getName()).texture("particle","block/"+ctx.getName());
-                            return ConfiguredModel.builder().modelFile(model).build();
-                        }))
-            .register();
 
     public static final BlockEntry<DimensionalPortalBlock> DIMENSIONAL_PORTAL_BLOCK = REGISTRATE
             .block("dimensional_portal_block",DimensionalPortalBlock::new)
@@ -76,6 +63,53 @@ public class GTPBlocks {
                             return ConfiguredModel.builder().modelFile(model).build();
                         });
             })
+            .register();
+
+    public static final BlockEntry<BrokenEndPortalFrameBlock> BROKEN_END_PORTAL_FRAME = REGISTRATE
+            .block("broken_end_portal_frame",BrokenEndPortalFrameBlock::new)
+            .initialProperties(()->Blocks.END_PORTAL_FRAME)
+            .lang("Broken End Portal Frame")
+            .blockstate((ctx,prov)->{
+                ModelBuilder<?> model = prov.models().getBuilder("broken_end_portal_frame").parent(prov.models().getExistingFile(new ResourceLocation("minecraft:block/block")));
+                model.element()
+                        .from(0,0,0).to(16,13,16)
+//                        .faces((dir,builder)->{
+//                            switch (dir){
+//                                case DOWN :
+//                                    builder.uvs(0,0,16,16).texture("#bottom").cullface(Direction.DOWN).end();
+//                                    break;
+//                                case UP:
+//                                    builder.uvs(0,0,16,16).texture("#top").end();
+//                                    break;
+//                                case NORTH:
+//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.NORTH).end();
+//                                    break;
+//                                case SOUTH:
+//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.SOUTH).end();
+//                                    break;
+//                                case WEST:
+//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.WEST).end();
+//                                    break;
+//                                case EAST:
+//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.EAST).end();
+//                                    break;
+//                            }
+//
+//                        })
+                        .face(Direction.DOWN).uvs(0,0,16,16).texture("#bottom").cullface(Direction.DOWN).end()
+                        .face(Direction.UP).uvs(0,0,16,16).texture("#top").end()
+                        .face(Direction.NORTH).uvs(0,3,16,16).texture("#side").cullface(Direction.NORTH).end()
+                        .face(Direction.SOUTH).uvs(0,3,16,16).texture("#side").cullface(Direction.SOUTH).end()
+                        .face(Direction.WEST).uvs(0,3,16,16).texture("#side").cullface(Direction.WEST).end()
+                        .face(Direction.EAST).uvs(0,3,16,16).texture("#side").cullface(Direction.EAST).end()
+                        .end();
+                model.texture("bottom",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/bottom"))
+                        .texture("top",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/top"))
+                        .texture("side",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/side"))
+                        .texture("particle",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/bottom"));
+                prov.getVariantBuilder(ctx.getEntry()).partialState().setModels(ConfiguredModel.builder().modelFile(model).build());
+            })
+            .simpleItem()
             .register();
 
     public static void init() {}

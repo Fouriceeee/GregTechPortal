@@ -1,0 +1,58 @@
+{
+  "variants": {
+    "axis=x,dimension=aether": {
+      "model": "gtportal:block/aether_portal_x"
+    },
+    "axis=x,dimension=empty": {
+      "model": "gtportal:block/empty_portal_x"
+    },
+    "axis=x,dimension=end": {
+      "model": "gtportal:block/end_portal_x"
+    },
+    "axis=x,dimension=nether": {
+      "model": "gtportal:block/nether_portal_x"
+    },
+    "axis=x,dimension=overworld": {
+      "model": "gtportal:block/overworld_portal_x"
+    },
+    "axis=x,dimension=twilight": {
+      "model": "gtportal:block/twilight_portal_x"
+    },
+    "axis=y,dimension=aether": {
+      "model": "gtportal:block/aether_portal_y"
+    },
+    "axis=y,dimension=empty": {
+      "model": "gtportal:block/empty_portal_y"
+    },
+    "axis=y,dimension=end": {
+      "model": "gtportal:block/end_portal_y"
+    },
+    "axis=y,dimension=nether": {
+      "model": "gtportal:block/nether_portal_y"
+    },
+    "axis=y,dimension=overworld": {
+      "model": "gtportal:block/overworld_portal_y"
+    },
+    "axis=y,dimension=twilight": {
+      "model": "gtportal:block/twilight_portal_y"
+    },
+    "axis=z,dimension=aether": {
+      "model": "gtportal:block/aether_portal_z"
+    },
+    "axis=z,dimension=empty": {
+      "model": "gtportal:block/empty_portal_z"
+    },
+    "axis=z,dimension=end": {
+      "model": "gtportal:block/end_portal_z"
+    },
+    "axis=z,dimension=nether": {
+      "model": "gtportal:block/nether_portal_z"
+    },
+    "axis=z,dimension=overworld": {
+      "model": "gtportal:block/overworld_portal_z"
+    },
+    "axis=z,dimension=twilight": {
+      "model": "gtportal:block/twilight_portal_z"
+    }
+  }
+}
