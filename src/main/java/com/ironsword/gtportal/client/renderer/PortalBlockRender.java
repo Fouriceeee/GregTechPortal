@@ -6,26 +6,18 @@ import com.gregtechceu.gtceu.client.util.RenderUtil;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
-import com.ironsword.gtportal.common.block.PortalBlock;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
-import com.ironsword.gtportal.data.BlockStateGen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 import java.util.*;
 

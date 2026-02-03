@@ -6,6 +6,6 @@ import com.tterrag.registrate.providers.ProviderType;
 
 public class GTPDatagen {
     public static void initPre(){
-        GTPRegistries.REGISTRATE.addDataGenerator(ProviderType.BLOCKSTATE,p -> BlockStateGen.init((GTBlockstateProvider)p));
+        GTPRegistries.REGISTRATE.addDataGenerator(ProviderType.LANG,LangHandler::init);
     }
 }

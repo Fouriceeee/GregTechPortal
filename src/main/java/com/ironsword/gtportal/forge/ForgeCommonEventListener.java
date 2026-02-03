@@ -16,7 +16,7 @@ public class ForgeCommonEventListener {
     @SubscribeEvent
     public static void onPortalIgnition(BlockEvent.PortalSpawnEvent event) {
         if (event.getLevel() instanceof Level level){
-            Utils.displayMessageInBoxes(level,event.getPos(),5,Component.literal("门不能从这一侧打开"));
+            Utils.displayMessageInBoxes(level,event.getPos(),5,Component.translatable("gtportal.clientmessage.banned_structure"));
         }
         event.setCanceled(true);
     }

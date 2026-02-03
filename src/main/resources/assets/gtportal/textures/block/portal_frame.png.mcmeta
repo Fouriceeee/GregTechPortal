@@ -1,0 +1,5 @@
+{
+    "ldlib": {
+        "connection": "gtportal:block/portal_frame_ctm"
+    }
+}

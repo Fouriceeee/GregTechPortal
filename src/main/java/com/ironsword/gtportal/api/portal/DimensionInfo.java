@@ -10,14 +10,13 @@ import net.minecraft.world.level.Level;
 import twilightforest.world.registration.TFGenerationSettings;
 
 public enum DimensionInfo implements StringRepresentable {
-    EMPTY("empty",null,new ResourceLocation(GTPortal.MODID,"block/portals/empty_portal"),0),
-    OVERWORLD("overworld", Level.OVERWORLD.location(),new ResourceLocation(GTPortal.MODID,"block/portals/overworld_portal"),0),
-    NETHER("nether",Level.NETHER.location(),new ResourceLocation(GTPortal.MODID,"block/portals/nether_portal"),0),
-    END("end",Level.END.location(),new ResourceLocation(GTPortal.MODID,"block/portals/end_portal"),128L),
-    TWILIGHT("twilight", TFGenerationSettings.DIMENSION,new ResourceLocation("minecraft","block/nether_portal"),128L),
-    AETHER("aether", AetherDimensions.AETHER_LEVEL.location(),new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"),128L);
+    EMPTY(null,new ResourceLocation(GTPortal.MODID,"block/portals/empty_portal"),0),
+    OVERWORLD(Level.OVERWORLD.location(),new ResourceLocation(GTPortal.MODID,"block/portals/overworld_portal"),0),
+    NETHER(Level.NETHER.location(),new ResourceLocation(GTPortal.MODID,"block/portals/nether_portal"),0),
+    END(Level.END.location(),new ResourceLocation(GTPortal.MODID,"block/portals/end_portal"),128L),
+    TWILIGHT(TFGenerationSettings.DIMENSION,new ResourceLocation("minecraft","block/nether_portal"),128L),
+    AETHER(AetherDimensions.AETHER_LEVEL.location(),new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"),128L);
 
-    private final String name;
     @Getter
     private final ResourceLocation id;
     @Getter
@@ -25,22 +24,32 @@ public enum DimensionInfo implements StringRepresentable {
     @Getter
     private final long teleportEnergy;
 
-    DimensionInfo(String name, ResourceLocation id, ResourceLocation texture, long teleportEnergy) {
-        this.name = name;
+    DimensionInfo(ResourceLocation id, ResourceLocation texture, long teleportEnergy) {
         this.id = id;
         this.texture = texture;
         this.teleportEnergy = teleportEnergy;
     }
 
-    public static DimensionInfo byId(ResourceLocation id) {
+    public static DimensionInfo byDimension(ResourceLocation id) {
         for (DimensionInfo i:DimensionInfo.values()){
             if (id.equals(i.id)) return i;
         }
         return EMPTY;
     }
 
+    public static DimensionInfo byName(String name) {
+        for (DimensionInfo i:DimensionInfo.values()){
+            if (name.equals(i.getSerializedName())) return i;
+        }
+        return EMPTY;
+    }
+
     @Override
     public String getSerializedName() {
-        return name;
+        return this.name().toLowerCase();
+    }
+
+    public String getTranslateKey(){
+        return "gtportal.dimension." + getSerializedName();
     }
 }

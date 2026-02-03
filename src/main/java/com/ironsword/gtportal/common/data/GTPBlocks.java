@@ -1,6 +1,7 @@
 package com.ironsword.gtportal.common.data;
 
 import com.aetherteam.aether.Aether;
+import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
@@ -73,29 +74,6 @@ public class GTPBlocks {
                 ModelBuilder<?> model = prov.models().getBuilder("broken_end_portal_frame").parent(prov.models().getExistingFile(new ResourceLocation("minecraft:block/block")));
                 model.element()
                         .from(0,0,0).to(16,13,16)
-//                        .faces((dir,builder)->{
-//                            switch (dir){
-//                                case DOWN :
-//                                    builder.uvs(0,0,16,16).texture("#bottom").cullface(Direction.DOWN).end();
-//                                    break;
-//                                case UP:
-//                                    builder.uvs(0,0,16,16).texture("#top").end();
-//                                    break;
-//                                case NORTH:
-//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.NORTH).end();
-//                                    break;
-//                                case SOUTH:
-//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.SOUTH).end();
-//                                    break;
-//                                case WEST:
-//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.WEST).end();
-//                                    break;
-//                                case EAST:
-//                                    builder.uvs(0,3,16,16).texture("#side").cullface(Direction.EAST).end();
-//                                    break;
-//                            }
-//
-//                        })
                         .face(Direction.DOWN).uvs(0,0,16,16).texture("#bottom").cullface(Direction.DOWN).end()
                         .face(Direction.UP).uvs(0,0,16,16).texture("#top").end()
                         .face(Direction.NORTH).uvs(0,3,16,16).texture("#side").cullface(Direction.NORTH).end()
@@ -109,6 +87,15 @@ public class GTPBlocks {
                         .texture("particle",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/bottom"));
                 prov.getVariantBuilder(ctx.getEntry()).partialState().setModels(ConfiguredModel.builder().modelFile(model).build());
             })
+            .simpleItem()
+            .register();
+
+    public static final BlockEntry<Block> PORTAL_FRAME = REGISTRATE
+            .block("portal_frame",Block::new)
+            .initialProperties(()->Blocks.OBSIDIAN)
+            .addLayer(()->RenderType::solid)
+            .lang("Portal Frame")
+            .exBlockstate(GTModels.cubeAllModel(GTPortal.id("block/portal_frame")))
             .simpleItem()
             .register();
 

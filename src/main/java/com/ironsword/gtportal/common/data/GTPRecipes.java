@@ -21,11 +21,11 @@ import java.util.function.Consumer;
 public class GTPRecipes {
     public static void createDefaultScannerRecipe(@NotNull String researchId,
                                                   ItemStack researchItem, FluidStack researchFluid,
-                                                  @NotNull ItemStack dataItem, @NotNull ResourceLocation dimension,
+                                                  @NotNull ItemStack dataItem, @NotNull DimensionInfo info,
                                                   int duration, long eu,Consumer<FinishedRecipe> provider){
 
         CompoundTag tag = dataItem.getOrCreateTag();
-        DimensionData data = new DimensionData(dimension,null);
+        DimensionData data = new DimensionData(info,null);
         tag.put("dim_data",data.toNbt());
         var builder = GTRecipeTypes.SCANNER_RECIPES.recipeBuilder(researchId)
                 .inputItems(dataItem.getItem());
@@ -52,27 +52,27 @@ public class GTPRecipes {
     private static void scannerRecipes(Consumer<FinishedRecipe> provider){
         createDefaultScannerRecipe("overworld",
                 Items.STONE.getDefaultInstance(),null,
-                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.OVERWORLD.getId(),
+                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.OVERWORLD,
                 20,8,provider);
 
         createDefaultScannerRecipe("nether",
                 Items.NETHERRACK.getDefaultInstance(),null,
-                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.NETHER.getId(),
+                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.NETHER,
                 20,32,provider);
 
         createDefaultScannerRecipe("end",
                 Items.END_STONE.getDefaultInstance(),null,
-                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.END.getId(),
+                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.END,
                 40,128,provider);
 
         createDefaultScannerRecipe("twilight_forest",
                 TFItems.TORCHBERRIES.get().getDefaultInstance(),null,
-                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.TWILIGHT.getId(),
+                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.TWILIGHT,
                 20,512,provider);
 
         createDefaultScannerRecipe("aether",
                 Items.GLOWSTONE.getDefaultInstance(),null,
-                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.AETHER.getId(),
+                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.AETHER,
                 20,2048,provider);
 
     }

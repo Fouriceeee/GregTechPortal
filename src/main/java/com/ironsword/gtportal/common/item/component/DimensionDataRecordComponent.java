@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
 import com.ironsword.gtportal.api.portal.DimensionData;
+import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.core.BlockPos;
@@ -30,7 +31,7 @@ public class DimensionDataRecordComponent extends DimensionDataComponent impleme
             if (entity instanceof MetaMachineBlockEntity machineEntity && machineEntity.getMetaMachine() instanceof PortalControllerMachine portalMachine){
                 ItemStack stack = context.getItemInHand();
                 changeDimensionData(stack,
-                        new DimensionData(level.dimension().location(),portalMachine.getPos()));
+                        new DimensionData(DimensionInfo.byDimension(level.dimension().location()),portalMachine.getPos()));
                 return InteractionResult.SUCCESS;
             }
         }

@@ -31,7 +31,6 @@ public class GTPMachines {
         GTPRegistries.REGISTRATE.creativeModeTab(()-> GTPCreativeModeTabs.GTP_TAB);
     }
 
-
     public static final MachineDefinition DIMENSION_DATA_HATCH = GTPRegistries.REGISTRATE
             .machine("dimension_data_hatch",DimensionDataHatchMachine::new)
             .langValue("Dimension Data Hatch")
@@ -45,14 +44,14 @@ public class GTPMachines {
             .multiblock("portal_controller", PortalControllerMachine::new)
             .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.DUMMY_RECIPES)
-            .appearanceBlock(()->Blocks.OBSIDIAN)
+            .appearanceBlock(()->GTPBlocks.PORTAL_FRAME.get())
             .pattern(definition-> FactoryBlockPattern.start()
                     .aisle( "XXPXX",
                             "X   X",
                             "X   X",
                             "X   X",
                             "XXXXX")
-                    .where('X',blocks(Blocks.OBSIDIAN)
+                    .where('X',blocks(GTPBlocks.PORTAL_FRAME.get())
                             .or(blocks(DIMENSION_DATA_HATCH.get()).setExactLimit(1))
                             .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setExactLimit(1)))
                     .where(' ', Predicates.air().or(blocks(GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.get())))
@@ -62,10 +61,9 @@ public class GTPMachines {
             .langValue("Portal Controller")
             .hasBER(true)
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
-            .model(createWorkableCasingMachineModel(GTCEu.id("block/casings/gcym/atomic_casing"),
-                    GTPortal.id("block/test")))
+            .model(createWorkableCasingMachineModel(GTPortal.id("block/portal_frame"),
+                    GTPortal.id("block/portal_controller_overlay")))
             .register();
-
 
     public static void init() {}
 }

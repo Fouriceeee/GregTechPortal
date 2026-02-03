@@ -10,7 +10,6 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.api.portal.DimensionData;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.api.portal.teleporter.Teleporter;
@@ -19,8 +18,6 @@ import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalControllerLogic;
 import com.ironsword.gtportal.common.machine.multiblock.part.DimensionDataHatchMachine;
 import com.ironsword.gtportal.utils.Utils;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
@@ -31,9 +28,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -71,7 +66,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
     }
 
     public long getEnergyPerTick() {
-        return cachedDimensionData == null ? 0L : DimensionInfo.byId(cachedDimensionData.dimension()).getTeleportEnergy();
+        return cachedDimensionData == null ? 0L : cachedDimensionData.info().getTeleportEnergy();
     }
 
     public BlockPos getFrontPos(){
@@ -81,16 +76,13 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
     @Override
     public void addDisplayText(List<Component> textList) {
         refreshDimensionData();
-        DimensionData data = cachedDimensionData;
-        if (data != null){
-            textList.add(Component.literal("Dimension: "+data.dimension()));
-            if (data.pos() != null){
-                textList.add(Component.literal("Position: "+data.pos().getX()+", "+data.pos().getY()+", "+data.pos().getZ()));
-            }
-            textList.add(Component.literal(getDimensionInfo().name()));
+        if (cachedDimensionData != null){
+            textList.add(cachedDimensionData.toDimension());
+            if (cachedDimensionData.hasPos())
+                textList.add(cachedDimensionData.toPosition());
             return;
         }
-        textList.add(Component.literal("No Destination Set"));
+        textList.add(Component.translatable("gtportal.machine.tooltip.no_data"));
     }
 
     private void refreshPortalBlock(){
@@ -117,7 +109,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
 
     public DimensionInfo getDimensionInfo(){
         refreshDimensionData();
-        return cachedDimensionData == null ? DimensionInfo.EMPTY : DimensionInfo.byId(cachedDimensionData.dimension());
+        return cachedDimensionData == null ? DimensionInfo.EMPTY : cachedDimensionData.info();
     }
 
     @Override
@@ -211,7 +203,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
                     getPos().offset(offset),
                     GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.getDefaultState()
                             .setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis())
-                            .setValue(DimensionalPortalBlock.DIMENSIONS,DimensionInfo.byId(cachedDimensionData.dimension()))
+                            .setValue(DimensionalPortalBlock.DIMENSIONS,cachedDimensionData.info())
             );
         }
     }
@@ -238,7 +230,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         BlockPos startingPos = getPos().relative(up).relative(clockWise),
                 endingPos = getPos().relative(up,3).relative(counterClockWise);
 
-        if (cachedDimensionData == null || cachedDimensionData.dimension().equals(getLevel().dimension().location())) return;
+        if (cachedDimensionData == null || cachedDimensionData.info().getId().equals(getLevel().dimension().location())) return;
 
         ServerLevel serverlevel = cachedDimensionData.getLevel(((ServerLevel)getLevel()).getServer());
         if (serverlevel == null) return;
@@ -249,7 +241,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
 
             if (!e.canChangeDimensions()) return;
 
-            if (cachedDimensionData.dimension().equals(DimensionInfo.END.getId())){
+            if (cachedDimensionData.info().getId().equals(DimensionInfo.END.getId())){
                 e.changeDimension(serverlevel);
             }
             else {

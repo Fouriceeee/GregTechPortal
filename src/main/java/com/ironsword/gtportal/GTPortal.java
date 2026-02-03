@@ -39,10 +39,8 @@ public class GTPortal
         GTPCreativeModeTabs.init();
         GTPItems.init();
         GTPBlocks.init();
-        GTPBlockEntities.init();
 
-
-        DynamicRenderManager.register(id("portal_block"), PortalBlockRender.TYPE);
+        //DynamicRenderManager.register(id("portal_block"), PortalBlockRender.TYPE);
 
         GTPRegistries.REGISTRATE.registerRegistrate();
     }

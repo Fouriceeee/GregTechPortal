@@ -41,7 +41,7 @@ public class DimensionHooksMixin {
             remap = false
     )
     private static void injectDetectWaterInFrame(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState,CallbackInfoReturnable<Boolean> cir){
-        Utils.displayMessageInBoxes((Level) levelAccessor,pos,5,Component.literal("门不能从这一侧打开"));
+        Utils.displayMessageInBoxes((Level) levelAccessor,pos,5,Component.translatable("gtportal.clientmessage.banned_structure"));
         cir.setReturnValue(false);
     }
 }
