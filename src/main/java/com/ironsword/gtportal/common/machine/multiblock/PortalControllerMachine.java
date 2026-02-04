@@ -12,7 +12,6 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.ironsword.gtportal.api.portal.DimensionData;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
-import com.ironsword.gtportal.api.portal.teleporter.Teleporter;
 import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalControllerLogic;
@@ -208,7 +207,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         }
     }
 
-    private void breakPortalBlock(){
+    public void breakPortalBlock(){
         if (!(getLevel()instanceof ServerLevel)) return;
         for (var offset:getOffsets()){
             BlockPos pos = getPos().offset(offset);
@@ -236,17 +235,10 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         if (serverlevel == null) return;
 
         getLevel().getEntities(null, Utils.getMaxBox(startingPos,endingPos)).forEach(e->{
-            if (!(e instanceof Entity))
+            if (!(e instanceof Entity) ||!e.canChangeDimensions())
                 return;
 
-            if (!e.canChangeDimensions()) return;
-
-            if (cachedDimensionData.info().getId().equals(DimensionInfo.END.getId())){
-                e.changeDimension(serverlevel);
-            }
-            else {
-                e.changeDimension(serverlevel, new Teleporter(cachedDimensionData.pos()));
-            }
+            cachedDimensionData.info().getTeleportFunc().apply(e,(ServerLevel) getLevel(),serverlevel,cachedDimensionData.pos());
         });
     }
 }

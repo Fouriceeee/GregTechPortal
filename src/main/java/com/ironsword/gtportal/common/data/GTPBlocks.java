@@ -68,7 +68,7 @@ public class GTPBlocks {
 
     public static final BlockEntry<BrokenEndPortalFrameBlock> BROKEN_END_PORTAL_FRAME = REGISTRATE
             .block("broken_end_portal_frame",BrokenEndPortalFrameBlock::new)
-            .initialProperties(()->Blocks.END_PORTAL_FRAME)
+            .initialProperties(()->Blocks.END_STONE)
             .lang("Broken End Portal Frame")
             .blockstate((ctx,prov)->{
                 ModelBuilder<?> model = prov.models().getBuilder("broken_end_portal_frame").parent(prov.models().getExistingFile(new ResourceLocation("minecraft:block/block")));

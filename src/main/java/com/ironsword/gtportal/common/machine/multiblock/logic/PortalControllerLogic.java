@@ -42,6 +42,8 @@ public class PortalControllerLogic extends RecipeLogic implements IWorkable {
                     progress = 1;
                 }
 
+                getMachine().breakPortalBlock();
+
                 setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_in").append(": ")
                         .append(EURecipeCapability.CAP.getName()));
                 return;
@@ -56,6 +58,7 @@ public class PortalControllerLogic extends RecipeLogic implements IWorkable {
             progress = 0;
         }else {
             progress = 0;
+            getMachine().breakPortalBlock();
             setStatus(Status.IDLE);
             machine.afterWorking();
         }

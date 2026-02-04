@@ -1,0 +1,19 @@
+{
+  "block.gtportal.broken_end_portal_frame": "Broken End Portal Frame",
+  "block.gtportal.dimension_data_hatch": "Dimension Data Hatch",
+  "block.gtportal.dimensional_portal_block": "Dimensional Portal Block",
+  "block.gtportal.portal_controller": "Portal Controller",
+  "block.gtportal.portal_frame": "Portal Frame",
+  "gtportal.clientmessage.banned_structure": "The structure is banned. Check the Quest Book for more information.",
+  "gtportal.dimension.aether": "The Aether",
+  "gtportal.dimension.empty": "Empty",
+  "gtportal.dimension.end": "End",
+  "gtportal.dimension.nether": "Nether",
+  "gtportal.dimension.overworld": "Overworld",
+  "gtportal.dimension.twilight": "Twilight Forest",
+  "gtportal.machine.tooltip.dimension": "Dimension",
+  "gtportal.machine.tooltip.no_data": "No Destination Set.",
+  "gtportal.machine.tooltip.position": "Position",
+  "item.gtportal.dim_data_recorder": "Dimension Data Recorder",
+  "item.gtportal.dim_data_stick": "Dimension Data Stick"
+}
