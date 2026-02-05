@@ -22,7 +22,7 @@ public class DimensionDataComponent implements IAddInformation {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         if (stack.getOrCreateTag().contains("dim_data")){
             DimensionData dimData = DimensionData.fromNbt(stack.getOrCreateTag().getCompound("dim_data"));
-            tooltipComponents.add(Component.literal(dimData.toString()));
+            tooltipComponents.add(dimData.toComponent());
         }
     }
 

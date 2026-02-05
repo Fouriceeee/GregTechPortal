@@ -114,6 +114,10 @@ repositories {
         }
     }
     maven { url = "https://packages.aether-mod.net/The-Aether" }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
 }
 
 dependencies {
@@ -121,9 +125,15 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
+
+    //jei
+    //compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:${jei_version}")
+    //compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:${jei_version}")
+    //runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
+
+    //emi
+    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}+${minecraft_version}")
+    runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}+${minecraft_version}")
 
     implementation fg.deobf("curse.maven:jade-324717:5640610")
 

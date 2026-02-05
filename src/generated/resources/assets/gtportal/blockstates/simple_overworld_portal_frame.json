@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "gtportal:block/simple_overworld_portal_frame"
+    }
+  }
+}

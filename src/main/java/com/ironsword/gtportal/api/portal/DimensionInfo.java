@@ -6,8 +6,15 @@ import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.TwilightTeleporter;
 import lombok.Getter;
+import net.minecraft.Util;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
@@ -88,6 +95,22 @@ public enum DimensionInfo implements StringRepresentable {
 
     public String getTranslateKey(){
         return "gtportal.dimension." + getSerializedName();
+    }
+
+    public CompoundTag toNbt(){
+        return Util.make(new CompoundTag(), tag ->{
+            tag.putString("dim",getSerializedName());
+        });
+    }
+
+    public MutableComponent toDimension(){
+        return Component.translatable("gtportal.machine.tooltip.dimension")
+                .append(": ")
+                .append(Component.translatable(getTranslateKey()));
+    }
+
+    public ServerLevel getLevel(MinecraftServer server) {
+        return server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
     }
 
     @FunctionalInterface

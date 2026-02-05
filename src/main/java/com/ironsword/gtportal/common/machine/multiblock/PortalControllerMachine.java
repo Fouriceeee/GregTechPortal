@@ -38,13 +38,13 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
 
     @Getter
     @Setter
-    private DimensionData cachedDimensionData = null;
+    protected DimensionData cachedDimensionData = null;
 
-    private TickableSubscription teleportSubscription;
+    protected TickableSubscription teleportSubscription;
 
     @Getter
     @Nullable
-    private EnergyContainerList inputEnergyContainers;
+    protected EnergyContainerList inputEnergyContainers;
 
     public PortalControllerMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -59,8 +59,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         return new PortalControllerLogic(this);
     }
 
-    @Override
-    public PortalControllerLogic getRecipeLogic() {
+    public PortalControllerLogic getPortalRecipeLogic(){
         return (PortalControllerLogic) super.getRecipeLogic();
     }
 
@@ -74,6 +73,8 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
 
     @Override
     public void addDisplayText(List<Component> textList) {
+        super.addDisplayText(textList);
+
         refreshDimensionData();
         if (cachedDimensionData != null){
             textList.add(cachedDimensionData.toDimension());
@@ -84,7 +85,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         textList.add(Component.translatable("gtportal.machine.tooltip.no_data"));
     }
 
-    private void refreshPortalBlock(){
+    protected void refreshPortalBlock(){
         if (isWorkingEnabled() && getRecipeLogic().isWorking()){
             setPortalBlock();
         }else{
@@ -132,7 +133,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         refreshDimensionData();
         initializeAbilities();
 
-        this.getRecipeLogic().setDuration(20);
+        this.getPortalRecipeLogic().setDuration(20);
     }
 
     @Override
@@ -171,7 +172,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
             }
         }
         this.inputEnergyContainers = new EnergyContainerList(energyContainers);
-        getRecipeLogic().setEnergyContainer(this.inputEnergyContainers);
+        getPortalRecipeLogic().setEnergyContainer(this.inputEnergyContainers);
     }
 
     public Set<BlockPos> getOffsets() {
@@ -195,7 +196,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         return offsets;
     }
 
-    private void setPortalBlock(){
+    protected void setPortalBlock(){
         if (!(getLevel()instanceof ServerLevel)) return;
         for (var offset:getOffsets()){
             getLevel().setBlockAndUpdate(
@@ -217,7 +218,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         }
     }
 
-    private void teleportEntities(){
+    protected void teleportEntities(){
         if (!(getLevel() instanceof ServerLevel)||!getRecipeLogic().isWorking())
             return;
 

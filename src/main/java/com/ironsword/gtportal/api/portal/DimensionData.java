@@ -47,9 +47,7 @@ public record DimensionData(@Nonnull DimensionInfo info, @Nullable Vec3i pos) {
     }
 
     public MutableComponent toDimension(){
-        return Component.translatable("gtportal.machine.tooltip.dimension")
-                .append(": ")
-                .append(Component.translatable(info.getTranslateKey()));
+        return info.toDimension();
     }
 
     public MutableComponent toPosition(){
@@ -65,6 +63,6 @@ public record DimensionData(@Nonnull DimensionInfo info, @Nullable Vec3i pos) {
     }
 
     public ServerLevel getLevel(MinecraftServer server) {
-        return server.getLevel(ResourceKey.create(Registries.DIMENSION, info.getId()));
+        return info.getLevel(server);
     }
 }

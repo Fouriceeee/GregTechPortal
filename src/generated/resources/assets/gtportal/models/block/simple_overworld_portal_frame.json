@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "gtportal:block/simple_overworld_portal_frame"
+  }
+}

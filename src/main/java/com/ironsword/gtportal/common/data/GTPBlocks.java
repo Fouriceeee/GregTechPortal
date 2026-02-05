@@ -99,6 +99,24 @@ public class GTPBlocks {
             .simpleItem()
             .register();
 
+    public static final BlockEntry<Block> SIMPLE_OVERWORLD_PORTAL_FRAME = REGISTRATE
+            .block("simple_overworld_portal_frame",Block::new)
+            .initialProperties(()->Blocks.OBSIDIAN)
+            .addLayer(()->RenderType::solid)
+            .lang("Simple Overworld Portal Frame")
+            .exBlockstate(GTModels.cubeAllModel(GTPortal.id("block/simple_overworld_portal_frame")))
+            .simpleItem()
+            .register();
+
+    public static final BlockEntry<Block> SIMPLE_NETHER_PORTAL_FRAME = REGISTRATE
+            .block("simple_nether_portal_frame",Block::new)
+            .initialProperties(()->Blocks.OBSIDIAN)
+            .addLayer(()->RenderType::solid)
+            .lang("Simple Nether Portal Frame")
+            .exBlockstate(GTModels.cubeAllModel(GTPortal.id("block/simple_nether_portal_frame")))
+            .simpleItem()
+            .register();
+
     public static void init() {}
 
 

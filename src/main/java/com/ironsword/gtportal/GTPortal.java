@@ -1,9 +1,11 @@
 package com.ironsword.gtportal;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
+import com.gregtechceu.gtceu.api.data.DimensionMarker;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
+import com.gregtechceu.gtceu.common.data.GTDimensionMarkers;
 import com.ironsword.gtportal.client.renderer.PortalBlockRender;
 import com.ironsword.gtportal.common.data.*;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
@@ -31,7 +33,7 @@ public class GTPortal
 
         bus.addGenericListener(MachineDefinition.class,this::registerMachines);
         bus.addGenericListener(GTRecipeType.class,this::registerRecipeTypes);
-
+        bus.addGenericListener(DimensionMarker.class,this::registerDimensionMarkers);
     }
 
     private static void init() {
@@ -53,6 +55,11 @@ public class GTPortal
     @SubscribeEvent
     public void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event){
         GTPRecipeTypes.init();
+    }
+
+    @SubscribeEvent
+    public void registerDimensionMarkers(GTCEuAPI.RegisterEvent<ResourceLocation, DimensionMarker> event){
+        GTPDimensionMarkers.init();
     }
 
     public static ResourceLocation id(String name){

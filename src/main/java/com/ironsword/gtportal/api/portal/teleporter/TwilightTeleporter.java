@@ -36,11 +36,12 @@ public class TwilightTeleporter extends GTPTeleporter{
     protected BlockPos searchDestPos(ServerLevel destWorld, BlockPos scaledPos) {
         Class<?> clazz = TFTeleporter.class;
         try {
-            Method moveToSafeCoords = clazz.getDeclaredMethod("moveToSafeCoords", ServerLevel.class, Entity.class, BlockPos.class);
-            Method findPortalCoords = clazz.getDeclaredMethod("findPortalCoords", ServerLevel.class, Vec3.class, Predicate.class);
-            Method isIdealForPortal = clazz.getDeclaredMethod("isIdealForPortal", ServerLevel.class, BlockPos.class);
-            Method isOkayForPortal = clazz.getDeclaredMethod("isOkayForPortal", ServerLevel.class, BlockPos.class);
-            Method loadSurroundingArea = clazz.getDeclaredMethod("loadSurroundingArea", ServerLevel.class, Vec3.class);
+            Method
+                    moveToSafeCoords = clazz.getDeclaredMethod("moveToSafeCoords", ServerLevel.class, Entity.class, BlockPos.class),
+                    findPortalCoords = clazz.getDeclaredMethod("findPortalCoords", ServerLevel.class, Vec3.class, Predicate.class),
+                    isIdealForPortal = clazz.getDeclaredMethod("isIdealForPortal", ServerLevel.class, BlockPos.class),
+                    isOkayForPortal = clazz.getDeclaredMethod("isOkayForPortal", ServerLevel.class, BlockPos.class),
+                    loadSurroundingArea = clazz.getDeclaredMethod("loadSurroundingArea", ServerLevel.class, Vec3.class);
             moveToSafeCoords.setAccessible(true);
             findPortalCoords.setAccessible(true);
             isIdealForPortal.setAccessible(true);
@@ -50,35 +51,20 @@ public class TwilightTeleporter extends GTPTeleporter{
             PortalInfo info = (PortalInfo) moveToSafeCoords.invoke(null,destWorld,entity,scaledPos);
             loadSurroundingArea.invoke(null,destWorld,info.pos);
 
-            Predicate<BlockPos>
-                    idealPredicate = (blockPos)-> {
-                try {
-                    return (boolean) isIdealForPortal.invoke(null, destWorld, blockPos);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-            },
-                    okayPredicate = (blockPos)-> {
-                try {
-                    return (boolean) isOkayForPortal.invoke(null, destWorld, blockPos);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-            };
+            Predicate<BlockPos> idealPredicate = (blockPos)-> {try {
+                    return (boolean) isIdealForPortal.invoke(null, destWorld, blockPos);} catch (IllegalAccessException | InvocationTargetException e) {throw new RuntimeException(e);}};
+            Predicate<BlockPos> okayPredicate = (blockPos)-> {try {
+                    return (boolean) isOkayForPortal.invoke(null, destWorld, blockPos);} catch (IllegalAccessException | InvocationTargetException e) {throw new RuntimeException(e);}};
 
             BlockPos spot = (BlockPos) findPortalCoords.invoke(null,destWorld,info.pos,idealPredicate);
-            if (spot != null){
+            if (spot != null)
                 return spot.above();
-            }
 
             spot = (BlockPos) findPortalCoords.invoke(null,destWorld,info.pos,okayPredicate);
-            if (spot!= null){
+            if (spot!= null)
                 return spot.above();
-            }
 
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {throw new RuntimeException(e);}
         return super.searchDestPos(destWorld,scaledPos);
     }
 }
