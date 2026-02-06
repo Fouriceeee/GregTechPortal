@@ -28,6 +28,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.Nullable;
@@ -92,7 +93,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         if (isWorkingEnabled()){
             setPortalBlock();
         }else{
-            breakPortalBlock();
+            setPortalBlockAir();
         }
     }
 
@@ -103,12 +104,12 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
                 if (cachedDimensionData != null){
                     refreshPortalBlock();
                 }else {
-                    breakPortalBlock();
+                    setPortalBlockAir();
                 }
                 return;
             }
         }
-        breakPortalBlock();
+        setPortalBlockAir();
         this.cachedDimensionData = null;
     }
 
@@ -128,6 +129,9 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
     public void onLoad() {
         super.onLoad();
         refreshDimensionData();
+        if (isWorkingEnabled()||cachedDimensionData != null){
+            getRecipeLogic().setStatus(RecipeLogic.Status.WORKING);
+        }
     }
 
     @Override
@@ -223,6 +227,16 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         }
     }
 
+    public void setPortalBlockAir(){
+        if (!(getLevel()instanceof ServerLevel)) return;
+        for (var offset:getOffsets()){
+            BlockPos pos = getPos().offset(offset);
+            if (getLevel().getBlockState(pos).is(GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.get())){
+                getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            }
+        }
+    }
+
     protected void teleportEntities(){
         if (!(getLevel() instanceof ServerLevel)||!getRecipeLogic().isWorking())
             return;
@@ -246,20 +260,6 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
 
             cachedDimensionData.info().getTeleportFunc().apply(e,(ServerLevel) getLevel(),serverlevel,cachedDimensionData.pos());
         });
-    }
-
-    public void readDataFromHatch(){
-        for (var part:getParts()){
-            if (part instanceof DimensionDataHatchMachine hatch){
-                this.cachedDimensionData = hatch.readData();
-                return;
-            }
-        }
-        this.cachedDimensionData = null;
-    }
-
-    protected BlockState getPortalBlockState(){
-        return cachedDimensionData == null ? null : GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.getDefaultState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()).setValue(DimensionalPortalBlock.DIMENSIONS,cachedDimensionData.info());
     }
 
 }

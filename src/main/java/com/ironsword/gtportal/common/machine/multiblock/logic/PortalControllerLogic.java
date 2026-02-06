@@ -44,8 +44,8 @@ public class PortalControllerLogic extends RecipeLogic implements IWorkable {
         if (duration > 0){
             if (!consumeEnergy()){
                 progress = 0;
-                getMachine().breakPortalBlock();
                 getMachine().setWorkingEnabled(false);
+                getMachine().breakPortalBlock();
                 return;
             }
             setStatus(Status.WORKING);
