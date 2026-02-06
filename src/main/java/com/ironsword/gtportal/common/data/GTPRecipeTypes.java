@@ -10,6 +10,7 @@ import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
+import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceKey;
@@ -40,6 +41,13 @@ public class GTPRecipeTypes {
 //                                      ResourceLocation dimension, int duration, EnergyStack EUt, int CWUt){
 //
 //    }
+
+    public static final GTRecipeType TEST_RECIPE_TYPE = GTRecipeTypes.register("gtp_test_recipe",GTRecipeTypes.MULTIBLOCK)
+            .setMaxIOSize(1,1,1,1)
+            .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
+            .setIconSupplier(()->GTPItems.DIM_DATA_STICK.asStack())
+            .setEUIO(IO.IN)
+            .addDataInfo(data-> "dimension%s".formatted(data.getString("dimension")));
 
     public static void init() {
 

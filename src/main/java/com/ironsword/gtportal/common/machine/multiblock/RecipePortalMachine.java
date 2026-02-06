@@ -10,46 +10,60 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
-import com.ironsword.gtportal.api.portal.DimensionData;
-import com.ironsword.gtportal.api.portal.DimensionInfo;
+import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
 import com.ironsword.gtportal.common.data.GTPBlocks;
-import com.ironsword.gtportal.common.machine.multiblock.logic.PortalControllerLogic;
-import com.ironsword.gtportal.common.machine.multiblock.part.DimensionDataHatchMachine;
+import com.ironsword.gtportal.common.machine.multiblock.logic.RecipePortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraftforge.common.util.ITeleporter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
-public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(PortalControllerMachine.class,
+public class RecipePortalMachine extends WorkableElectricMultiblockMachine {
+    public static final TeleportFunction EMPTY_FUNC = ((entity, currWorld, destWorld, coordinate) -> {});
+    public static final Map<ResourceLocation, TeleportFunction> TELEPORTER_MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(),((entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
+            Level.NETHER.location(),((entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.NETHERRACK))),
+            Level.END.location(),((entity, currWorld, destWorld, coordinate) -> {
+                if (coordinate == null){
+                    entity.changeDimension(destWorld);
+                }else {
+                    entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.END_STONE));
+                }
+            })
+    ));
+    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(RecipePortalMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
 
-    @Getter
-    @Setter
-    @Nullable
-    protected DimensionData cachedDimensionData = null;
+    protected ResourceLocation cachedDimension = null;
+    protected BlockPos cachedCoordinate = null;
 
-    protected TickableSubscription teleportSubscription;
-
-    @Getter
     @Nullable
     protected EnergyContainerList inputEnergyContainers;
 
-    public PortalControllerMachine(IMachineBlockEntity holder, Object... args) {
+    protected TickableSubscription teleportSubscription;
+
+    public RecipePortalMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
     }
 
@@ -59,112 +73,48 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
 
     @Override
     protected RecipeLogic createRecipeLogic(Object... args) {
-        return new PortalControllerLogic(this);
+        return new RecipePortalLogic(this);
     }
 
-    public PortalControllerLogic getPortalRecipeLogic(){
-        return (PortalControllerLogic) super.getRecipeLogic();
-    }
-
-    public long getEnergyPerTick() {
-        return cachedDimensionData == null ? 0L : cachedDimensionData.info().getTeleportEnergy();
-    }
-
-    public BlockPos getFrontPos(){
-        return getPos().relative(getFrontFacing());
+    public RecipePortalLogic getRecipePortalLogic(){
+        return (RecipePortalLogic) getRecipeLogic();
     }
 
     @Override
     public void addDisplayText(List<Component> textList) {
         super.addDisplayText(textList);
-
-        refreshDimensionData();
-        if (cachedDimensionData != null){
-            textList.add(cachedDimensionData.toDimension());
-            if (cachedDimensionData.hasPos())
-                textList.add(cachedDimensionData.toPosition());
-            return;
-        }
-        textList.add(Component.translatable("gtportal.machine.tooltip.no_data"));
-    }
-
-    protected void refreshPortalBlock(){
-        if (isWorkingEnabled()){
-            setPortalBlock();
-        }else{
-            breakPortalBlock();
-        }
-    }
-
-    public void refreshDimensionData(){
-        for (var part:getParts()){
-            if (part instanceof DimensionDataHatchMachine hatch){
-                this.cachedDimensionData = hatch.readData();
-                if (cachedDimensionData != null){
-                    refreshPortalBlock();
-                }else {
-                    breakPortalBlock();
-                }
-                return;
-            }
-        }
-        breakPortalBlock();
-        this.cachedDimensionData = null;
-    }
-
-    public DimensionInfo getDimensionInfo(){
-        refreshDimensionData();
-        return cachedDimensionData == null ? DimensionInfo.EMPTY : cachedDimensionData.info();
-    }
-
-    @Override
-    public void onUnload() {
-        super.onUnload();
-        unsubscribe(teleportSubscription);
-        teleportSubscription = null;
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
-        refreshDimensionData();
+    }
+
+    @Override
+    public void onUnload() {
+        super.onUnload();
     }
 
     @Override
     public void onStructureFormed() {
         super.onStructureFormed();
-        teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
-
-        refreshDimensionData();
-        initializeAbilities();
-
-        this.getPortalRecipeLogic().setDuration(20);
     }
 
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        breakPortalBlock();
-        unsubscribe(teleportSubscription);
-        teleportSubscription = null;
-        this.inputEnergyContainers = null;
     }
 
     @Override
     public void setWorkingEnabled(boolean isWorkingAllowed) {
-        if (isWorkingAllowed){
-            refreshDimensionData();
-        }else {
-            getRecipeLogic().setStatus(RecipeLogic.Status.IDLE);
-        }
         super.setWorkingEnabled(isWorkingAllowed);
     }
 
-    protected void initializeAbilities() {
+    protected void initAbilities(){
         List<IEnergyContainer> energyContainers = new ArrayList<>();
         Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
                 Long2ObjectMaps::emptyMap);
-        for (IMultiPart part : getParts()) {
+        for (IMultiPart part:getParts()){
             IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
             if (io == IO.NONE || io == IO.OUT) continue;
             var handlerLists = part.getRecipeHandlers();
@@ -177,7 +127,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
             }
         }
         this.inputEnergyContainers = new EnergyContainerList(energyContainers);
-        getPortalRecipeLogic().setEnergyContainer(this.inputEnergyContainers);
+        getRecipePortalLogic().setEnergyContainer(this.inputEnergyContainers);
     }
 
     public Set<BlockPos> getOffsets() {
@@ -201,26 +151,32 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         return offsets;
     }
 
-    protected void setPortalBlock(){
+    protected void fillBlock(BlockState blockState){
         if (!(getLevel()instanceof ServerLevel)) return;
         for (var offset:getOffsets()){
             getLevel().setBlockAndUpdate(
                     getPos().offset(offset),
-                    GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.getDefaultState()
-                            .setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis())
-                            .setValue(DimensionalPortalBlock.DIMENSIONS,cachedDimensionData.info())
+                    blockState
             );
         }
     }
 
-    public void breakPortalBlock(){
+    //block true , check true  -> destroy
+    //block false, check true  -> continue
+    //block true , check false -> destroy
+    //block false, check false -> destroy
+    protected void destroyBlock(Block block, boolean checkBlock){
         if (!(getLevel()instanceof ServerLevel)) return;
         for (var offset:getOffsets()){
             BlockPos pos = getPos().offset(offset);
-            if (getLevel().getBlockState(pos).is(GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.get())){
+            if (!checkBlock || getLevel().getBlockState(pos).is(block)){
                 getLevel().destroyBlock(pos,false);
             }
         }
+    }
+
+    protected void destroyBlock(boolean checkBlock){
+        this.destroyBlock(GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.get(),checkBlock);
     }
 
     protected void teleportEntities(){
@@ -235,31 +191,26 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
         BlockPos startingPos = getPos().relative(up).relative(clockWise),
                 endingPos = getPos().relative(up,3).relative(counterClockWise);
 
-        if (cachedDimensionData == null || cachedDimensionData.info().getId().equals(getLevel().dimension().location())) return;
+        if (cachedDimension == null || cachedDimension.equals(getLevel().dimension().location()))
+            return;
 
-        ServerLevel serverlevel = cachedDimensionData.getLevel(((ServerLevel)getLevel()).getServer());
-        if (serverlevel == null) return;
+        ServerLevel serverLevel = ((ServerLevel) getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION,cachedDimension));
+        if (serverLevel == null)
+            return;
 
         getLevel().getEntities(null, Utils.getMaxBox(startingPos,endingPos)).forEach(e->{
             if (!(e instanceof Entity) ||!e.canChangeDimensions())
                 return;
 
-            cachedDimensionData.info().getTeleportFunc().apply(e,(ServerLevel) getLevel(),serverlevel,cachedDimensionData.pos());
+            TELEPORTER_MAP.getOrDefault(cachedDimension,EMPTY_FUNC).teleport(e,(ServerLevel) getLevel(),serverLevel,cachedCoordinate);
         });
     }
 
-    public void readDataFromHatch(){
-        for (var part:getParts()){
-            if (part instanceof DimensionDataHatchMachine hatch){
-                this.cachedDimensionData = hatch.readData();
-                return;
-            }
-        }
-        this.cachedDimensionData = null;
+    @FunctionalInterface
+    public interface TeleportFunction{
+        void teleport(Entity entity, ServerLevel currWorld, ServerLevel destWorld, @Nullable Vec3i coordinate);
     }
-
-    protected BlockState getPortalBlockState(){
-        return cachedDimensionData == null ? null : GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.getDefaultState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()).setValue(DimensionalPortalBlock.DIMENSIONS,cachedDimensionData.info());
-    }
-
 }
+
+
+

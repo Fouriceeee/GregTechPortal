@@ -6,7 +6,6 @@ import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
 import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
-import com.ironsword.gtportal.common.block.PortalBlock;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
@@ -17,11 +16,20 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.client.model.generators.ModelFile;
 
 import static com.ironsword.gtportal.common.registry.GTPRegistries.REGISTRATE;
 
 public class GTPBlocks {
+
+    public static final ResourceLocation
+            EMPTY_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/empty_portal"),
+            OVERWORLD_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/overworld_portal"),
+            NETHER_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/nether_portal"),
+            END_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/end_portal"),
+            AETHER_TEXTURE = new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"),
+            TWILIGHT_TEXTURE = new ResourceLocation("minecraft","block/nether_portal");
+
+
     static {
         REGISTRATE.creativeModeTab(()-> GTPCreativeModeTabs.GTP_TAB);
     }

@@ -25,6 +25,7 @@ import lombok.Setter;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DimensionDataHatchMachine extends MultiblockPartMachine {
 
@@ -64,6 +65,7 @@ public class DimensionDataHatchMachine extends MultiblockPartMachine {
         };
     }
 
+    @Nullable
     public DimensionData readData(){
         if (getLevel() == null || getLevel().isClientSide()) return null;
         ItemStack stack = importItems.getStackInSlot(0);

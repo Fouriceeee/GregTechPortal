@@ -47,6 +47,22 @@ public class GTPRecipes {
         VanillaRecipeHelper.addShapelessRecipe(provider,"dim_data_stick",GTPItems.DIM_DATA_STICK.asStack(),GTPItems.DIM_DATA_STICK.asStack());
         VanillaRecipeHelper.addShapelessRecipe(provider,"dim_data_recorder",GTPItems.DIM_DATA_RECORDER.asStack(),GTPItems.DIM_DATA_RECORDER.asStack());
 
+        testRecipes(provider);
+    }
+
+    private static void testRecipes(Consumer<FinishedRecipe> provider) {
+        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("overworld")
+                .inputItems(GTPItems.DIM_DATA_STICK.asStack())
+                .EUt(32)
+                .duration(20)
+                .addData("dimension",DimensionInfo.OVERWORLD.getSerializedName())
+                .save(provider);
+        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("nether")
+                .inputItems(GTPItems.DIM_DATA_STICK.asStack())
+                .EUt(64)
+                .duration(20)
+                .addData("dimension",DimensionInfo.NETHER.getSerializedName())
+                .save(provider);
     }
 
     private static void scannerRecipes(Consumer<FinishedRecipe> provider){

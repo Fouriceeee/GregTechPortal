@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
 import com.gregtechceu.gtceu.common.data.GTDimensionMarkers;
 import com.ironsword.gtportal.client.renderer.PortalBlockRender;
+import com.ironsword.gtportal.common.block.property.Dimension;
 import com.ironsword.gtportal.common.data.*;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
