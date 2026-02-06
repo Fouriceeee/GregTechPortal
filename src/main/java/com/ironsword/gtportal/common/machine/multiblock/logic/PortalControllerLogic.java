@@ -35,27 +35,21 @@ public class PortalControllerLogic extends RecipeLogic implements IWorkable {
         return MANAGED_FIELD_HOLDER;
     }
 
+    @Override
+    public void setStatus(Status status) {
+        super.setStatus(status);
+    }
+
     public void serverTick(){
         if (duration > 0){
             if (!consumeEnergy()){
-                if (progress > 0 && machine.regressWhenWaiting()) {
-                    progress = 1;
-                }
-
+                progress = 0;
                 getMachine().breakPortalBlock();
-
-                setWaiting(Component.translatable("gtceu.recipe_logic.insufficient_in").append(": ")
-                        .append(EURecipeCapability.CAP.getName()));
+                getMachine().setWorkingEnabled(false);
                 return;
             }
             setStatus(Status.WORKING);
-            if (progress++ < getMaxProgress()) {
-                if (!machine.onWorking()) {
-                    this.interruptRecipe();
-                }
-                return;
-            }
-            progress = 0;
+            progress = 20;
         }else {
             progress = 0;
             getMachine().breakPortalBlock();

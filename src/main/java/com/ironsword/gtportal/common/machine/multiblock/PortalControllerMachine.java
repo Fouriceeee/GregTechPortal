@@ -86,7 +86,7 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
     }
 
     protected void refreshPortalBlock(){
-        if (isWorkingEnabled() && getRecipeLogic().isWorking()){
+        if (isWorkingEnabled()){
             setPortalBlock();
         }else{
             breakPortalBlock();
@@ -99,6 +99,8 @@ public class PortalControllerMachine extends WorkableElectricMultiblockMachine {
                 this.cachedDimensionData = hatch.readData();
                 if (cachedDimensionData != null){
                     refreshPortalBlock();
+                }else {
+                    breakPortalBlock();
                 }
                 return;
             }

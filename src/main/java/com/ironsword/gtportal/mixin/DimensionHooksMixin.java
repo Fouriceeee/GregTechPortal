@@ -30,7 +30,7 @@ public class DimensionHooksMixin {
             remap = false
     )
     private static void injectCreatePortal(Player player, Level level, BlockPos pos, @Nullable Direction direction, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<Boolean> cir){
-        player.displayClientMessage(Component.literal("门不能从这一侧打开"),true);
+        player.displayClientMessage(Component.translatable("gtportal.clientmessage.banned_structure"),true);
         cir.setReturnValue(false);
     }
 

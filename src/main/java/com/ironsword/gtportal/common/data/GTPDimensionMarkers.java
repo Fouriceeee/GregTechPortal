@@ -17,16 +17,16 @@ public class GTPDimensionMarkers {
         REGISTRATE.creativeModeTab(() -> null);
     }
 
-    public static final DimensionMarker AETHER = createAndRegister(
-            DimensionInfo.AETHER.getId(),
-            0,
-            ()-> AetherItems.AETHER_PORTAL_FRAME.get(),
-            DimensionInfo.AETHER.getTranslateKey());
-    public static final DimensionMarker TWILIGHT = createAndRegister(
-            DimensionInfo.TWILIGHT.getId(),
-            0,
-            ()-> TFBlocks.TWILIGHT_PORTAL_MINIATURE_STRUCTURE.get(),
-            DimensionInfo.TWILIGHT.getTranslateKey());
+//    public static final DimensionMarker AETHER = createAndRegister(
+//            DimensionInfo.AETHER.getId(),
+//            0,
+//            ()-> AetherItems.AETHER_PORTAL_FRAME.get(),
+//            DimensionInfo.AETHER.getTranslateKey());
+//    public static final DimensionMarker TWILIGHT = createAndRegister(
+//            DimensionInfo.TWILIGHT.getId(),
+//            0,
+//            ()-> TFBlocks.TWILIGHT_PORTAL_MINIATURE_STRUCTURE.get(),
+//            DimensionInfo.TWILIGHT.getTranslateKey());
 
 
     public static void init(){}

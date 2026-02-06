@@ -19,7 +19,7 @@ public class LangHandler extends com.gregtechceu.gtceu.data.lang.LangHandler {
         provider.add("gtportal.tooltip.item.dim_data_recorder","Shift + Right click at Portal Controller to record dimension data");
 
         //dimension infos
-        provider.add("gtportal.dimension.empty","Empty");
+        provider.add("gtportal.dimension.empty","Unknown Dimension");
         provider.add("gtportal.dimension.overworld","Overworld");
         provider.add("gtportal.dimension.nether","Nether");
         provider.add("gtportal.dimension.end","End");

@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine;
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableItemStackHandler;
 import com.ironsword.gtportal.api.portal.DimensionData;
+import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -67,10 +68,12 @@ public class DimensionDataHatchMachine extends MultiblockPartMachine {
         if (getLevel() == null || getLevel().isClientSide()) return null;
         ItemStack stack = importItems.getStackInSlot(0);
         if (stack.getOrCreateTag().contains("dim_data")){
-            return DimensionData.fromNbt(stack.getOrCreateTag().getCompound("dim_data"));
-        }else {
-            return null;
+            DimensionData data = DimensionData.fromNbt(stack.getOrCreateTag().getCompound("dim_data"));
+            if (!data.info().equals(DimensionInfo.EMPTY)){
+                return data;
+            }
         }
+        return null;
     }
 
     private PortalControllerMachine getPortalController(){
