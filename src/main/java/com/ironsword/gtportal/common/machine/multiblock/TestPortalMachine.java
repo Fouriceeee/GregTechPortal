@@ -11,14 +11,12 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
-import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
 import com.ironsword.gtportal.common.data.GTPBlocks;
-import com.ironsword.gtportal.common.machine.multiblock.logic.RecipePortalLogic;
+import com.ironsword.gtportal.common.machine.multiblock.logic.TestPortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
-import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -32,14 +30,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.util.ITeleporter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
 
-public class RecipePortalMachine extends WorkableElectricMultiblockMachine {
+public class TestPortalMachine extends WorkableElectricMultiblockMachine {
     public static final TeleportFunction EMPTY_FUNC = ((entity, currWorld, destWorld, coordinate) -> {});
     public static final Map<ResourceLocation, TeleportFunction> TELEPORTER_MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),((entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
@@ -52,7 +47,7 @@ public class RecipePortalMachine extends WorkableElectricMultiblockMachine {
                 }
             })
     ));
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(RecipePortalMachine.class,
+    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(TestPortalMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
 
     protected ResourceLocation cachedDimension = null;
@@ -63,7 +58,7 @@ public class RecipePortalMachine extends WorkableElectricMultiblockMachine {
 
     protected TickableSubscription teleportSubscription;
 
-    public RecipePortalMachine(IMachineBlockEntity holder, Object... args) {
+    public TestPortalMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
     }
 
@@ -73,11 +68,11 @@ public class RecipePortalMachine extends WorkableElectricMultiblockMachine {
 
     @Override
     protected RecipeLogic createRecipeLogic(Object... args) {
-        return new RecipePortalLogic(this);
+        return new TestPortalLogic(this);
     }
 
-    public RecipePortalLogic getRecipePortalLogic(){
-        return (RecipePortalLogic) getRecipeLogic();
+    public TestPortalLogic getRecipePortalLogic(){
+        return (TestPortalLogic) getRecipeLogic();
     }
 
     @Override

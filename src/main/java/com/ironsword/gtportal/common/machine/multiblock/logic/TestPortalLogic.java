@@ -8,14 +8,14 @@ import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
-public class RecipePortalLogic extends RecipeLogic implements IWorkable {
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(RecipePortalLogic.class, RecipeLogic.MANAGED_FIELD_HOLDER);
+public class TestPortalLogic extends RecipeLogic implements IWorkable {
+    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(TestPortalLogic.class, RecipeLogic.MANAGED_FIELD_HOLDER);
 
     @Setter
     @Nullable
     private IEnergyContainer energyContainer;
 
-    public RecipePortalLogic(IRecipeLogicMachine machine) {
+    public TestPortalLogic(IRecipeLogicMachine machine) {
         super(machine);
     }
 

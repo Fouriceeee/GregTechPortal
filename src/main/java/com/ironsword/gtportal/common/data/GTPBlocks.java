@@ -6,6 +6,7 @@ import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
 import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
+import com.ironsword.gtportal.common.block.TestPortalBlock;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
@@ -29,10 +30,14 @@ public class GTPBlocks {
             AETHER_TEXTURE = new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"),
             TWILIGHT_TEXTURE = new ResourceLocation("minecraft","block/nether_portal");
 
-
     static {
         REGISTRATE.creativeModeTab(()-> GTPCreativeModeTabs.GTP_TAB);
     }
+
+    public static final BlockEntry<TestPortalBlock> TEST_OVERWORLD_PORTAL_BLOCK = registerTestPortalBlock("test_overworld_portal_block","Test Overworld Portal Block",GTPortal.id("block/portals/overworld_portal"));
+    public static final BlockEntry<TestPortalBlock> TEST_NETHER_PORTAL_BLOCK = registerTestPortalBlock("test_nether_portal_block","Test Nether Portal Block",GTPortal.id("block/portals/nether_portal"));
+    public static final BlockEntry<TestPortalBlock> TEST_END_PORTAL_BLOCK = registerTestPortalBlock("test_end_portal_block","Test End Portal Block",GTPortal.id("block/portals/end_portal"));
+    public static final BlockEntry<TestPortalBlock> TEST_EMPTY_PORTAL_BLOCK = registerTestPortalBlock("test_empty_portal_block","Test Empty Portal Block",GTPortal.id("block/portals/empty_portal"));
 
     public static final BlockEntry<DimensionalPortalBlock> DIMENSIONAL_PORTAL_BLOCK = REGISTRATE
             .block("dimensional_portal_block",DimensionalPortalBlock::new)
@@ -124,6 +129,16 @@ public class GTPBlocks {
             .exBlockstate(GTModels.cubeAllModel(GTPortal.id("block/simple_nether_portal_frame")))
             .simpleItem()
             .register();
+
+    public static BlockEntry<TestPortalBlock> registerTestPortalBlock(String id, String name, ResourceLocation texture){
+        return REGISTRATE
+                .block(id,TestPortalBlock::new)
+                .initialProperties(()->Blocks.NETHER_PORTAL)
+                .addLayer(()->RenderType::translucent)
+                .lang(name)
+                .blockstate(GTPModels.createPortalBlockModel(id,texture))
+                .register();
+    }
 
     public static void init() {}
 

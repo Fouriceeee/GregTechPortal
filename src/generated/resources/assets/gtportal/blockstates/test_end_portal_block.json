@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "gtportal:block/portal/test_end_portal_block_x"
+    },
+    "axis=y": {
+      "model": "gtportal:block/portal/test_end_portal_block_y"
+    },
+    "axis=z": {
+      "model": "gtportal:block/portal/test_end_portal_block_z"
+    }
+  }
+}

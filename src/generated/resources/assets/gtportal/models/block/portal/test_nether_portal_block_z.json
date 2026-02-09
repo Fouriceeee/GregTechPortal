@@ -1,0 +1,7 @@
+{
+  "parent": "gtportal:block/portal/parent/portal_z",
+  "textures": {
+    "particle": "gtportal:block/portals/nether_portal",
+    "portal": "gtportal:block/portals/nether_portal"
+  }
+}
