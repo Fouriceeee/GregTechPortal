@@ -1,6 +1,5 @@
 package com.ironsword.gtportal.data;
 
-import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.tterrag.registrate.providers.ProviderType;
 

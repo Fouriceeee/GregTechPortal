@@ -35,6 +35,5 @@ public class GTPItems {
     }
 
     public static void init() {
-        //REGISTRATE.creativeModeTab().get().column()
     }
 }

@@ -33,8 +33,6 @@ public class LangHandler extends com.gregtechceu.gtceu.data.lang.LangHandler {
         //jei
         provider.add("gtceu.dimension_teleport_recipes","Teleport Energy");
 
-        //test_recipe
-
 
     }
 }
