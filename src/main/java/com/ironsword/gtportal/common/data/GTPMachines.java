@@ -15,6 +15,7 @@ import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.client.renderer.PortalBlockRender;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.ironsword.gtportal.common.machine.multiblock.SimplePortalControllerMachine;
+import com.ironsword.gtportal.common.machine.multiblock.TestPortalMachine;
 import com.ironsword.gtportal.common.machine.multiblock.part.DimensionDataHatchMachine;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
@@ -112,6 +113,31 @@ public class GTPMachines {
             .model(createWorkableCasingMachineModel(GTPortal.id("block/simple_nether_portal_frame"),
                     GTPortal.id("block/portal_controller_overlay")))
             .tooltips(Component.translatable("gtportal.tooltip.machine.simple_nether_portal_controller"))
+            .register();
+
+
+    public static final MultiblockMachineDefinition TEST_MACHINE = GTPRegistries.REGISTRATE
+            .multiblock("test_machine", TestPortalMachine::new)
+            .rotationState(RotationState.ALL)
+            .recipeType(GTPRecipeTypes.TEST_RECIPE_TYPE)
+            .appearanceBlock(()->GTPBlocks.PORTAL_FRAME.get())
+            .pattern(definition-> FactoryBlockPattern.start()
+                    .aisle( "XPX",
+                            "X X",
+                            "X X",
+                            "XXX")
+                    .where('X',blocks(GTPBlocks.PORTAL_FRAME.get())
+                            .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setExactLimit(1))
+                            .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setMinGlobalLimited(1)))
+                    .where(' ', Predicates.any())
+                    .where('P',Predicates.controller(blocks(definition.getBlock())))
+                    .build()
+            )
+            .langValue("Test Machine")
+            .hasBER(true)
+            .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
+            .model(createWorkableCasingMachineModel(GTPortal.id("block/portal_frame"),
+                    GTPortal.id("block/portal_controller_overlay")))
             .register();
 
     public static void init() {}

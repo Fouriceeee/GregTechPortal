@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class GTPCreativeModeTabs {
     public static RegistryEntry<CreativeModeTab> GTP_TAB = GTPRegistries.REGISTRATE.defaultCreativeTab(
@@ -31,7 +32,19 @@ public class GTPCreativeModeTabs {
                            CompoundTag tag = item.getOrCreateTag();
                             tag.put("dim_data",info.toNbt());
                             var2.accept(item);
-                        }})
+                        }
+                        var item = GTPItems.TEST_ITEM.asStack();
+                        var2.accept(item.copy());
+
+
+                        var tag = item.getOrCreateTag();
+                        tag.putString("dimension",Level.OVERWORLD.location().toString());
+                        var2.accept(item.copy());
+
+                        tag.remove("dimension");
+                        tag.putString("dimension",Level.NETHER.location().toString());
+                        var2.accept(item.copy());
+                    })
                     .icon(GTPItems.DIM_DATA_STICK::asStack)
                     .title(Component.translatable("gtportal.creativemodetab.dim_data_sticks"))
                     .build()

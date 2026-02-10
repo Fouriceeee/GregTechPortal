@@ -10,11 +10,13 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.machine.multiblock.logic.TestPortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import net.minecraft.core.BlockPos;
@@ -32,26 +34,36 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class TestPortalMachine extends WorkableElectricMultiblockMachine {
-    public static final TeleportFunction EMPTY_FUNC = ((entity, currWorld, destWorld, coordinate) -> {});
-    public static final Map<ResourceLocation, TeleportFunction> TELEPORTER_MAP = new HashMap<>(Map.of(
-            Level.OVERWORLD.location(),((entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
-            Level.NETHER.location(),((entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.NETHERRACK))),
-            Level.END.location(),((entity, currWorld, destWorld, coordinate) -> {
-                if (coordinate == null){
-                    entity.changeDimension(destWorld);
-                }else {
-                    entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.END_STONE));
-                }
-            })
+
+    public static final Pair<Block,TeleportFunction> EMPTY = Pair.of(GTPBlocks.TEST_EMPTY_PORTAL_BLOCK.get(),(entity, currWorld, destWorld, coordinate) -> {});
+    public static final Map<ResourceLocation, Pair<Block,TeleportFunction>> MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(),Pair.of(
+                    GTPBlocks.TEST_OVERWORLD_PORTAL_BLOCK.get(),
+                    (entity, currWorld, destWorld, coordinate) ->
+                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
+            Level.NETHER.location(),Pair.of(
+                    GTPBlocks.TEST_NETHER_PORTAL_BLOCK.get(),
+                    (entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.NETHERRACK))),
+            Level.END.location(),Pair.of(
+                    GTPBlocks.TEST_END_PORTAL_BLOCK.get(),
+                    (entity, currWorld, destWorld, coordinate) -> {
+                        if (coordinate == null){
+                            entity.changeDimension(destWorld);
+                        }else {
+                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.END_STONE));
+                        }
+                    }
+            )
     ));
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(TestPortalMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
 
-    protected ResourceLocation cachedDimension = null;
-    protected BlockPos cachedCoordinate = null;
+    @Nonnull
+    protected Pair<ResourceLocation, Vec3i> cache = Pair.of(null,null);
 
     @Nullable
     protected EnergyContainerList inputEnergyContainers;
@@ -88,21 +100,38 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
     @Override
     public void onUnload() {
         super.onUnload();
+        unsubscribe(teleportSubscription);
+        teleportSubscription = null;
     }
 
     @Override
     public void onStructureFormed() {
         super.onStructureFormed();
+        teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
+        initAbilities();
     }
 
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
+        unsubscribe(teleportSubscription);
+        teleportSubscription = null;
+        this.inputEnergyContainers = null;
     }
 
     @Override
     public void setWorkingEnabled(boolean isWorkingAllowed) {
         super.setWorkingEnabled(isWorkingAllowed);
+    }
+
+    @Override
+    public boolean beforeWorking(@Nullable GTRecipe recipe) {
+        return super.beforeWorking(recipe);
+    }
+
+    @Override
+    public void afterWorking() {
+        super.afterWorking();
     }
 
     protected void initAbilities(){
@@ -125,6 +154,19 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
         getRecipePortalLogic().setEnergyContainer(this.inputEnergyContainers);
     }
 
+    public void refreshCache(){
+//        for (var part:getParts()){
+//            if (part instanceof TestHatchMachine hatch){
+//                cache = hatch.readNbtFromItem();
+//            }
+//        }
+//        clearCache();
+    }
+
+    protected void clearCache(){
+        cache = Pair.of(null,null);
+    }
+
     public Set<BlockPos> getOffsets() {
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
         Direction clockWise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
@@ -136,12 +178,15 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
 
         Set<BlockPos> offsets = new HashSet<>();
 
-        for (int i=0;i<3;i++){
-            center = center.relative(up);
-            offsets.add(center.subtract(pos));
-            offsets.add(center.relative(clockWise).subtract(pos));
-            offsets.add(center.relative(counterClockWise).subtract(pos));
-        }
+        offsets.add(center.relative(up).subtract(pos));
+        offsets.add(center.relative(up,2).subtract(pos));
+
+//        for (int i=0;i<3;i++){
+//            center = center.relative(up);
+//            offsets.add(center.subtract(pos));
+//            offsets.add(center.relative(clockWise).subtract(pos));
+//            offsets.add(center.relative(counterClockWise).subtract(pos));
+//        }
 
         return offsets;
     }
@@ -178,26 +223,29 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
         if (!(getLevel() instanceof ServerLevel)||!getRecipeLogic().isWorking())
             return;
 
+        ResourceLocation dimension = cache.getFirst();
+
+        if (dimension == null || dimension.equals(getLevel().dimension().location()))
+            return;
+
+        ServerLevel serverLevel = ((ServerLevel) getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION,dimension));
+        if (serverLevel == null)
+            return;
+
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
         Direction clockWise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
         Direction counterClockWise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(),
                 isFlipped());
-
-        BlockPos startingPos = getPos().relative(up).relative(clockWise),
-                endingPos = getPos().relative(up,3).relative(counterClockWise);
-
-        if (cachedDimension == null || cachedDimension.equals(getLevel().dimension().location()))
-            return;
-
-        ServerLevel serverLevel = ((ServerLevel) getLevel()).getServer().getLevel(ResourceKey.create(Registries.DIMENSION,cachedDimension));
-        if (serverLevel == null)
-            return;
+//        BlockPos startingPos = getPos().relative(up).relative(clockWise),
+//                endingPos = getPos().relative(up,3).relative(counterClockWise);
+        BlockPos startingPos = getPos().relative(up),
+                endingPos = getPos().relative(up,2);
 
         getLevel().getEntities(null, Utils.getMaxBox(startingPos,endingPos)).forEach(e->{
             if (!(e instanceof Entity) ||!e.canChangeDimensions())
                 return;
 
-            TELEPORTER_MAP.getOrDefault(cachedDimension,EMPTY_FUNC).teleport(e,(ServerLevel) getLevel(),serverLevel,cachedCoordinate);
+            MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,cache.getSecond());
         });
     }
 

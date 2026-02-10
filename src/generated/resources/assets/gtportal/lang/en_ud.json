@@ -10,6 +10,7 @@
   "block.gtportal.simple_overworld_portal_frame": "ǝɯɐɹℲ ןɐʇɹoԀ pןɹoʍɹǝʌO ǝןdɯıS",
   "block.gtportal.test_empty_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ʎʇdɯƎ ʇsǝ⟘",
   "block.gtportal.test_end_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ puƎ ʇsǝ⟘",
+  "block.gtportal.test_machine": "ǝuıɥɔɐW ʇsǝ⟘",
   "block.gtportal.test_nether_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ɹǝɥʇǝN ʇsǝ⟘",
   "block.gtportal.test_overworld_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ pןɹoʍɹǝʌO ʇsǝ⟘",
   "gtceu.dimension_teleport_recipes": "ʎbɹǝuƎ ʇɹodǝןǝ⟘",
@@ -28,5 +29,6 @@
   "gtportal.tooltip.item.dim_data_recorder": "ɐʇɐp uoısuǝɯıp pɹoɔǝɹ oʇ ɹǝןןoɹʇuoƆ ןɐʇɹoԀ ʇɐ ʞɔıןɔ ʇɥbıᴚ + ʇɟıɥS",
   "gtportal.tooltip.machine.simple_nether_portal_controller": "ɹǝɥʇǝu ǝɥʇ ɹǝʇuǝ noʎ ƎᴚOℲƎᗺ ןɐʇɹod pןɹoʍɹǝʌo ɐ pןınq oʇ sbuıɥʇ ɥbnouǝ buıɹᗺ\nuɹnʇǝɹ oʇ ןɐʇɹod ɐ ǝʇɐǝɹɔ ɹ§ʇouן§ɔ§ ןןıʍ ǝuıɥɔɐɯ sıɥ⟘",
   "item.gtportal.dim_data_recorder": "ɹǝpɹoɔǝᴚ ɐʇɐᗡ uoısuǝɯıᗡ",
-  "item.gtportal.dim_data_stick": "ʞɔıʇS ɐʇɐᗡ uoısuǝɯıᗡ"
+  "item.gtportal.dim_data_stick": "ʞɔıʇS ɐʇɐᗡ uoısuǝɯıᗡ",
+  "item.gtportal.test_item": "ɯǝʇI ʇsǝ⟘"
 }

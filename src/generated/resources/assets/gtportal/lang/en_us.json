@@ -10,6 +10,7 @@
   "block.gtportal.simple_overworld_portal_frame": "Simple Overworld Portal Frame",
   "block.gtportal.test_empty_portal_block": "Test Empty Portal Block",
   "block.gtportal.test_end_portal_block": "Test End Portal Block",
+  "block.gtportal.test_machine": "Test Machine",
   "block.gtportal.test_nether_portal_block": "Test Nether Portal Block",
   "block.gtportal.test_overworld_portal_block": "Test Overworld Portal Block",
   "gtceu.dimension_teleport_recipes": "Teleport Energy",
@@ -28,5 +29,6 @@
   "gtportal.tooltip.item.dim_data_recorder": "Shift + Right click at Portal Controller to record dimension data",
   "gtportal.tooltip.machine.simple_nether_portal_controller": "This machine will §c§lnot§r create a portal to return\nBring enough things to build a overworld portal BEFORE you enter the nether",
   "item.gtportal.dim_data_recorder": "Dimension Data Recorder",
-  "item.gtportal.dim_data_stick": "Dimension Data Stick"
+  "item.gtportal.dim_data_stick": "Dimension Data Stick",
+  "item.gtportal.test_item": "Test Item"
 }

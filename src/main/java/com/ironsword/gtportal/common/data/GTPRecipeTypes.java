@@ -47,7 +47,7 @@ public class GTPRecipeTypes {
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
             .setIconSupplier(()->GTPItems.DIM_DATA_STICK.asStack())
             .setEUIO(IO.IN)
-            .addDataInfo(data-> "dimension%s".formatted(data.getString("dimension")));
+            .addDataInfo(data-> "dimension-%s".formatted(data.getString("dimension")));
 
     public static void init() {
 

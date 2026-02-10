@@ -10,7 +10,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import twilightforest.init.TFItems;
@@ -51,17 +53,24 @@ public class GTPRecipes {
     }
 
     private static void testRecipes(Consumer<FinishedRecipe> provider) {
+        var item = GTPItems.TEST_ITEM.asStack();
+        var tag = item.getOrCreateTag();
+
+        tag.putString("dimension",Level.OVERWORLD.location().toString());
         GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("overworld")
-                .inputItems(GTPItems.DIM_DATA_STICK.asStack())
+                .notConsumable(StrictNBTIngredient.of(item.copy()))
                 .EUt(32)
                 .duration(20)
-                .addData("dimension",DimensionInfo.OVERWORLD.getSerializedName())
+                .addData("dimension",Level.OVERWORLD.location().toString())
                 .save(provider);
+
+        tag.remove("dimension");
+        tag.putString("dimension",Level.NETHER.location().toString());
         GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("nether")
-                .inputItems(GTPItems.DIM_DATA_STICK.asStack())
+                .notConsumable(StrictNBTIngredient.of(item.copy()))
                 .EUt(64)
                 .duration(20)
-                .addData("dimension",DimensionInfo.NETHER.getSerializedName())
+                .addData("dimension",Level.NETHER.location().toString())
                 .save(provider);
     }
 

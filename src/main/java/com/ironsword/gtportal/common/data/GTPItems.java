@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IItemComponent;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.item.component.DimensionDataRecordComponent;
+import com.ironsword.gtportal.common.item.component.TestComponent;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
@@ -27,6 +28,13 @@ public class GTPItems {
             .initialProperties(()->new Item.Properties().stacksTo(1))
             .lang("Dimension Data Stick")
             .onRegister(attach(new DimensionDataComponent()))
+            .defaultModel()
+            .register();
+
+    public static final ItemEntry<ComponentItem> TEST_ITEM = REGISTRATE.item("test_item",ComponentItem::create)
+            .initialProperties(()->new Item.Properties().stacksTo(1))
+            .lang("Test Item")
+            .onRegister(attach(new TestComponent()))
             .defaultModel()
             .register();
 
