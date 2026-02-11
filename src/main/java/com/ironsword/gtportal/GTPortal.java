@@ -37,6 +37,8 @@ public class GTPortal
         GTPItems.init();
         GTPBlocks.init();
 
+        //DynamicRenderManager.register(id("portal_block"), PortalBlockRender.TYPE);
+
         GTPRegistries.REGISTRATE.registerRegistrate();
     }
 

@@ -14,15 +14,20 @@ import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTRecipeCapabilities;
+import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.data.GTPTags;
 import com.ironsword.gtportal.common.machine.multiblock.logic.TestPortalLogic;
 import com.ironsword.gtportal.utils.Utils;
+import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
+import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -45,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class TestPortalMachine extends WorkableElectricMultiblockMachine {
+public class TestPortalMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
 
     public static final Pair<Block,TeleportFunction> EMPTY = Pair.of(GTPBlocks.TEST_EMPTY_PORTAL_BLOCK.get(),(entity, currWorld, destWorld, coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Block,TeleportFunction>> MAP = new HashMap<>(Map.of(
@@ -67,6 +72,13 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
                     }
             )
     ));
+
+    @Getter
+    @Setter
+    @DescSynced
+    @RequireRerender
+    private @NotNull Set<BlockPos> blockOffsets = new HashSet<>();
+
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(TestPortalMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
 
@@ -98,6 +110,11 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
     }
 
     @Override
+    public @NotNull Set<BlockPos> saveOffsets() {
+        return Set.of();
+    }
+
+    @Override
     public void onLoad() {
         super.onLoad();
     }
@@ -113,6 +130,7 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
     public void onStructureFormed() {
         super.onStructureFormed();
         teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
+        IBlockRenderMulti.super.onStructureFormed();
     }
 
     @Override
@@ -120,7 +138,7 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
         super.onStructureInvalid();
         unsubscribe(teleportSubscription);
         teleportSubscription = null;
-        destroyBlock();
+        IBlockRenderMulti.super.onStructureInvalid();
     }
 
     @Override
@@ -136,21 +154,13 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
         ResourceLocation dimension = new ResourceLocation(recipe.data.getString("dimension"));
         if (getLevel().dimension().location().equals(dimension)) return false;
         cache = Pair.of(dimension,null);
-        fillBlock(MAP.getOrDefault(cache.getFirst(),EMPTY).getFirst().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
         return true;
     }
 
     @Override
     public void afterWorking() {
-        fillBlock(Blocks.AIR.defaultBlockState());
         clearCache();
         super.afterWorking();
-    }
-
-    @Override
-    public void onWaiting() {
-        fillBlock(Blocks.AIR.defaultBlockState());
-        super.onWaiting();
     }
 
     public void clearCache(){
@@ -161,44 +171,6 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
 
         return Set.of(getPos().relative(up),getPos().relative(up,2));
-    }
-
-    public BlockState getPortalBlockState(){
-        var pair = MAP.get(cache.getFirst());
-        return pair == null ? Blocks.AIR.defaultBlockState() : pair.getFirst().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis());
-    }
-
-    public void fillBlock(BlockState blockState){
-        if (!(getLevel()instanceof ServerLevel)) return;
-        for (var pos:getBlockPoses()){
-            getLevel().setBlockAndUpdate(pos,blockState);
-        }
-    }
-
-    //block true , check true  -> destroy
-    //block false, check true  -> continue
-    //block true , check false -> destroy
-    //block false, check false -> destroy
-    public void destroyBlock(Block block, boolean checkBlock){
-        if (!(getLevel()instanceof ServerLevel)) return;
-        for (var pos:getBlockPoses()){
-            if (!checkBlock || getLevel().getBlockState(pos).is(block)){
-                getLevel().destroyBlock(pos,false);
-            }
-        }
-    }
-
-    public void destroyBlock(){
-        if (!(getLevel()instanceof ServerLevel)) return;
-        for (var pos:getBlockPoses()){
-            if (getLevel().getBlockState(pos).is(GTPTags.PORTAL)){
-                getLevel().destroyBlock(pos,false);
-            }
-        }
-    }
-
-    public void destroyBlock(boolean checkBlock){
-        this.destroyBlock(GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.get(),checkBlock);
     }
 
     protected void teleportEntities(){
