@@ -136,6 +136,7 @@ public class GTPBlocks {
                 .initialProperties(()->Blocks.NETHER_PORTAL)
                 .addLayer(()->RenderType::translucent)
                 .lang(name)
+                .tag(GTPTags.PORTAL)
                 .blockstate(GTPModels.createPortalBlockModel(id,texture))
                 .register();
     }

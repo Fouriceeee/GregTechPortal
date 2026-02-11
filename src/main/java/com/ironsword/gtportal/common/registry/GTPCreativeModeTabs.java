@@ -44,6 +44,10 @@ public class GTPCreativeModeTabs {
                         tag.remove("dimension");
                         tag.putString("dimension",Level.NETHER.location().toString());
                         var2.accept(item.copy());
+
+                        tag.remove("dimension");
+                        tag.putString("dimension",Level.END.location().toString());
+                        var2.accept(item.copy());
                     })
                     .icon(GTPItems.DIM_DATA_STICK::asStack)
                     .title(Component.translatable("gtportal.creativemodetab.dim_data_sticks"))

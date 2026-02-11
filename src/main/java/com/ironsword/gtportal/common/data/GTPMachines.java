@@ -127,9 +127,10 @@ public class GTPMachines {
                             "X X",
                             "XXX")
                     .where('X',blocks(GTPBlocks.PORTAL_FRAME.get())
-                            .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setExactLimit(1))
-                            .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setMinGlobalLimited(1)))
-                    .where(' ', Predicates.any())
+                            .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMaxGlobalLimited(1))
+                            .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setExactLimit(1)))
+                    .where(' ', Predicates.air()
+                            .or(Predicates.blockTag(GTPTags.PORTAL)))
                     .where('P',Predicates.controller(blocks(definition.getBlock())))
                     .build()
             )

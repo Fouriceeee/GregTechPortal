@@ -3,6 +3,8 @@ package com.ironsword.gtportal.common.machine.multiblock;
 import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
+import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
@@ -11,8 +13,10 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.common.data.GTRecipeCapabilities;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
+import com.ironsword.gtportal.common.data.GTPTags;
 import com.ironsword.gtportal.common.machine.multiblock.logic.TestPortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -28,10 +32,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -64,9 +72,6 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
 
     @Nonnull
     protected Pair<ResourceLocation, Vec3i> cache = Pair.of(null,null);
-
-    @Nullable
-    protected EnergyContainerList inputEnergyContainers;
 
     protected TickableSubscription teleportSubscription;
 
@@ -108,7 +113,6 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
     public void onStructureFormed() {
         super.onStructureFormed();
         teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
-        initAbilities();
     }
 
     @Override
@@ -116,7 +120,7 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
         super.onStructureInvalid();
         unsubscribe(teleportSubscription);
         teleportSubscription = null;
-        this.inputEnergyContainers = null;
+        destroyBlock();
     }
 
     @Override
@@ -126,78 +130,48 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
 
     @Override
     public boolean beforeWorking(@Nullable GTRecipe recipe) {
-        return super.beforeWorking(recipe);
+        if (recipe == null) return false;
+        if (!super.beforeWorking(recipe)) return false;
+
+        ResourceLocation dimension = new ResourceLocation(recipe.data.getString("dimension"));
+        if (getLevel().dimension().location().equals(dimension)) return false;
+        cache = Pair.of(dimension,null);
+        fillBlock(MAP.getOrDefault(cache.getFirst(),EMPTY).getFirst().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
+        return true;
     }
 
     @Override
     public void afterWorking() {
+        fillBlock(Blocks.AIR.defaultBlockState());
+        clearCache();
         super.afterWorking();
     }
 
-    protected void initAbilities(){
-        List<IEnergyContainer> energyContainers = new ArrayList<>();
-        Long2ObjectMap<IO> ioMap = getMultiblockState().getMatchContext().getOrCreate("ioMap",
-                Long2ObjectMaps::emptyMap);
-        for (IMultiPart part:getParts()){
-            IO io = ioMap.getOrDefault(part.self().getPos().asLong(), IO.BOTH);
-            if (io == IO.NONE || io == IO.OUT) continue;
-            var handlerLists = part.getRecipeHandlers();
-            for (var handlerList : handlerLists) {
-                if (!handlerList.isValid(io)) continue;
-                handlerList.getCapability(EURecipeCapability.CAP).stream()
-                        .filter(IEnergyContainer.class::isInstance)
-                        .map(IEnergyContainer.class::cast)
-                        .forEach(energyContainers::add);
-            }
-        }
-        this.inputEnergyContainers = new EnergyContainerList(energyContainers);
-        getRecipePortalLogic().setEnergyContainer(this.inputEnergyContainers);
+    @Override
+    public void onWaiting() {
+        fillBlock(Blocks.AIR.defaultBlockState());
+        super.onWaiting();
     }
 
-    public void refreshCache(){
-//        for (var part:getParts()){
-//            if (part instanceof TestHatchMachine hatch){
-//                cache = hatch.readNbtFromItem();
-//            }
-//        }
-//        clearCache();
-    }
-
-    protected void clearCache(){
+    public void clearCache(){
         cache = Pair.of(null,null);
     }
 
-    public Set<BlockPos> getOffsets() {
+    public Set<BlockPos> getBlockPoses(){
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction clockWise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction counterClockWise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(),
-                isFlipped());
 
-        BlockPos pos = getPos();
-        BlockPos center = pos;
-
-        Set<BlockPos> offsets = new HashSet<>();
-
-        offsets.add(center.relative(up).subtract(pos));
-        offsets.add(center.relative(up,2).subtract(pos));
-
-//        for (int i=0;i<3;i++){
-//            center = center.relative(up);
-//            offsets.add(center.subtract(pos));
-//            offsets.add(center.relative(clockWise).subtract(pos));
-//            offsets.add(center.relative(counterClockWise).subtract(pos));
-//        }
-
-        return offsets;
+        return Set.of(getPos().relative(up),getPos().relative(up,2));
     }
 
-    protected void fillBlock(BlockState blockState){
+    public BlockState getPortalBlockState(){
+        var pair = MAP.get(cache.getFirst());
+        return pair == null ? Blocks.AIR.defaultBlockState() : pair.getFirst().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis());
+    }
+
+    public void fillBlock(BlockState blockState){
         if (!(getLevel()instanceof ServerLevel)) return;
-        for (var offset:getOffsets()){
-            getLevel().setBlockAndUpdate(
-                    getPos().offset(offset),
-                    blockState
-            );
+        for (var pos:getBlockPoses()){
+            getLevel().setBlockAndUpdate(pos,blockState);
         }
     }
 
@@ -205,17 +179,25 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
     //block false, check true  -> continue
     //block true , check false -> destroy
     //block false, check false -> destroy
-    protected void destroyBlock(Block block, boolean checkBlock){
+    public void destroyBlock(Block block, boolean checkBlock){
         if (!(getLevel()instanceof ServerLevel)) return;
-        for (var offset:getOffsets()){
-            BlockPos pos = getPos().offset(offset);
+        for (var pos:getBlockPoses()){
             if (!checkBlock || getLevel().getBlockState(pos).is(block)){
                 getLevel().destroyBlock(pos,false);
             }
         }
     }
 
-    protected void destroyBlock(boolean checkBlock){
+    public void destroyBlock(){
+        if (!(getLevel()instanceof ServerLevel)) return;
+        for (var pos:getBlockPoses()){
+            if (getLevel().getBlockState(pos).is(GTPTags.PORTAL)){
+                getLevel().destroyBlock(pos,false);
+            }
+        }
+    }
+
+    public void destroyBlock(boolean checkBlock){
         this.destroyBlock(GTPBlocks.DIMENSIONAL_PORTAL_BLOCK.get(),checkBlock);
     }
 
@@ -233,11 +215,7 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine {
             return;
 
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction clockWise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction counterClockWise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(),
-                isFlipped());
-//        BlockPos startingPos = getPos().relative(up).relative(clockWise),
-//                endingPos = getPos().relative(up,3).relative(counterClockWise);
+
         BlockPos startingPos = getPos().relative(up),
                 endingPos = getPos().relative(up,2);
 

@@ -59,8 +59,8 @@ public class GTPRecipes {
         tag.putString("dimension",Level.OVERWORLD.location().toString());
         GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("overworld")
                 .notConsumable(StrictNBTIngredient.of(item.copy()))
-                .EUt(32)
-                .duration(20)
+                .EUt(0)
+                .duration(20*5)
                 .addData("dimension",Level.OVERWORLD.location().toString())
                 .save(provider);
 
@@ -68,9 +68,18 @@ public class GTPRecipes {
         tag.putString("dimension",Level.NETHER.location().toString());
         GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("nether")
                 .notConsumable(StrictNBTIngredient.of(item.copy()))
-                .EUt(64)
-                .duration(20)
+                .EUt(0)
+                .duration(20*5)
                 .addData("dimension",Level.NETHER.location().toString())
+                .save(provider);
+
+        tag.remove("dimension");
+        tag.putString("dimension",Level.END.location().toString());
+        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("end")
+                .notConsumable(StrictNBTIngredient.of(item.copy()))
+                .EUt(32)
+                .duration(20*5)
+                .addData("dimension",Level.END.location().toString())
                 .save(provider);
     }
 
