@@ -3,6 +3,8 @@ package com.ironsword.gtportal;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
+import com.ironsword.gtportal.client.renderer.TestRenderer;
 import com.ironsword.gtportal.common.data.*;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
@@ -37,7 +39,7 @@ public class GTPortal
         GTPItems.init();
         GTPBlocks.init();
 
-        //DynamicRenderManager.register(id("portal_block"), PortalBlockRender.TYPE);
+        DynamicRenderManager.register(id("portal_block"), TestRenderer.TYPE);
 
         GTPRegistries.REGISTRATE.registerRegistrate();
     }

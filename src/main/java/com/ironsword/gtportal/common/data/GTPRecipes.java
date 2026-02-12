@@ -20,6 +20,8 @@ import twilightforest.world.registration.TFGenerationSettings;
 
 import java.util.function.Consumer;
 
+import static com.ironsword.gtportal.common.item.component.TestComponent.putDimensionNbt;
+
 public class GTPRecipes {
     public static void createDefaultScannerRecipe(@NotNull String researchId,
                                                   ItemStack researchItem, FluidStack researchFluid,
@@ -53,30 +55,22 @@ public class GTPRecipes {
     }
 
     private static void testRecipes(Consumer<FinishedRecipe> provider) {
-        var item = GTPItems.TEST_ITEM.asStack();
-        var tag = item.getOrCreateTag();
-
-        tag.putString("dimension",Level.OVERWORLD.location().toString());
         GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("overworld")
-                .notConsumable(StrictNBTIngredient.of(item.copy()))
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.OVERWORLD.location())))
                 .EUt(0)
                 .duration(20*5)
                 .addData("dimension",Level.OVERWORLD.location().toString())
                 .save(provider);
 
-        tag.remove("dimension");
-        tag.putString("dimension",Level.NETHER.location().toString());
         GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("nether")
-                .notConsumable(StrictNBTIngredient.of(item.copy()))
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.NETHER.location())))
                 .EUt(0)
                 .duration(20*5)
                 .addData("dimension",Level.NETHER.location().toString())
                 .save(provider);
 
-        tag.remove("dimension");
-        tag.putString("dimension",Level.END.location().toString());
         GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("end")
-                .notConsumable(StrictNBTIngredient.of(item.copy()))
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.END.location())))
                 .EUt(32)
                 .duration(20*5)
                 .addData("dimension",Level.END.location().toString())

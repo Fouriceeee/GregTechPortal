@@ -83,6 +83,7 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine impleme
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
 
     @Nonnull
+    @Getter
     protected Pair<ResourceLocation, Vec3i> cache = Pair.of(null,null);
 
     protected TickableSubscription teleportSubscription;
@@ -111,7 +112,11 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine impleme
 
     @Override
     public @NotNull Set<BlockPos> saveOffsets() {
-        return Set.of();
+        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+
+        BlockPos pos = getPos();
+
+        return Set.of(pos.relative(up).subtract(pos),pos.relative(up,2).subtract(pos));
     }
 
     @Override

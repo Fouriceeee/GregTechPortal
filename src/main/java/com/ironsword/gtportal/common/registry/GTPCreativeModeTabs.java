@@ -12,6 +12,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import static com.ironsword.gtportal.common.item.component.TestComponent.putDimensionNbt;
+
 public class GTPCreativeModeTabs {
     public static RegistryEntry<CreativeModeTab> GTP_TAB = GTPRegistries.REGISTRATE.defaultCreativeTab(
             GTPortal.MODID,
@@ -25,29 +27,10 @@ public class GTPCreativeModeTabs {
             "dim_data_sticks",
             builder -> builder
                     .displayItems((var1,var2)->{
-                        var2.accept(GTPItems.DIM_DATA_STICK.asStack());
-                        for (var info: DimensionInfo.values()){
-                           if (info.equals(DimensionInfo.EMPTY)) continue;
-                           ItemStack item = GTPItems.DIM_DATA_STICK.asStack();
-                           CompoundTag tag = item.getOrCreateTag();
-                            tag.put("dim_data",info.toNbt());
-                            var2.accept(item);
-                        }
-                        var item = GTPItems.TEST_ITEM.asStack();
-                        var2.accept(item.copy());
-
-
-                        var tag = item.getOrCreateTag();
-                        tag.putString("dimension",Level.OVERWORLD.location().toString());
-                        var2.accept(item.copy());
-
-                        tag.remove("dimension");
-                        tag.putString("dimension",Level.NETHER.location().toString());
-                        var2.accept(item.copy());
-
-                        tag.remove("dimension");
-                        tag.putString("dimension",Level.END.location().toString());
-                        var2.accept(item.copy());
+                        var2.accept(GTPItems.TEST_ITEM.asStack());
+                        var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.OVERWORLD.location()));
+                        var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.NETHER.location()));
+                        var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.END.location()));
                     })
                     .icon(GTPItems.DIM_DATA_STICK::asStack)
                     .title(Component.translatable("gtportal.creativemodetab.dim_data_sticks"))

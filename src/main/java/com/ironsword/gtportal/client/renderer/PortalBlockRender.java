@@ -21,7 +21,6 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 
-//不打算用了，controller已经改成放置方块的逻辑了（但也不舍得删
 public class PortalBlockRender extends DynamicRender<IBlockRenderMulti,PortalBlockRender> {
 
     public static final Codec<PortalBlockRender> CODEC = RecordCodecBuilder.create(instance->instance.group(

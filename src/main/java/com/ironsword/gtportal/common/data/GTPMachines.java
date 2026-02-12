@@ -13,6 +13,7 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.client.renderer.PortalBlockRender;
+import com.ironsword.gtportal.client.renderer.TestRenderer;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.ironsword.gtportal.common.machine.multiblock.SimplePortalControllerMachine;
 import com.ironsword.gtportal.common.machine.multiblock.TestPortalMachine;
@@ -138,7 +139,8 @@ public class GTPMachines {
             .hasBER(true)
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
             .model(createWorkableCasingMachineModel(GTPortal.id("block/portal_frame"),
-                    GTPortal.id("block/portal_controller_overlay")))
+                    GTPortal.id("block/portal_controller_overlay"))
+                    .andThen(b->b.addDynamicRenderer(()->new TestRenderer(Optional.empty()))))
             .register();
 
     public static void init() {}
