@@ -1,7 +1,6 @@
 package com.ironsword.gtportal.mixin;
 
 import com.ironsword.gtportal.GTPConfigHolder;
-import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;

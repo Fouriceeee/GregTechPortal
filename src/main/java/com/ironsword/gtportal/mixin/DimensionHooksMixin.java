@@ -2,7 +2,6 @@ package com.ironsword.gtportal.mixin;
 
 import com.aetherteam.aether.event.hooks.DimensionHooks;
 import com.ironsword.gtportal.GTPConfigHolder;
-import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.ironsword.gtportal.utils.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

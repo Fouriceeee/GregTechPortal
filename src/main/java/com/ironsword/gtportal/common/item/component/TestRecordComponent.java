@@ -2,9 +2,6 @@ package com.ironsword.gtportal.common.item.component;
 
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.gregtechceu.gtceu.api.item.component.IInteractionItem;
-import com.ironsword.gtportal.api.portal.DimensionData;
-import com.ironsword.gtportal.api.portal.DimensionInfo;
-import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.ironsword.gtportal.common.machine.multiblock.TestPortalMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -12,8 +9,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 
 public class TestRecordComponent extends TestComponent implements IInteractionItem {
     @Override

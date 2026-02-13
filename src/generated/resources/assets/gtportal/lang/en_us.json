@@ -1,18 +1,15 @@
 {
   "block.gtportal.broken_end_portal_frame": "Broken End Portal Frame",
-  "block.gtportal.dimension_data_hatch": "Dimension Data Hatch",
-  "block.gtportal.dimensional_portal_block": "Dimensional Portal Block",
-  "block.gtportal.portal_controller": "Portal Controller",
   "block.gtportal.portal_frame": "Portal Frame",
-  "block.gtportal.simple_nether_portal_controller": "Simple Nether Portal Controller",
   "block.gtportal.simple_nether_portal_frame": "Simple Nether Portal Frame",
-  "block.gtportal.simple_overworld_portal_controller": "Simple Overworld Portal Controller",
   "block.gtportal.simple_overworld_portal_frame": "Simple Overworld Portal Frame",
+  "block.gtportal.test_aether_portal_block": "Test Aether Portal Block",
   "block.gtportal.test_empty_portal_block": "Test Empty Portal Block",
   "block.gtportal.test_end_portal_block": "Test End Portal Block",
   "block.gtportal.test_machine": "Test Machine",
   "block.gtportal.test_nether_portal_block": "Test Nether Portal Block",
   "block.gtportal.test_overworld_portal_block": "Test Overworld Portal Block",
+  "block.gtportal.test_twilight_portal_block": "Test Twilight Portal Block",
   "gtceu.dimension_teleport_recipes": "Teleport Energy",
   "gtportal.clientmessage.banned_structure": "The structure is banned. Check the Quest Book for more information.",
   "gtportal.creativemodetab.dim_data_sticks": "Dimension Data Sticks",
@@ -28,7 +25,5 @@
   "gtportal.machine.tooltip.position": "Position",
   "gtportal.tooltip.item.dim_data_recorder": "Shift + Right click at Portal Controller to record dimension data",
   "gtportal.tooltip.machine.simple_nether_portal_controller": "This machine will §c§lnot§r create a portal to return\nBring enough things to build a overworld portal BEFORE you enter the nether",
-  "item.gtportal.dim_data_recorder": "Dimension Data Recorder",
-  "item.gtportal.dim_data_stick": "Dimension Data Stick",
   "item.gtportal.test_item": "Test Item"
 }

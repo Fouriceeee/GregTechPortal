@@ -1,5 +1,7 @@
 package com.ironsword.gtportal.mixin;
 
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.LoadingModList;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -20,6 +22,14 @@ public class GTPMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+
+        if (mixinClassName.equals("TFPortalBlockMixin")){
+            return isModLoaded("twilightforest");
+        }
+        if (mixinClassName.equals("DimensionHooksMixin")){
+            return isModLoaded("aether");
+        }
+
         return true;
     }
 
@@ -41,5 +51,12 @@ public class GTPMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 
+    }
+
+    private static boolean isModLoaded(String modId) {
+        if (ModList.get() == null) {
+            return LoadingModList.get().getModFileById(modId) != null;
+        }
+        return ModList.get().isLoaded(modId);
     }
 }

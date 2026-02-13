@@ -24,28 +24,16 @@ import java.util.function.Consumer;
 
 public class GTPRecipeTypes {
 
-    public static final GTRecipeType DIMENSION_TELEPORT_RECIPES = GTRecipeTypes.register("dimension_teleport_recipes", GTRecipeTypes.MULTIBLOCK)
-            .setMaxIOSize(0,0,0,0)
-            .setProgressBar(GuiTextures.BLANK_TRANSPARENT, ProgressTexture.FillDirection.ALWAYS_FULL)
-            .setIconSupplier(()-> GTPMachines.PORTAL_CONTROLLER.asStack())
-            .setEUIO(IO.IN);
-//
-//    public static final GTRecipeType DIMENSION_DATA_RECIPES = register("dimension_data_recipes", GTRecipeTypes.MULTIBLOCK)
+//    public static final GTRecipeType DIMENSION_TELEPORT_RECIPES = GTRecipeTypes.register("dimension_teleport_recipes", GTRecipeTypes.MULTIBLOCK)
 //            .setMaxIOSize(0,0,0,0)
-//            .setEUIO(IO.IN)
-//            .addCustomRecipeLogic();
-//
-//
-//    private record ScannerRecipeEntry(@NotNull String id,
-//                                      @NotNull ItemStack researchItem, FluidStack researchFluid, @NotNull ItemStack dataStack,
-//                                      ResourceLocation dimension, int duration, EnergyStack EUt, int CWUt){
-//
-//    }
+//            .setProgressBar(GuiTextures.BLANK_TRANSPARENT, ProgressTexture.FillDirection.ALWAYS_FULL)
+//            .setIconSupplier(()-> GTPMachines.PORTAL_CONTROLLER.asStack())
+//            .setEUIO(IO.IN);
 
     public static final GTRecipeType TEST_RECIPE_TYPE = GTRecipeTypes.register("gtp_test_recipe",GTRecipeTypes.MULTIBLOCK)
             .setMaxIOSize(1,1,1,1)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
-            .setIconSupplier(()->GTPItems.DIM_DATA_STICK.asStack())
+            .setIconSupplier(()->GTPItems.TEST_ITEM.asStack())
             .setEUIO(IO.IN)
             .addDataInfo(data-> "dimension-%s".formatted(data.getString("dimension")));
 

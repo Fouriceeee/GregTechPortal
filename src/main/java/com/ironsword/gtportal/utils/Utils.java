@@ -1,6 +1,5 @@
 package com.ironsword.gtportal.utils;
 
-import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;

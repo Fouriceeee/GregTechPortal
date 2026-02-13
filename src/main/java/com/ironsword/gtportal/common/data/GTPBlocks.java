@@ -3,18 +3,16 @@ package com.ironsword.gtportal.common.data;
 import com.aetherteam.aether.Aether;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.ironsword.gtportal.GTPortal;
-import com.ironsword.gtportal.api.portal.DimensionInfo;
 import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
-import com.ironsword.gtportal.common.block.DimensionalPortalBlock;
 import com.ironsword.gtportal.common.block.TestPortalBlock;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
+import com.lowdragmc.lowdraglib.LDLib;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelBuilder;
 
@@ -34,50 +32,55 @@ public class GTPBlocks {
         REGISTRATE.creativeModeTab(()-> GTPCreativeModeTabs.GTP_TAB);
     }
 
+
+//    public static final BlockEntry<DimensionalPortalBlock> DIMENSIONAL_PORTAL_BLOCK = REGISTRATE
+//            .block("dimensional_portal_block",DimensionalPortalBlock::new)
+//            .initialProperties(()->Blocks.NETHER_PORTAL)
+//            .addLayer(()-> RenderType::translucent)
+//            .lang("Dimensional Portal Block")
+//            .blockstate((ctx,prov)->{
+//                prov.getVariantBuilder(ctx.getEntry())
+//                        .forAllStates(state -> {
+//                            Direction.Axis axis = state.getValue(BlockStateProperties.AXIS);
+//                            DimensionInfo info = state.getValue(DimensionalPortalBlock.DIMENSIONS);
+//
+//                            ModelBuilder<?> model = prov.models().getBuilder(info.getSerializedName()+"_portal_"+axis.getName()).parent(prov.models().getExistingFile(new ResourceLocation("minecraft:block/block")));
+//                            switch (axis.getName()){
+//                                case "x":
+//                                    model.element().from(6,0,0).to(10,16,16)
+//                                            .face(Direction.EAST).uvs(0,0,16,16).texture("#portal").end()
+//                                            .face(Direction.WEST).uvs(0,0,16,16).texture("#portal").end()
+//                                            .end();
+//                                    break;
+//                                case "y":
+//                                    model.element().from(0,6,0).to(16,10,16)
+//                                            .face(Direction.UP).uvs(0,0,16,16).texture("#portal").end()
+//                                            .face(Direction.DOWN).uvs(0,0,16,16).texture("#portal").end()
+//                                            .end();
+//                                    break;
+//                                case "z":
+//                                    model.element().from(0,0,6).to(16,16,10)
+//                                            .face(Direction.NORTH).uvs(0,0,16,16).texture("#portal").end()
+//                                            .face(Direction.SOUTH).uvs(0,0,16,16).texture("#portal").end()
+//                                            .end();
+//                                    break;
+//                                default:
+//                                    break;
+//                            }
+//                            model.texture("portal",info.getTexture()).texture("particle",info.getTexture());
+//                            return ConfiguredModel.builder().modelFile(model).build();
+//                        });
+//            })
+//            .register();
+
     public static final BlockEntry<TestPortalBlock> TEST_OVERWORLD_PORTAL_BLOCK = registerTestPortalBlock("test_overworld_portal_block","Test Overworld Portal Block",GTPortal.id("block/portals/overworld_portal"));
     public static final BlockEntry<TestPortalBlock> TEST_NETHER_PORTAL_BLOCK = registerTestPortalBlock("test_nether_portal_block","Test Nether Portal Block",GTPortal.id("block/portals/nether_portal"));
     public static final BlockEntry<TestPortalBlock> TEST_END_PORTAL_BLOCK = registerTestPortalBlock("test_end_portal_block","Test End Portal Block",GTPortal.id("block/portals/end_portal"));
     public static final BlockEntry<TestPortalBlock> TEST_EMPTY_PORTAL_BLOCK = registerTestPortalBlock("test_empty_portal_block","Test Empty Portal Block",GTPortal.id("block/portals/empty_portal"));
 
-    public static final BlockEntry<DimensionalPortalBlock> DIMENSIONAL_PORTAL_BLOCK = REGISTRATE
-            .block("dimensional_portal_block",DimensionalPortalBlock::new)
-            .initialProperties(()->Blocks.NETHER_PORTAL)
-            .addLayer(()-> RenderType::translucent)
-            .lang("Dimensional Portal Block")
-            .blockstate((ctx,prov)->{
-                prov.getVariantBuilder(ctx.getEntry())
-                        .forAllStates(state -> {
-                            Direction.Axis axis = state.getValue(BlockStateProperties.AXIS);
-                            DimensionInfo info = state.getValue(DimensionalPortalBlock.DIMENSIONS);
+    public static BlockEntry<TestPortalBlock> TEST_AETHER_PORTAL_BLOCK = null;
+    public static BlockEntry<TestPortalBlock> TEST_TWILIGHT_PORTAL_BLOCK = null;
 
-                            ModelBuilder<?> model = prov.models().getBuilder(info.getSerializedName()+"_portal_"+axis.getName()).parent(prov.models().getExistingFile(new ResourceLocation("minecraft:block/block")));
-                            switch (axis.getName()){
-                                case "x":
-                                    model.element().from(6,0,0).to(10,16,16)
-                                            .face(Direction.EAST).uvs(0,0,16,16).texture("#portal").end()
-                                            .face(Direction.WEST).uvs(0,0,16,16).texture("#portal").end()
-                                            .end();
-                                    break;
-                                case "y":
-                                    model.element().from(0,6,0).to(16,10,16)
-                                            .face(Direction.UP).uvs(0,0,16,16).texture("#portal").end()
-                                            .face(Direction.DOWN).uvs(0,0,16,16).texture("#portal").end()
-                                            .end();
-                                    break;
-                                case "z":
-                                    model.element().from(0,0,6).to(16,16,10)
-                                            .face(Direction.NORTH).uvs(0,0,16,16).texture("#portal").end()
-                                            .face(Direction.SOUTH).uvs(0,0,16,16).texture("#portal").end()
-                                            .end();
-                                    break;
-                                default:
-                                    break;
-                            }
-                            model.texture("portal",info.getTexture()).texture("particle",info.getTexture());
-                            return ConfiguredModel.builder().modelFile(model).build();
-                        });
-            })
-            .register();
 
     public static final BlockEntry<BrokenEndPortalFrameBlock> BROKEN_END_PORTAL_FRAME = REGISTRATE
             .block("broken_end_portal_frame",BrokenEndPortalFrameBlock::new)
@@ -141,7 +144,14 @@ public class GTPBlocks {
                 .register();
     }
 
-    public static void init() {}
+    public static void init() {
+        if (LDLib.isModLoaded("aether")){
+            TEST_AETHER_PORTAL_BLOCK = GTPBlocks.registerTestPortalBlock("test_aether_portal_block","Test Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
+        }
+        if (LDLib.isModLoaded("twilightforest")){
+            TEST_TWILIGHT_PORTAL_BLOCK = GTPBlocks.registerTestPortalBlock("test_twilight_portal_block","Test Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
+        }
+    }
 
 
 }

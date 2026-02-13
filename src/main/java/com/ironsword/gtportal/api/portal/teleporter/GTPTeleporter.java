@@ -1,7 +1,5 @@
 package com.ironsword.gtportal.api.portal.teleporter;
 
-import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
-import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -9,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -38,10 +35,11 @@ public class GTPTeleporter implements ITeleporter {
     @Override
     public @Nullable PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel, PortalInfo> defaultPortalInfo) {
         if (controllerPos != null){
-            BlockEntity blockEntity = destWorld.getBlockEntity(controllerPos);
-            if (blockEntity instanceof MetaMachineBlockEntity machineEntity && machineEntity.getMetaMachine() instanceof PortalControllerMachine portalMachine){
-                return makePortalInfo(entity,portalMachine.getFrontPos());
-            }
+//            BlockEntity blockEntity = destWorld.getBlockEntity(controllerPos);
+//            if (blockEntity instanceof MetaMachineBlockEntity machineEntity && machineEntity.getMetaMachine() instanceof PortalControllerMachine portalMachine){
+//                return makePortalInfo(entity,portalMachine.getFrontPos());
+//            }
+            return makePortalInfo(entity,controllerPos);
         }
 
         BlockPos currPos = getScaledPos(destWorld,entity.blockPosition()),
