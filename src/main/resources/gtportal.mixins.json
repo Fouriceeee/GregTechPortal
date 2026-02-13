@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "com.ironsword.gtportal.mixin",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "com.ironsword.gtportal.mixin.GTPMixinPlugin",
   "mixins": [
     "TFPortalBlockMixin",
     "DimensionHooksMixin",

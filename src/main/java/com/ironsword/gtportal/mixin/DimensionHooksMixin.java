@@ -1,6 +1,7 @@
 package com.ironsword.gtportal.mixin;
 
 import com.aetherteam.aether.event.hooks.DimensionHooks;
+import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import com.ironsword.gtportal.utils.Utils;
 import net.minecraft.core.BlockPos;
@@ -30,6 +31,10 @@ public class DimensionHooksMixin {
             remap = false
     )
     private static void injectCreatePortal(Player player, Level level, BlockPos pos, @Nullable Direction direction, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<Boolean> cir){
+        if (GTPConfigHolder.INSTANCE.portalGateConfigs.allowVanillaAetherPortalGate){
+            return;
+        }
+
         player.displayClientMessage(Component.translatable("gtportal.clientmessage.banned_structure"),true);
         cir.setReturnValue(false);
     }
@@ -41,6 +46,10 @@ public class DimensionHooksMixin {
             remap = false
     )
     private static void injectDetectWaterInFrame(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState,CallbackInfoReturnable<Boolean> cir){
+        if (GTPConfigHolder.INSTANCE.portalGateConfigs.allowVanillaAetherPortalGate){
+            return;
+        }
+
         Utils.displayMessageInBoxes((Level) levelAccessor,pos,5,Component.translatable("gtportal.clientmessage.banned_structure"));
         cir.setReturnValue(false);
     }

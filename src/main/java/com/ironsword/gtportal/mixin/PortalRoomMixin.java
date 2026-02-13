@@ -1,5 +1,6 @@
 package com.ironsword.gtportal.mixin;
 
+import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -33,6 +34,10 @@ public abstract class PortalRoomMixin extends StructurePiece {
             at = @At("TAIL")
     )
     private void injectPostProcess(WorldGenLevel pLevel, StructureManager pStructureManager, ChunkGenerator pGenerator, RandomSource pRandom, BoundingBox pBox, ChunkPos pChunkPos, BlockPos pPos,CallbackInfo cir){
+        if (GTPConfigHolder.INSTANCE.portalGateConfigs.generateVanillaEndPortalFrame) {
+            return;
+        }
+
         BlockState state = GTPBlocks.BROKEN_END_PORTAL_FRAME.getDefaultState();
         this.placeBlock(pLevel, state, 4, 3, 8, pBox);
         this.placeBlock(pLevel, state, 5, 3, 8, pBox);

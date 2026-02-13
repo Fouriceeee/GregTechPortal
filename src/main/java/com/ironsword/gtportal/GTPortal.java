@@ -1,5 +1,6 @@
 package com.ironsword.gtportal;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
@@ -34,12 +35,21 @@ public class GTPortal
     }
 
     private static void init() {
+        GTPConfigHolder.init();
         GTPDatagen.initPre();
         GTPCreativeModeTabs.init();
         GTPItems.init();
         GTPBlocks.init();
 
         DynamicRenderManager.register(id("portal_block"), TestRenderer.TYPE);
+
+//        if (GTCEu.isModLoaded("aether")){
+//
+//        }
+//
+//        if (GTCEu.isModLoaded("twilightforest")){
+//
+//        }
 
         GTPRegistries.REGISTRATE.registerRegistrate();
     }

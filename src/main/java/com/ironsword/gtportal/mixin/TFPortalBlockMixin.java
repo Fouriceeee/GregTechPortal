@@ -1,5 +1,6 @@
 package com.ironsword.gtportal.mixin;
 
+import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.common.machine.multiblock.PortalControllerMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -25,8 +26,12 @@ public class TFPortalBlockMixin {
             cancellable = true,
             remap = false)
     public void injectTryToCreatePortal(Level level, BlockPos pos, ItemEntity catalyst, @Nullable Player player,CallbackInfoReturnable<Boolean> cir){
+        if (GTPConfigHolder.INSTANCE.portalGateConfigs.allowVanillaTwilightForestPortalGate){
+            return;
+        }
+
         if (player != null){
-            player.displayClientMessage(Component.literal("门不能从这一侧打开"),true);
+            player.displayClientMessage(Component.translatable("gtportal.clientmessage.banned_structure"),true);
         }
         cir.setReturnValue(true);
     }
