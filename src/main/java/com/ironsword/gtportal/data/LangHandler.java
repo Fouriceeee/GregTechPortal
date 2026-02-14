@@ -28,7 +28,7 @@ public class LangHandler extends com.gregtechceu.gtceu.data.lang.LangHandler {
 
         //creativeModeTabs
         provider.add("gtportal.creativemodetab.main","GT Portal");
-        provider.add("gtportal.creativemodetab.dim_data_sticks","Dimension Data Sticks");
+        provider.add("gtportal.creativemodetab.dimension_data_sticks","Dimension Data Sticks");
 
         //jei
         provider.add("gtceu.dimension_teleport_recipes","Teleport Energy");

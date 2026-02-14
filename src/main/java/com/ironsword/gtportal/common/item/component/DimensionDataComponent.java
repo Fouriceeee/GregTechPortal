@@ -1,7 +1,6 @@
 package com.ironsword.gtportal.common.item.component;
 
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public class TestComponent implements IAddInformation {
+public class DimensionDataComponent implements IAddInformation {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         CompoundTag tag = stack.getOrCreateTag();

@@ -17,5 +17,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "gtportal:blocks/test_overworld_portal_block"
+  "random_sequence": "gtportal:blocks/overworld_portal_block"
 }

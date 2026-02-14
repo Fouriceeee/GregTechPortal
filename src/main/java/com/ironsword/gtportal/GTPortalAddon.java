@@ -9,7 +9,7 @@ import com.ironsword.gtportal.api.portal.teleporter.TwilightTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.data.GTPItems;
 import com.ironsword.gtportal.common.data.GTPRecipes;
-import com.ironsword.gtportal.common.machine.multiblock.TestPortalMachine;
+import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.ironsword.gtportal.data.GTPDatagen;
 import com.lowdragmc.lowdraglib.LDLib;
@@ -35,20 +35,20 @@ public class GTPortalAddon implements IGTAddon {
         GTPBlocks.init();
 
         if (LDLib.isModLoaded("aether")){
-            TestPortalMachine.MAP.put(
+            MultidimensionalPortalControllerMachine.MAP.put(
                     AetherDimensions.AETHER_LEVEL.location(),
                     Pair.of(
-                            GTPBlocks.TEST_AETHER_PORTAL_BLOCK,
+                            GTPBlocks.AETHER_PORTAL_BLOCK,
                             (entity, currWorld, destWorld, coordinate) ->
                                     entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate, Blocks.GLOWSTONE))
                     ));
         }
 
         if (LDLib.isModLoaded("twilightforest")){
-            TestPortalMachine.MAP.put(
+            MultidimensionalPortalControllerMachine.MAP.put(
                     TFGenerationSettings.DIMENSION,
                     Pair.of(
-                            GTPBlocks.TEST_TWILIGHT_PORTAL_BLOCK,
+                            GTPBlocks.TWILIGHT_PORTAL_BLOCK,
                             (entity, currWorld, destWorld, coordinate) ->
                                     entity.changeDimension(destWorld,new TwilightTeleporter(currWorld,coordinate, TFBlocks.ROOT_BLOCK.get(),entity))
                     ));

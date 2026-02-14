@@ -1,10 +1,11 @@
 package com.ironsword.gtportal.client.renderer;
 
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 import com.gregtechceu.gtceu.client.util.RenderUtil;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
-import com.ironsword.gtportal.common.machine.multiblock.TestPortalMachine;
+import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -20,19 +21,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class TestRenderer extends DynamicRender<IBlockRenderMulti, TestRenderer> {
+public class PortalBlockRenderer extends DynamicRender<IBlockRenderMulti, PortalBlockRenderer> {
 
-    public static final Codec<TestRenderer> CODEC = RecordCodecBuilder.create(instance->instance.group(
-            BuiltInRegistries.BLOCK.byNameCodec().optionalFieldOf("fixed_block").forGetter(TestRenderer::getFixedBlock)
-    ).apply(instance, TestRenderer::new));
-    public static final DynamicRenderType<IBlockRenderMulti, TestRenderer> TYPE = new DynamicRenderType<>(CODEC);
+    public static final Codec<PortalBlockRenderer> CODEC = RecordCodecBuilder.create(instance->instance.group(
+            BuiltInRegistries.BLOCK.byNameCodec().optionalFieldOf("fixed_block").forGetter(PortalBlockRenderer::getFixedBlock)
+    ).apply(instance, PortalBlockRenderer::new));
+    public static final DynamicRenderType<IBlockRenderMulti, PortalBlockRenderer> TYPE = new DynamicRenderType<>(CODEC);
 
     private final boolean fixedBlock;
 
     private @Nullable Block cachedBlock;
     private @Nullable ResourceLocation cachedRecipe;
 
-    public TestRenderer(Optional<Block> block){
+    public PortalBlockRenderer(Optional<Block> block){
         if (block.isPresent()){
             fixedBlock = true;
             cachedBlock = block.get();
@@ -52,14 +53,14 @@ public class TestRenderer extends DynamicRender<IBlockRenderMulti, TestRenderer>
     }
 
     @Override
-    public DynamicRenderType<IBlockRenderMulti, TestRenderer> getType() {
+    public DynamicRenderType<IBlockRenderMulti, PortalBlockRenderer> getType() {
         return TYPE;
     }
 
     @Override
     public void render(IBlockRenderMulti machine, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
-        if (!machine.isFormed() || machine.getRenderBlockOffsets() == null || !(machine instanceof TestPortalMachine portal)){
+        if (!machine.isFormed() || machine.getRenderBlockOffsets() == null){
             return;
         }
         if (!fixedBlock){
@@ -70,23 +71,21 @@ public class TestRenderer extends DynamicRender<IBlockRenderMulti, TestRenderer>
             }else if (machine.self().getOffsetTimer() % 20 == 0 || lastRecipe.id != cachedRecipe){
                 cachedRecipe = lastRecipe.id;
                 if (machine.getRecipeLogic().isWorking()){
-                    cachedBlock = TestPortalMachine.MAP.getOrDefault(new ResourceLocation(lastRecipe.data.getString("dimension")),TestPortalMachine.EMPTY).getFirst().get();
+                    cachedBlock = MultidimensionalPortalControllerMachine.MAP.getOrDefault(new ResourceLocation(lastRecipe.data.getString("dimension")), MultidimensionalPortalControllerMachine.EMPTY).getFirst().get();
                 }else {
                     cachedBlock = null;
                 }
+            }
+        }else {
+            if (!machine.getRecipeLogic().isWorking()){
+                return;
             }
         }
         if (cachedBlock == null){
             return;
         }
 
-//        if (!machine.isFormed()||
-//            machine.getRenderBlockOffsets() == null ||
-//            !machine.getRecipeLogic().isWorking() ||
-//            !(machine instanceof TestPortalMachine))
-//            return;
-
-        BlockState state = cachedBlock.defaultBlockState().setValue(BlockStateProperties.AXIS,portal.getFrontFacing().getAxis());
+        BlockState state = cachedBlock.defaultBlockState().setValue(BlockStateProperties.AXIS,((MetaMachine) machine).getFrontFacing().getAxis());
 
         BlockPos prevOffset = null;
         for (BlockPos offset : machine.getRenderBlockOffsets()) {

@@ -1,13 +1,16 @@
 package com.ironsword.gtportal.common.data;
 
 import com.aetherteam.aether.data.resources.registries.AetherDimensions;
+import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.StrictNBTIngredient;
+import twilightforest.world.registration.TFGenerationSettings;
 
 import java.util.function.Consumer;
 
-import static com.ironsword.gtportal.common.item.component.TestComponent.putDimensionNbt;
+import static com.ironsword.gtportal.common.item.component.DimensionDataComponent.putDimensionNbt;
 
 public class GTPRecipes {
 //    public static void createDefaultScannerRecipe(@NotNull String researchId,
@@ -32,83 +35,57 @@ public class GTPRecipes {
 //    }
 
     public static void init(Consumer<FinishedRecipe> provider) {
-//        scannerRecipes(provider);
-//        teleportRecipes(provider);
+        VanillaRecipeHelper.addShapelessRecipe(provider,"dimension_data_stick_clear_data",GTPItems.DIMENSION_DATA_STICK.asStack(),GTPItems.DIMENSION_DATA_STICK.asStack());
 
-//        VanillaRecipeHelper.addShapelessRecipe(provider,"dim_data_stick",GTPItems.DIM_DATA_STICK.asStack(),GTPItems.DIM_DATA_STICK.asStack());
-//        VanillaRecipeHelper.addShapelessRecipe(provider,"dim_data_recorder",GTPItems.DIM_DATA_RECORDER.asStack(),GTPItems.DIM_DATA_RECORDER.asStack());
-
-        testRecipes(provider);
+        teleportRecipes(provider);
     }
 
-    private static void testRecipes(Consumer<FinishedRecipe> provider) {
-        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("overworld")
-                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.OVERWORLD.location())))
+    private static void teleportRecipes(Consumer<FinishedRecipe> provider) {
+        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("overworld")
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(),Level.OVERWORLD.location())))
                 .EUt(0)
                 .duration(20*5)
                 .addData("dimension",Level.OVERWORLD.location().toString())
                 .save(provider);
 
-        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("nether")
-                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.NETHER.location())))
+        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("nether")
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(),Level.NETHER.location())))
                 .EUt(0)
                 .duration(20*5)
                 .addData("dimension",Level.NETHER.location().toString())
                 .save(provider);
 
-        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("end")
-                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(),Level.END.location())))
+        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("end")
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(),Level.END.location())))
                 .EUt(32)
                 .duration(20*5)
                 .addData("dimension",Level.END.location().toString())
                 .save(provider);
 
-        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("aether")
-                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(), AetherDimensions.AETHER_LEVEL.location())))
+        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("aether")
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(), AetherDimensions.AETHER_LEVEL.location())))
                 .EUt(32)
                 .duration(20*5)
                 .addData("dimension",AetherDimensions.AETHER_LEVEL.location().toString())
                 .save(provider);
+
+        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("twilight")
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(), TFGenerationSettings.DIMENSION)))
+                .EUt(32)
+                .duration(20*5)
+                .addData("dimension",AetherDimensions.AETHER_LEVEL.location().toString())
+                .save(provider);
+
+        GTPRecipeTypes.OVERWORLD_TELEPORT_RECIPE_TYPE.recipeBuilder("overworld")
+                .notConsumable(Blocks.GRASS_BLOCK.asItem())
+                .EUt(0)
+                .duration(20*5)
+                .save(provider);
+
+        GTPRecipeTypes.NETHER_TELEPORT_RECIPE_TYPE.recipeBuilder("nether")
+                .notConsumable(Blocks.NETHERRACK.asItem())
+                .EUt(0)
+                .duration(20*5)
+                .save(provider);
     }
-
-    private static void scannerRecipes(Consumer<FinishedRecipe> provider){
-//        createDefaultScannerRecipe("overworld",
-//                Items.STONE.getDefaultInstance(),null,
-//                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.OVERWORLD,
-//                20,8,provider);
-//
-//        createDefaultScannerRecipe("nether",
-//                Items.NETHERRACK.getDefaultInstance(),null,
-//                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.NETHER,
-//                20,32,provider);
-//
-//        createDefaultScannerRecipe("end",
-//                Items.END_STONE.getDefaultInstance(),null,
-//                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.END,
-//                40,128,provider);
-//
-//        createDefaultScannerRecipe("twilight_forest",
-//                TFItems.TORCHBERRIES.get().getDefaultInstance(),null,
-//                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.TWILIGHT,
-//                20,512,provider);
-//
-//        createDefaultScannerRecipe("aether",
-//                Items.GLOWSTONE.getDefaultInstance(),null,
-//                GTPItems.DIM_DATA_STICK.asStack(), DimensionInfo.AETHER,
-//                20,2048,provider);
-
-    }
-
-//    private static void teleportRecipes(Consumer<FinishedRecipe> provider){
-//        for (var info:DimensionInfo.values()){
-//            if (info.equals(DimensionInfo.EMPTY)) continue;
-//            GTPRecipeTypes.DIMENSION_TELEPORT_RECIPES.recipeBuilder(info.name())
-//                    .duration(20)
-//                    .EUt(info.getTeleportEnergy())
-//                    .dimension(info.getId())
-//                    .save(provider);
-//        }
-//
-//    }
-
 }

@@ -12,33 +12,33 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.Level;
 import twilightforest.world.registration.TFGenerationSettings;
 
-import static com.ironsword.gtportal.common.item.component.TestComponent.putDimensionNbt;
+import static com.ironsword.gtportal.common.item.component.DimensionDataComponent.putDimensionNbt;
 
 public class GTPCreativeModeTabs {
     public static RegistryEntry<CreativeModeTab> GTP_TAB = GTPRegistries.REGISTRATE.defaultCreativeTab(
             GTPortal.MODID,
             builder -> builder.displayItems(new GTCreativeModeTabs.RegistrateDisplayItemsGenerator(GTPortal.MODID,GTPRegistries.REGISTRATE))
-                    .icon(GTPMachines.TEST_MACHINE::asStack)
+                    .icon(GTPMachines.MULTIDIMENSIONAL_PORTAL_CONTROLLER::asStack)
                     .title(Component.translatable("gtportal.creativemodetab.main"))
                     .build()
     ).register();
 
     public static RegistryEntry<CreativeModeTab> DATA_STICK_TAB = GTPRegistries.REGISTRATE.defaultCreativeTab(
-            "dim_data_sticks",
+            "dimension_data_sticks",
             builder -> builder
                     .displayItems((var1,var2)->{
-                        var2.accept(GTPItems.TEST_ITEM.asStack());
-                        var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(), Level.OVERWORLD.location()));
-                        var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(), Level.NETHER.location()));
-                        var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(), Level.END.location()));
+                        var2.accept(GTPItems.DIMENSION_DATA_STICK.asStack());
+                        var2.accept(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(), Level.OVERWORLD.location()));
+                        var2.accept(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(), Level.NETHER.location()));
+                        var2.accept(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(), Level.END.location()));
                         if (LDLib.isModLoaded("aether")){
-                            var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(), AetherDimensions.AETHER_LEVEL.location()));
+                            var2.accept(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(), AetherDimensions.AETHER_LEVEL.location()));
                         }
                         if (LDLib.isModLoaded("twilightforest")){
-                            var2.accept(putDimensionNbt(GTPItems.TEST_ITEM.asStack(), TFGenerationSettings.DIMENSION));
+                            var2.accept(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(), TFGenerationSettings.DIMENSION));
                         }
                     })
-                    .icon(GTPItems.TEST_ITEM::asStack)
+                    .icon(GTPItems.DIMENSION_DATA_STICK::asStack)
                     .title(Component.translatable("gtportal.creativemodetab.dim_data_sticks"))
                     .build()
     ).register();

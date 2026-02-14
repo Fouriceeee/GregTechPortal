@@ -1,18 +1,20 @@
 {
   "block.gtportal.broken_end_portal_frame": "ǝɯɐɹℲ ןɐʇɹoԀ puƎ uǝʞoɹᗺ",
+  "block.gtportal.empty_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ʎʇdɯƎ",
+  "block.gtportal.end_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ puƎ",
+  "block.gtportal.multidimensional_portal_controller": "ɹǝןןoɹʇuoƆ ןɐʇɹoԀ ןɐuoısuǝɯıpıʇןnW",
+  "block.gtportal.nether_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ɹǝɥʇǝN",
+  "block.gtportal.overworld_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ pןɹoʍɹǝʌO",
   "block.gtportal.portal_frame": "ǝɯɐɹℲ ןɐʇɹoԀ",
+  "block.gtportal.simple_nether_portal_controller": "ɹǝןןoɹʇuoƆ ןɐʇɹoԀ ɹǝɥʇǝN ǝןdɯıS",
   "block.gtportal.simple_nether_portal_frame": "ǝɯɐɹℲ ןɐʇɹoԀ ɹǝɥʇǝN ǝןdɯıS",
+  "block.gtportal.simple_overworld_portal_controller": "ɹǝןןoɹʇuoƆ ןɐʇɹoԀ pןɹoʍɹǝʌO ǝןdɯıS",
   "block.gtportal.simple_overworld_portal_frame": "ǝɯɐɹℲ ןɐʇɹoԀ pןɹoʍɹǝʌO ǝןdɯıS",
   "block.gtportal.test_aether_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ɹǝɥʇǝⱯ ʇsǝ⟘",
-  "block.gtportal.test_empty_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ʎʇdɯƎ ʇsǝ⟘",
-  "block.gtportal.test_end_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ puƎ ʇsǝ⟘",
-  "block.gtportal.test_machine": "ǝuıɥɔɐW ʇsǝ⟘",
-  "block.gtportal.test_nether_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ɹǝɥʇǝN ʇsǝ⟘",
-  "block.gtportal.test_overworld_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ pןɹoʍɹǝʌO ʇsǝ⟘",
   "block.gtportal.test_twilight_portal_block": "ʞɔoןᗺ ןɐʇɹoԀ ʇɥbıןıʍ⟘ ʇsǝ⟘",
   "gtceu.dimension_teleport_recipes": "ʎbɹǝuƎ ʇɹodǝןǝ⟘",
   "gtportal.clientmessage.banned_structure": "˙uoıʇɐɯɹoɟuı ǝɹoɯ ɹoɟ ʞooᗺ ʇsǝnὉ ǝɥʇ ʞɔǝɥƆ ˙pǝuuɐq sı ǝɹnʇɔnɹʇs ǝɥ⟘",
-  "gtportal.creativemodetab.dim_data_sticks": "sʞɔıʇS ɐʇɐᗡ uoısuǝɯıᗡ",
+  "gtportal.creativemodetab.dimension_data_sticks": "sʞɔıʇS ɐʇɐᗡ uoısuǝɯıᗡ",
   "gtportal.creativemodetab.main": "ןɐʇɹoԀ ⟘⅁",
   "gtportal.dimension.aether": "ɹǝɥʇǝⱯ ǝɥ⟘",
   "gtportal.dimension.empty": "uoısuǝɯıᗡ uʍouʞu∩",
@@ -25,5 +27,5 @@
   "gtportal.machine.tooltip.position": "uoıʇısoԀ",
   "gtportal.tooltip.item.dim_data_recorder": "ɐʇɐp uoısuǝɯıp pɹoɔǝɹ oʇ ɹǝןןoɹʇuoƆ ןɐʇɹoԀ ʇɐ ʞɔıןɔ ʇɥbıᴚ + ʇɟıɥS",
   "gtportal.tooltip.machine.simple_nether_portal_controller": "ɹǝɥʇǝu ǝɥʇ ɹǝʇuǝ noʎ ƎᴚOℲƎᗺ ןɐʇɹod pןɹoʍɹǝʌo ɐ pןınq oʇ sbuıɥʇ ɥbnouǝ buıɹᗺ\nuɹnʇǝɹ oʇ ןɐʇɹod ɐ ǝʇɐǝɹɔ ɹ§ʇouן§ɔ§ ןןıʍ ǝuıɥɔɐɯ sıɥ⟘",
-  "item.gtportal.test_item": "ɯǝʇI ʇsǝ⟘"
+  "item.gtportal.dimension_data_stick": "ʞɔıʇS ɐʇɐᗡ uoısuǝɯıᗡ"
 }

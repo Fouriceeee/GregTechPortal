@@ -4,7 +4,7 @@ import com.aetherteam.aether.Aether;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
-import com.ironsword.gtportal.common.block.TestPortalBlock;
+import com.ironsword.gtportal.common.block.PortalBlock;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.lowdragmc.lowdraglib.LDLib;
 import com.tterrag.registrate.util.entry.BlockEntry;
@@ -73,13 +73,13 @@ public class GTPBlocks {
 //            })
 //            .register();
 
-    public static final BlockEntry<TestPortalBlock> TEST_OVERWORLD_PORTAL_BLOCK = registerTestPortalBlock("test_overworld_portal_block","Test Overworld Portal Block",GTPortal.id("block/portals/overworld_portal"));
-    public static final BlockEntry<TestPortalBlock> TEST_NETHER_PORTAL_BLOCK = registerTestPortalBlock("test_nether_portal_block","Test Nether Portal Block",GTPortal.id("block/portals/nether_portal"));
-    public static final BlockEntry<TestPortalBlock> TEST_END_PORTAL_BLOCK = registerTestPortalBlock("test_end_portal_block","Test End Portal Block",GTPortal.id("block/portals/end_portal"));
-    public static final BlockEntry<TestPortalBlock> TEST_EMPTY_PORTAL_BLOCK = registerTestPortalBlock("test_empty_portal_block","Test Empty Portal Block",GTPortal.id("block/portals/empty_portal"));
+    public static final BlockEntry<PortalBlock> OVERWORLD_PORTAL_BLOCK = registerPortalBlock("overworld_portal_block","Overworld Portal Block",GTPortal.id("block/portals/overworld_portal"));
+    public static final BlockEntry<PortalBlock> NETHER_PORTAL_BLOCK = registerPortalBlock("nether_portal_block","Nether Portal Block",GTPortal.id("block/portals/nether_portal"));
+    public static final BlockEntry<PortalBlock> END_PORTAL_BLOCK = registerPortalBlock("end_portal_block","End Portal Block",GTPortal.id("block/portals/end_portal"));
+    public static final BlockEntry<PortalBlock> EMPTY_PORTAL_BLOCK = registerPortalBlock("empty_portal_block","Empty Portal Block",GTPortal.id("block/portals/empty_portal"));
 
-    public static BlockEntry<TestPortalBlock> TEST_AETHER_PORTAL_BLOCK = null;
-    public static BlockEntry<TestPortalBlock> TEST_TWILIGHT_PORTAL_BLOCK = null;
+    public static BlockEntry<PortalBlock> AETHER_PORTAL_BLOCK = null;
+    public static BlockEntry<PortalBlock> TWILIGHT_PORTAL_BLOCK = null;
 
 
     public static final BlockEntry<BrokenEndPortalFrameBlock> BROKEN_END_PORTAL_FRAME = REGISTRATE
@@ -106,7 +106,7 @@ public class GTPBlocks {
             .simpleItem()
             .register();
 
-    public static final BlockEntry<Block> PORTAL_FRAME = REGISTRATE
+    public static final BlockEntry<Block> MULTIDIMENSIONAL_PORTAL_FRAME = REGISTRATE
             .block("portal_frame",Block::new)
             .initialProperties(()->Blocks.OBSIDIAN)
             .addLayer(()->RenderType::solid)
@@ -133,23 +133,22 @@ public class GTPBlocks {
             .simpleItem()
             .register();
 
-    public static BlockEntry<TestPortalBlock> registerTestPortalBlock(String id, String name, ResourceLocation texture){
+    public static BlockEntry<PortalBlock> registerPortalBlock(String id, String name, ResourceLocation texture){
         return REGISTRATE
-                .block(id,TestPortalBlock::new)
+                .block(id, PortalBlock::new)
                 .initialProperties(()->Blocks.NETHER_PORTAL)
                 .addLayer(()->RenderType::translucent)
                 .lang(name)
-                .tag(GTPTags.PORTAL)
                 .blockstate(GTPModels.createPortalBlockModel(id,texture))
                 .register();
     }
 
     public static void init() {
         if (LDLib.isModLoaded("aether")){
-            TEST_AETHER_PORTAL_BLOCK = GTPBlocks.registerTestPortalBlock("test_aether_portal_block","Test Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
+            AETHER_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("test_aether_portal_block","Test Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
         }
         if (LDLib.isModLoaded("twilightforest")){
-            TEST_TWILIGHT_PORTAL_BLOCK = GTPBlocks.registerTestPortalBlock("test_twilight_portal_block","Test Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
+            TWILIGHT_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("test_twilight_portal_block","Test Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
         }
     }
 

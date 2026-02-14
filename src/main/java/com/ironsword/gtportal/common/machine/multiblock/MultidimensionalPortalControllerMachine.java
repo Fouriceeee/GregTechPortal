@@ -1,31 +1,20 @@
 package com.ironsword.gtportal.common.machine.multiblock;
 
-import com.gregtechceu.gtceu.api.capability.IEnergyContainer;
-import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.IO;
-import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
-import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
-import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
-import com.gregtechceu.gtceu.api.misc.EnergyContainerList;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.common.data.GTRecipeCapabilities;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
-import com.ironsword.gtportal.common.data.GTPTags;
-import com.ironsword.gtportal.common.machine.multiblock.logic.TestPortalLogic;
+import com.ironsword.gtportal.common.machine.multiblock.logic.MultidimensionalPortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -37,13 +26,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,19 +36,19 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class TestPortalMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
+public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
 
-    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.TEST_EMPTY_PORTAL_BLOCK,(entity, currWorld, destWorld, coordinate) -> {});
+    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity, currWorld, destWorld, coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
-                    GTPBlocks.TEST_OVERWORLD_PORTAL_BLOCK,
+                    GTPBlocks.OVERWORLD_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, coordinate) ->
                             entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
-                    GTPBlocks.TEST_NETHER_PORTAL_BLOCK,
+                    GTPBlocks.NETHER_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
-                    GTPBlocks.TEST_END_PORTAL_BLOCK,
+                    GTPBlocks.END_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, coordinate) -> {
                         if (coordinate == null){
                             entity.changeDimension(destWorld);
@@ -80,7 +65,7 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine impleme
     @RequireRerender
     private @NotNull Set<BlockPos> blockOffsets = new HashSet<>();
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(TestPortalMachine.class,
+    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MultidimensionalPortalControllerMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
 
     @Nonnull
@@ -89,21 +74,12 @@ public class TestPortalMachine extends WorkableElectricMultiblockMachine impleme
 
     protected TickableSubscription teleportSubscription;
 
-    public TestPortalMachine(IMachineBlockEntity holder, Object... args) {
+    public MultidimensionalPortalControllerMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
     }
 
     public static ManagedFieldHolder getManagedFieldHolder() {
         return MANAGED_FIELD_HOLDER;
-    }
-
-    @Override
-    protected RecipeLogic createRecipeLogic(Object... args) {
-        return new TestPortalLogic(this);
-    }
-
-    public TestPortalLogic getRecipePortalLogic(){
-        return (TestPortalLogic) getRecipeLogic();
     }
 
     @Override

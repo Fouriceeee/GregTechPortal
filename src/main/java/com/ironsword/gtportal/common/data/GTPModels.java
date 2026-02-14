@@ -1,7 +1,7 @@
 package com.ironsword.gtportal.common.data;
 
 import com.ironsword.gtportal.GTPortal;
-import com.ironsword.gtportal.common.block.TestPortalBlock;
+import com.ironsword.gtportal.common.block.PortalBlock;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
@@ -14,7 +14,7 @@ import net.minecraftforge.client.model.generators.ModelBuilder;
 
 public class GTPModels {
 
-    public static NonNullBiConsumer<DataGenContext<Block, TestPortalBlock>, RegistrateBlockstateProvider> createPortalBlockModel(String id, ResourceLocation texture){
+    public static NonNullBiConsumer<DataGenContext<Block, PortalBlock>, RegistrateBlockstateProvider> createPortalBlockModel(String id, ResourceLocation texture){
         return (ctx,prov)->{
           prov.getVariantBuilder(ctx.getEntry())
                   .forAllStates(state->{

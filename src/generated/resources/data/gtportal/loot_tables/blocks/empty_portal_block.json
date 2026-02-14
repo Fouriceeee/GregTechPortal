@@ -17,5 +17,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "gtportal:blocks/test_end_portal_block"
+  "random_sequence": "gtportal:blocks/empty_portal_block"
 }

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "gtportal:item/test_item"
+    "layer0": "gtportal:item/dimension_data_stick"
   }
 }
