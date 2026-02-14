@@ -27,5 +27,6 @@
   "gtportal.machine.tooltip.position": "Position",
   "gtportal.tooltip.item.dim_data_recorder": "Shift + Right click at Portal Controller to record dimension data",
   "gtportal.tooltip.machine.simple_nether_portal_controller": "This machine will §c§lnot§r create a portal to return\nBring enough things to build a overworld portal BEFORE you enter the nether",
+  "item.gtportal.dimension_data_recorder": "Dimension Data Recorder",
   "item.gtportal.dimension_data_stick": "Dimension Data Stick"
 }
