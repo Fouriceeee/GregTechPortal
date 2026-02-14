@@ -1,5 +1,6 @@
 package com.ironsword.gtportal.common.data;
 
+import com.aetherteam.aether.data.resources.registries.AetherDimensions;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.StrictNBTIngredient;
@@ -60,6 +61,13 @@ public class GTPRecipes {
                 .EUt(32)
                 .duration(20*5)
                 .addData("dimension",Level.END.location().toString())
+                .save(provider);
+
+        GTPRecipeTypes.TEST_RECIPE_TYPE.recipeBuilder("aether")
+                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.TEST_ITEM.asStack(), AetherDimensions.AETHER_LEVEL.location())))
+                .EUt(32)
+                .duration(20*5)
+                .addData("dimension",AetherDimensions.AETHER_LEVEL.location().toString())
                 .save(provider);
     }
 

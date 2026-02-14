@@ -8,7 +8,9 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderManager;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.TwilightTeleporter;
+import com.ironsword.gtportal.client.ClientProxy;
 import com.ironsword.gtportal.client.renderer.TestRenderer;
+import com.ironsword.gtportal.common.CommonProxy;
 import com.ironsword.gtportal.common.data.*;
 import com.ironsword.gtportal.common.machine.multiblock.TestPortalMachine;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
@@ -22,6 +24,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
@@ -37,25 +40,14 @@ public class GTPortal
 
     public GTPortal(FMLJavaModLoadingContext context)
     {
-        GTPortal.init();
-        var bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.register(this);
+//        GTPortal.init();
+//        var bus = FMLJavaModLoadingContext.get().getModEventBus();
+//        bus.register(this);
 
-        bus.addGenericListener(MachineDefinition.class,this::registerMachines);
-        bus.addGenericListener(GTRecipeType.class,this::registerRecipeTypes);
+        DistExecutor.unsafeRunForDist(()-> ClientProxy::new,()-> CommonProxy::new);
     }
 
     private static void init() {
-        GTPConfigHolder.init();
-        GTPDatagen.initPre();
-        GTPCreativeModeTabs.init();
-        GTPItems.init();
-        GTPBlocks.init();
-
-        DynamicRenderManager.register(id("portal_block"), TestRenderer.TYPE);
-
-        GTPRegistries.REGISTRATE.registerRegistrate();
-
 //        if (LDLib.isModLoaded("aether")){
 //            TestPortalMachine.MAP.put(
 //                    AetherDimensions.AETHER_LEVEL.location(),
@@ -75,16 +67,6 @@ public class GTPortal
 //                                    entity.changeDimension(destWorld,new TwilightTeleporter(currWorld,coordinate, TFBlocks.ROOT_BLOCK.get(),entity))
 //                    ));
 //        }
-    }
-
-    @SubscribeEvent
-    public void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event){
-        GTPMachines.init();
-    }
-
-    @SubscribeEvent
-    public void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event){
-        GTPRecipeTypes.init();
     }
 
     public static ResourceLocation id(String name){

@@ -49,20 +49,21 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Supplier;
 
 public class TestPortalMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
 
-    public static final Pair<Block,TeleportFunction> EMPTY = Pair.of(GTPBlocks.TEST_EMPTY_PORTAL_BLOCK.get(),(entity, currWorld, destWorld, coordinate) -> {});
-    public static final Map<ResourceLocation, Pair<Block,TeleportFunction>> MAP = new HashMap<>(Map.of(
+    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.TEST_EMPTY_PORTAL_BLOCK,(entity, currWorld, destWorld, coordinate) -> {});
+    public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
-                    GTPBlocks.TEST_OVERWORLD_PORTAL_BLOCK.get(),
+                    GTPBlocks.TEST_OVERWORLD_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, coordinate) ->
                             entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
-                    GTPBlocks.TEST_NETHER_PORTAL_BLOCK.get(),
+                    GTPBlocks.TEST_NETHER_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
-                    GTPBlocks.TEST_END_PORTAL_BLOCK.get(),
+                    GTPBlocks.TEST_END_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, coordinate) -> {
                         if (coordinate == null){
                             entity.changeDimension(destWorld);

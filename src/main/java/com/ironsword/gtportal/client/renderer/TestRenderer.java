@@ -70,7 +70,7 @@ public class TestRenderer extends DynamicRender<IBlockRenderMulti, TestRenderer>
             }else if (machine.self().getOffsetTimer() % 20 == 0 || lastRecipe.id != cachedRecipe){
                 cachedRecipe = lastRecipe.id;
                 if (machine.getRecipeLogic().isWorking()){
-                    cachedBlock = TestPortalMachine.MAP.getOrDefault(new ResourceLocation(lastRecipe.data.getString("dimension")),TestPortalMachine.EMPTY).getFirst();
+                    cachedBlock = TestPortalMachine.MAP.getOrDefault(new ResourceLocation(lastRecipe.data.getString("dimension")),TestPortalMachine.EMPTY).getFirst().get();
                 }else {
                     cachedBlock = null;
                 }
