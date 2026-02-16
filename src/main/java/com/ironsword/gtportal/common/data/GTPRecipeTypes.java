@@ -5,6 +5,8 @@ import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
+import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
@@ -16,7 +18,7 @@ public class GTPRecipeTypes {
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
             .setIconSupplier(()->GTPItems.DIMENSION_DATA_STICK.asStack())
             .setEUIO(IO.IN)
-            .addDataInfo(data-> "dimension-%s".formatted(data.getString("dimension")));
+            .addDataInfo(data-> LocalizationUtils.format("gtportal.machine.tooltip.dimension") + ": " + LocalizationUtils.format("gtportal.dimension."+data.getString("dimension")));
 
     public static final GTRecipeType OVERWORLD_TELEPORT_RECIPE_TYPE = GTRecipeTypes.register("overworld_teleport_recipe",GTRecipeTypes.MULTIBLOCK)
             .setMaxIOSize(1,0,0,0)

@@ -1,6 +1,7 @@
 package com.ironsword.gtportal.common.item.component;
 
 import com.gregtechceu.gtceu.api.item.component.IAddInformation;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -18,11 +19,16 @@ public class DimensionDataComponent implements IAddInformation {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         CompoundTag tag = stack.getOrCreateTag();
         if (tag.contains("dimension")){
-            tooltipComponents.add(Component.literal("dimension-%s".formatted(tag.getString("dimension"))));
+            tooltipComponents.add(Component.translatable("gtportal.machine.tooltip.dimension").append(": ").append(Component.translatable("gtportal.dimension.%s".formatted(new ResourceLocation(tag.getString("dimension")).getPath()))));
         }
         if (tag.contains("coordinate")){
-            tooltipComponents.add(Component.literal("coordinate-%s".formatted(Arrays.toString(tag.getIntArray("coordinate")))));
+            tooltipComponents.add(Component.translatable("gtportal.machine.tooltip.coordinate").append(": ").append(Arrays.toString(tag.getIntArray("coordinate"))));
         }
+    }
+
+    public static Pair<ResourceLocation, Vec3i> dataFromItemStack(ItemStack itemStack){
+        CompoundTag tag = itemStack.getOrCreateTag();
+        return Pair.of(dimensionFromNbt(tag),coordinateFromNbt(tag));
     }
 
     @Nullable

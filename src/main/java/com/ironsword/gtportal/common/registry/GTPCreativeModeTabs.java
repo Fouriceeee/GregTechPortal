@@ -39,7 +39,7 @@ public class GTPCreativeModeTabs {
                         }
                     })
                     .icon(GTPItems.DIMENSION_DATA_STICK::asStack)
-                    .title(Component.translatable("gtportal.creativemodetab.dim_data_sticks"))
+                    .title(Component.translatable("gtportal.creativemodetab.dimension_data_sticks"))
                     .build()
     ).register();
 

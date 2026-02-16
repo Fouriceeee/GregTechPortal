@@ -14,6 +14,7 @@ import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalCo
 import com.ironsword.gtportal.common.machine.multiblock.SingleDimensionPortalControllerMachine;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
@@ -179,6 +180,7 @@ public class GTPMachines {
             .model(createWorkableCasingMachineModel(GTPortal.id("block/simple_nether_portal_frame"),
                     GTPortal.id("block/portal_controller_overlay"))
                     .andThen(b->b.addDynamicRenderer(()->new PortalBlockRenderer(Optional.of(GTPBlocks.NETHER_PORTAL_BLOCK.get())))))
+            .tooltips(Component.translatable("gtportal.tooltip.machine.simple_nether_portal_controller"))
             .register();
 
     public static void init() {}

@@ -3,11 +3,13 @@ package com.ironsword.gtportal.common.data;
 import com.gregtechceu.gtceu.api.item.ComponentItem;
 import com.gregtechceu.gtceu.api.item.IComponentItem;
 import com.gregtechceu.gtceu.api.item.component.IItemComponent;
+import com.gregtechceu.gtceu.common.item.TooltipBehavior;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.item.component.DimensionDataRecorderComponent;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
 import static com.ironsword.gtportal.common.registry.GTPRegistries.REGISTRATE;
@@ -27,6 +29,7 @@ public class GTPItems {
             .initialProperties(()->new Item.Properties().stacksTo(1))
             .lang("Dimension Data Recorder")
             .onRegister(attach(new DimensionDataRecorderComponent()))
+            .onRegister(attach(new TooltipBehavior(tooltip->tooltip.add(Component.translatable("gtportal.tooltip.item.dimension_data_recorder")))))
             .defaultModel()
             .register();
 

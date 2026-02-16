@@ -1,5 +1,8 @@
 package com.ironsword.gtportal.common.machine.multiblock;
 
+import com.gregtechceu.gtceu.api.capability.recipe.IO;
+import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
+import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
@@ -9,6 +12,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
+import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.logic.MultidimensionalPortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
@@ -26,6 +30,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -37,7 +43,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
-
+    public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
     public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity, currWorld, destWorld, coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
@@ -85,6 +91,18 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Override
     public void addDisplayText(List<Component> textList) {
         super.addDisplayText(textList);
+
+        if (cache.getFirst() == null) {
+            textList.add(Component.translatable("gtportal.machine.tooltip.no_data"));
+        }
+        else {
+            textList.add(Component.translatable("gtportal.machine.tooltip.dimension").append(": ").append(Component.translatable("gtportal.dimension.%s".formatted(cache.getFirst().getPath()))));
+            if (cache.getSecond() != null){
+                textList.add(Component.translatable("gtportal.machine.tooltip.coordinate").append(": ").append("[%d %d %d]".formatted(cache.getSecond().getX(),cache.getSecond().getY(),cache.getSecond().getZ())));
+            }
+        }
+
+
     }
 
     @Override
@@ -133,10 +151,13 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         if (recipe == null) return false;
         if (!super.beforeWorking(recipe)) return false;
 
-        ResourceLocation dimension = new ResourceLocation(recipe.data.getString("dimension"));
-        if (getLevel().dimension().location().equals(dimension)) return false;
-        cache = Pair.of(dimension,null);
-        return true;
+//        ResourceLocation dimension = new ResourceLocation(recipe.data.getString("dimension"));
+//        if (getLevel().dimension().location().equals(dimension)) return false;
+//        cache = getFirstDimData(recipe);
+//        return true;
+
+        cache = getFirstDimData(recipe);
+        return cache.getFirst() != null || getLevel().dimension().location().equals(cache.getFirst());
     }
 
     @Override
@@ -145,8 +166,42 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         super.afterWorking();
     }
 
+    protected Pair<ResourceLocation, Vec3i> getFirstDimData(@NotNull GTRecipe recipe){
+        var itemInputs = recipe.inputs.getOrDefault(ItemRecipeCapability.CAP, Collections.emptyList());
+        if (itemInputs.isEmpty()) return EMPTY_PAIR;
+        int inputsSize = itemInputs.size();
+
+        var itemHandlers = getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP);
+        var itemInventory = itemHandlers.stream()
+                .filter(IRecipeHandler::shouldSearchContent)
+                .map(container -> container.getContents().stream()
+                        .filter(ItemStack.class::isInstance)
+                        .map(ItemStack.class::cast)
+                        .filter(s -> !s.isEmpty())
+                        .findFirst())
+                .dropWhile(Optional::isEmpty)
+                .limit(inputsSize)
+                .map(o -> o.orElse(ItemStack.EMPTY))
+                .toList();
+
+        if (itemInventory.size() < inputsSize) return EMPTY_PAIR;
+
+        for (int i = 0; i < inputsSize; i++){
+            var itemStack = itemInventory.get(i);
+
+            Ingredient recipeStack = ItemRecipeCapability.CAP.of(itemInputs.get(i).content);
+            if (recipeStack.test(itemStack)){
+                return DimensionDataComponent.dataFromItemStack(itemStack);
+            }
+
+        }
+
+        return EMPTY_PAIR;
+
+    }
+
     public void clearCache(){
-        cache = Pair.of(null,null);
+        cache = EMPTY_PAIR;
     }
 
     public Set<BlockPos> getBlockPoses(){

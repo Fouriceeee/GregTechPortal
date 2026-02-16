@@ -145,10 +145,10 @@ public class GTPBlocks {
 
     public static void init() {
         if (LDLib.isModLoaded("aether")){
-            AETHER_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("test_aether_portal_block","Test Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
+            AETHER_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("aether_portal_block","Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
         }
         if (LDLib.isModLoaded("twilightforest")){
-            TWILIGHT_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("test_twilight_portal_block","Test Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
+            TWILIGHT_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("twilight_portal_block","Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
         }
     }
 
