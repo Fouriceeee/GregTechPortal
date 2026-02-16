@@ -53,11 +53,29 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
 
     @Override
     public @NotNull Set<BlockPos> saveOffsets() {
+//        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+//
+//        BlockPos pos = getPos();
+//
+//        return Set.of(pos.relative(up).subtract(pos),pos.relative(up,2).subtract(pos));
+
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
 
         BlockPos pos = getPos();
+        BlockPos center = pos;
 
-        return Set.of(pos.relative(up).subtract(pos),pos.relative(up,2).subtract(pos));
+        Set<BlockPos> offsets = new HashSet<>();
+
+        for (int i=0;i<3;i++){
+            center = center.relative(up);
+            offsets.add(center.subtract(pos));
+            offsets.add(center.relative(clockwise).subtract(pos));
+            offsets.add(center.relative(counterClockwise).subtract(pos));
+        }
+
+        return offsets;
     }
 
     @Override
@@ -104,9 +122,11 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
             return;
 
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
 
-        BlockPos startingPos = getPos().relative(up),
-                endingPos = getPos().relative(up,2);
+        BlockPos startingPos = getPos().relative(up).relative(clockwise),
+                endingPos = getPos().relative(up,3).relative(counterClockwise);
 
         getLevel().getEntities(null, Utils.getMaxBox(startingPos,endingPos)).forEach(e->{
             if (!(e instanceof Entity) ||!e.canChangeDimensions())

@@ -6,7 +6,9 @@ import com.lowdragmc.lowdraglib.LDLib;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.PartialNBTIngredient;
@@ -48,78 +50,17 @@ public class GTPRecipes {
     }
 
     private static void teleportRecipes(Consumer<FinishedRecipe> provider) {
-
-        CompoundTag
-                OVERWORLD_TAG = new CompoundTag(),
-                NETHER_TAG = new CompoundTag(),
-                END_TAG = new CompoundTag();
-        OVERWORLD_TAG.putString("dimension",Level.OVERWORLD.location().toString());
-        NETHER_TAG.putString("dimension",Level.NETHER.location().toString());
-        END_TAG.putString("dimension",Level.END.location().toString());
-
-        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("overworld")
-                .notConsumable(PartialNBTIngredient.of(OVERWORLD_TAG,GTPItems.DIMENSION_DATA_STICK))
-                .EUt(0)
-                .duration(20*5)
-                .addData("dimension",Level.OVERWORLD.location().getPath())
-                .save(provider);
-
-        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("overworld_with_coordinate")
-                .notConsumable(PartialNBTIngredient.of(OVERWORLD_TAG,GTPItems.DIMENSION_DATA_RECORDER))
-                .EUt(0)
-                .duration(20*5)
-                .addData("dimension",Level.OVERWORLD.location().getPath())
-                .save(provider);
-
-        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("nether")
-                .notConsumable(PartialNBTIngredient.of(NETHER_TAG,GTPItems.DIMENSION_DATA_STICK))
-                .EUt(0)
-                .duration(20*5)
-                .addData("dimension",Level.NETHER.location().getPath())
-                .save(provider);
-
-        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("nether_with_coordinate")
-                .notConsumable(PartialNBTIngredient.of(NETHER_TAG,GTPItems.DIMENSION_DATA_RECORDER))
-                .EUt(0)
-                .duration(20*5)
-                .addData("dimension",Level.NETHER.location().getPath())
-                .save(provider);
-
-        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("end")
-                .notConsumable(PartialNBTIngredient.of(END_TAG,GTPItems.DIMENSION_DATA_STICK))
-                .EUt(32)
-                .duration(20*5)
-                .addData("dimension",Level.END.location().getPath())
-                .save(provider);
+        registerMultidimensionalTeleportRecipe("overworld",Level.OVERWORLD.location(),0,5*20,provider);
+        registerMultidimensionalTeleportRecipe("nether",Level.NETHER.location(),0,5*20,provider);
+        registerMultidimensionalTeleportRecipe("end",Level.END.location(),32,5*20,provider);
 
         if (LDLib.isModLoaded("aether")){
-            CompoundTag AETHER_TAG = new CompoundTag();
-            AETHER_TAG.putString("dimension",AetherDimensions.AETHER_LEVEL.location().toString());
-
-            GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("aether")
-                    .notConsumable(PartialNBTIngredient.of(AETHER_TAG,GTPItems.DIMENSION_DATA_STICK))
-                    .EUt(32)
-                    .duration(20*5)
-                    .addData("dimension",AetherDimensions.AETHER_LEVEL.location().getPath())
-                    .save(provider);
+            registerMultidimensionalTeleportRecipe("aether",AetherDimensions.AETHER_LEVEL.location(),32,20*5,provider);
         }
 
         if (LDLib.isModLoaded("twilightforest")){
-            CompoundTag TWILIGHT_TAG = new CompoundTag();
-            TWILIGHT_TAG.putString("dimension",TFGenerationSettings.DIMENSION.toString());
-
-            GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("twilight")
-                    .notConsumable(PartialNBTIngredient.of(TWILIGHT_TAG,GTPItems.DIMENSION_DATA_STICK))
-                    .EUt(32)
-                    .duration(20*5)
-                    .addData("dimension",TFGenerationSettings.DIMENSION.getPath())
-                    .save(provider);
+            registerMultidimensionalTeleportRecipe("twilight",TFGenerationSettings.DIMENSION,32,20*5,provider);
         }
-
-
-
-
-
 
 //        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder("overworld")
 //                .notConsumable(StrictNBTIngredient.of(putDimensionNbt(GTPItems.DIMENSION_DATA_STICK.asStack(),Level.OVERWORLD.location())))
@@ -171,7 +112,23 @@ public class GTPRecipes {
                 .save(provider);
     }
 
-    private static void registerMultidimensionalTeleportRecipe(){
+    private static void registerMultidimensionalTeleportRecipe(String id, ResourceLocation dimension, long eut, int duration, Consumer<FinishedRecipe> provider){
+        CompoundTag tag = new CompoundTag();
+        tag.putString("dimension",dimension.toString());
+
+        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id+"_data_stick")
+                .notConsumable(PartialNBTIngredient.of(tag,GTPItems.DIMENSION_DATA_STICK))
+                .EUt(eut)
+                .duration(duration)
+                .addData("dimension",dimension.getPath())
+                .save(provider);
+
+        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id+"_data_recorder")
+                .notConsumable(PartialNBTIngredient.of(tag,GTPItems.DIMENSION_DATA_RECORDER))
+                .EUt(eut)
+                .duration(duration)
+                .addData("dimension",dimension.getPath())
+                .save(provider);
 
     }
 }

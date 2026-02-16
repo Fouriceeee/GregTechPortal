@@ -13,6 +13,8 @@
   "block.gtportal.simple_overworld_portal_frame": "Simple Overworld Portal Frame",
   "block.gtportal.twilight_portal_block": "Twilight Portal Block",
   "gtceu.multidimensional_teleport_recipe": "Multidimensional Teleport Recipe",
+  "gtceu.nether_teleport_recipe": "Nether Teleport Recipe",
+  "gtceu.overworld_teleport_recipe": "Overworld Teleport Recipe",
   "gtportal.clientmessage.banned_structure": "The structure is banned. Check the Quest Book for more information.",
   "gtportal.creativemodetab.dimension_data_sticks": "Dimension Data Sticks",
   "gtportal.creativemodetab.main": "GT Portal",

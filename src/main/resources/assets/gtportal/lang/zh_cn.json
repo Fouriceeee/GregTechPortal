@@ -13,6 +13,8 @@
   "block.gtportal.simple_overworld_portal_frame": "简易主世界传送门框架",
   "block.gtportal.twilight_portal_block": "暮色传送门方块",
   "gtceu.multidimensional_teleport_recipe": "多维度传送门传送配方",
+  "gtceu.nether_teleport_recipe": "下界传送配方",
+  "gtceu.overworld_teleport_recipe": "主世界传送配方",
   "gtportal.clientmessage.banned_structure": "该结构已被禁用.请查看任务书获取有关传送门的更多信息.",
   "gtportal.creativemodetab.dimension_data_sticks": "维度数据条",
   "gtportal.creativemodetab.main": "GT 传送门",
