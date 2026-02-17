@@ -38,7 +38,7 @@ public class GTPortalAddon implements IGTAddon {
             MultidimensionalPortalControllerMachine.MAP.put(
                     AetherDimensions.AETHER_LEVEL.location(),
                     Pair.of(
-                            GTPBlocks.AETHER_PORTAL_BLOCK,
+                            GTPBlocks.AETHER_PORTAL_BLOCK::get,
                             (entity, currWorld, destWorld, coordinate) ->
                                     entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate, Blocks.GLOWSTONE))
                     ));
@@ -48,7 +48,7 @@ public class GTPortalAddon implements IGTAddon {
             MultidimensionalPortalControllerMachine.MAP.put(
                     TFGenerationSettings.DIMENSION,
                     Pair.of(
-                            GTPBlocks.TWILIGHT_PORTAL_BLOCK,
+                            GTPBlocks.TWILIGHT_PORTAL_BLOCK::get,
                             (entity, currWorld, destWorld, coordinate) ->
                                     entity.changeDimension(destWorld,new TwilightTeleporter(currWorld,coordinate, TFBlocks.ROOT_BLOCK.get(),entity))
                     ));

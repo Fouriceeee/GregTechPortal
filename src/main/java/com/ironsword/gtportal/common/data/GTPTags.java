@@ -7,5 +7,5 @@ import net.minecraft.world.level.block.Block;
 
 public class GTPTags {
 
-    //public static final TagKey<Block> PORTAL = TagKey.create(BuiltInRegistries.BLOCK.key(), GTPortal.id("portal"));
+    public static final TagKey<Block> PORTAL_BLOCKS = TagKey.create(BuiltInRegistries.BLOCK.key(), GTPortal.id("portal_blocks"));
 }

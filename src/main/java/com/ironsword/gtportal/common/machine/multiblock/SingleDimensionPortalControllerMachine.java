@@ -3,9 +3,11 @@ package com.ironsword.gtportal.common.machine.multiblock;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
+import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
@@ -19,6 +21,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +56,11 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     }
 
     @Override
+    protected RecipeLogic createRecipeLogic(Object... args) {
+        return new PortalLogic(this);
+    }
+
+    @Override
     public @NotNull Set<BlockPos> saveOffsets() {
 //        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
 //
@@ -78,6 +87,25 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         return offsets;
     }
 
+    public Set<BlockPos> getPortalPoses(){
+        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+
+        BlockPos center = getPos();
+
+        Set<BlockPos> poses = new HashSet<>();
+
+        for (int i=0;i<3;i++){
+            center = center.relative(up);
+            poses.add(center);
+            poses.add(center.relative(clockwise));
+            poses.add(center.relative(counterClockwise));
+        }
+
+        return poses;
+    }
+
     @Override
     public void onLoad() {
         super.onLoad();
@@ -100,6 +128,7 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
+        destroyPortalBlock();
         unsubscribe(teleportSubscription);
         teleportSubscription = null;
         IBlockRenderMulti.super.onStructureInvalid();
@@ -110,7 +139,42 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         if (recipe == null) return false;
         if (!super.beforeWorking(recipe)) return false;
 
-        return !getLevel().dimension().location().equals(dimension);
+        if (getLevel().dimension().location().equals(dimension)){
+            return false;
+        }else {
+            placePortalBlock();
+            return true;
+        }
+    }
+
+    @Override
+    public void afterWorking() {
+        fillAir();
+        super.afterWorking();
+    }
+
+    protected void placePortalBlock(){
+        if (getLevel() instanceof ServerLevel){
+            for (var pos:getPortalPoses()){
+                getLevel().setBlockAndUpdate(pos,MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getFirst().get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
+            }
+        }
+    }
+
+    protected void fillAir(){
+        if (getLevel() instanceof ServerLevel){
+            for (var pos:getPortalPoses()){
+                getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            }
+        }
+    }
+
+    protected void destroyPortalBlock(){
+        if (getLevel() instanceof ServerLevel){
+            for (var pos:getPortalPoses()){
+                getLevel().destroyBlock(pos,false);
+            }
+        }
     }
 
     protected void teleportEntities(){

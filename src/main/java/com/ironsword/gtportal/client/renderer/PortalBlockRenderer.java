@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRender;
 import com.gregtechceu.gtceu.client.renderer.machine.DynamicRenderType;
 import com.gregtechceu.gtceu.client.util.RenderUtil;
+import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -59,6 +60,10 @@ public class PortalBlockRenderer extends DynamicRender<IBlockRenderMulti, Portal
 
     @Override
     public void render(IBlockRenderMulti machine, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+
+        if(GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks) {
+            return;
+        }
 
         if (!machine.isFormed() || machine.getRenderBlockOffsets() == null){
             return;

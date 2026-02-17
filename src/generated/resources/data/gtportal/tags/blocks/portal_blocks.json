@@ -1,0 +1,10 @@
+{
+  "values": [
+    "gtportal:overworld_portal_block",
+    "gtportal:nether_portal_block",
+    "gtportal:end_portal_block",
+    "gtportal:empty_portal_block",
+    "gtportal:aether_portal_block",
+    "gtportal:twilight_portal_block"
+  ]
+}

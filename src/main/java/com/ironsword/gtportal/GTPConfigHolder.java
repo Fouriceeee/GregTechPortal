@@ -22,6 +22,9 @@ public class GTPConfigHolder {
     @Configurable
     public PortalGateConfigs portalGateConfigs = new PortalGateConfigs();
 
+    @Configurable
+    public PortalBlockConfigs portalBlockConfigs = new PortalBlockConfigs();
+
     public static class PortalGateConfigs {
 
         @Configurable
@@ -39,5 +42,12 @@ public class GTPConfigHolder {
         @Configurable
         @Configurable.Comment({"Whether to allow players to build normal Aether portal gate.","Default: false" })
         public boolean allowVanillaAetherPortalGate = false;
+    }
+
+    public static class PortalBlockConfigs {
+
+        @Configurable
+        @Configurable.Comment({"Whether to allow players to build normal Aether portal gate.","Default: true"})
+        public boolean generatePortalBlocks = true;
     }
 }

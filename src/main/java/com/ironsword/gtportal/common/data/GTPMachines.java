@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.client.renderer.PortalBlockRenderer;
@@ -32,6 +33,7 @@ public class GTPMachines {
             .multiblock("multidimensional_portal_controller", MultidimensionalPortalControllerMachine::new)
             .rotationState(RotationState.ALL)
             .recipeType(GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE)
+            .recipeModifier(RecipeModifier.NO_MODIFIER)
             .appearanceBlock(()->GTPBlocks.MULTIDIMENSIONAL_PORTAL_FRAME.get())
             .pattern(definition-> FactoryBlockPattern.start()
                     .aisle( "XXPXX",
@@ -42,7 +44,8 @@ public class GTPMachines {
                     .where('X',blocks(GTPBlocks.MULTIDIMENSIONAL_PORTAL_FRAME.get())
                             .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMaxGlobalLimited(1))
                             .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setExactLimit(1)))
-                    .where(' ', Predicates.air())
+                    .where(' ', Predicates.air()
+                            .or(Predicates.blockTag(GTPTags.PORTAL_BLOCKS)))
                     .where('P',Predicates.controller(blocks(definition.getBlock())))
                     .build()
             )
@@ -58,6 +61,7 @@ public class GTPMachines {
             .multiblock("simple_overworld_portal_controller",iMachineBlockEntity -> new SingleDimensionPortalControllerMachine(iMachineBlockEntity, Level.OVERWORLD.location()))
             .rotationState(RotationState.ALL)
             .recipeType(GTPRecipeTypes.OVERWORLD_TELEPORT_RECIPE_TYPE)
+            .recipeModifier(RecipeModifier.NO_MODIFIER)
             .appearanceBlock(() -> GTPBlocks.SIMPLE_OVERWORLD_PORTAL_FRAME.get())
             .pattern(definition-> FactoryBlockPattern.start()
                     .aisle( "XXPXX",
@@ -67,7 +71,8 @@ public class GTPMachines {
                             "XXXXX")
                     .where('X',blocks(GTPBlocks.SIMPLE_OVERWORLD_PORTAL_FRAME.get())
                             .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setExactLimit(1)))
-                    .where(' ', Predicates.air())
+                    .where(' ', Predicates.air()
+                            .or(Predicates.blockTag(GTPTags.PORTAL_BLOCKS)))
                     .where('P',Predicates.controller(blocks(definition.getBlock())))
                     .build()
             )
@@ -83,6 +88,7 @@ public class GTPMachines {
             .multiblock("simple_nether_portal_controller",iMachineBlockEntity -> new SingleDimensionPortalControllerMachine(iMachineBlockEntity, Level.NETHER.location()))
             .rotationState(RotationState.ALL)
             .recipeType(GTPRecipeTypes.NETHER_TELEPORT_RECIPE_TYPE)
+            .recipeModifier(RecipeModifier.NO_MODIFIER)
             .appearanceBlock(() -> GTPBlocks.SIMPLE_NETHER_PORTAL_FRAME.get())
             .pattern(definition-> FactoryBlockPattern.start()
                     .aisle( "XXPXX",
@@ -92,7 +98,8 @@ public class GTPMachines {
                             "XXXXX")
                     .where('X',blocks(GTPBlocks.SIMPLE_NETHER_PORTAL_FRAME.get())
                             .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setExactLimit(1)))
-                    .where(' ', Predicates.air())
+                    .where(' ', Predicates.air()
+                            .or(Predicates.blockTag(GTPTags.PORTAL_BLOCKS)))
                     .where('P',Predicates.controller(blocks(definition.getBlock())))
                     .build()
             )

@@ -9,11 +9,12 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
-import com.ironsword.gtportal.common.machine.multiblock.logic.MultidimensionalPortalLogic;
+import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.Utils;
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
@@ -35,6 +36,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,17 +46,17 @@ import java.util.function.Supplier;
 
 public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
-    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity, currWorld, destWorld, coordinate) -> {});
+    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK::get,(entity, currWorld, destWorld, coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
-                    GTPBlocks.OVERWORLD_PORTAL_BLOCK,
+                    GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld, coordinate) ->
                             entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
-                    GTPBlocks.NETHER_PORTAL_BLOCK,
+                    GTPBlocks.NETHER_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
-                    GTPBlocks.END_PORTAL_BLOCK,
+                    GTPBlocks.END_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld, coordinate) -> {
                         if (coordinate == null){
                             entity.changeDimension(destWorld);
@@ -86,6 +88,11 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
 
     public static ManagedFieldHolder getManagedFieldHolder() {
         return MANAGED_FIELD_HOLDER;
+    }
+
+    @Override
+    protected RecipeLogic createRecipeLogic(Object... args) {
+        return new PortalLogic(this);
     }
 
     @Override
@@ -126,6 +133,25 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         return offsets;
     }
 
+    public Set<BlockPos> getPortalPoses(){
+        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+
+        BlockPos center = getPos();
+
+        Set<BlockPos> poses = new HashSet<>();
+
+        for (int i=0;i<3;i++){
+            center = center.relative(up);
+            poses.add(center);
+            poses.add(center.relative(clockwise));
+            poses.add(center.relative(counterClockwise));
+        }
+
+        return poses;
+    }
+
     @Override
     public void onLoad() {
         super.onLoad();
@@ -148,6 +174,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
+        destroyPortalBlock();
         unsubscribe(teleportSubscription);
         teleportSubscription = null;
         IBlockRenderMulti.super.onStructureInvalid();
@@ -169,13 +196,46 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
 //        return true;
 
         cache = getFirstDimData(recipe);
-        return cache.getFirst() != null || getLevel().dimension().location().equals(cache.getFirst());
+
+        if (cache.getFirst() == null || getLevel().dimension().location().equals(cache.getFirst())){
+            return false;
+        }
+        else {
+            placePortalBlock();
+            return true;
+        }
+        //return cache.getFirst() != null || getLevel().dimension().location().equals(cache.getFirst());
     }
 
     @Override
     public void afterWorking() {
         clearCache();
+        fillAir();
         super.afterWorking();
+    }
+
+    protected void placePortalBlock(){
+        if (getLevel() instanceof ServerLevel){
+            for (var pos:getPortalPoses()){
+                getLevel().setBlockAndUpdate(pos,MAP.getOrDefault(cache.getFirst(),EMPTY).getFirst().get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
+            }
+        }
+    }
+
+    protected void fillAir(){
+        if (getLevel() instanceof ServerLevel){
+            for (var pos:getPortalPoses()){
+                getLevel().setBlockAndUpdate(pos,Blocks.AIR.defaultBlockState());
+            }
+        }
+    }
+
+    protected void destroyPortalBlock(){
+        if (getLevel() instanceof ServerLevel){
+            for (var pos:getPortalPoses()){
+                getLevel().destroyBlock(pos,false);
+            }
+        }
     }
 
     protected Pair<ResourceLocation, Vec3i> getFirstDimData(@NotNull GTRecipe recipe){

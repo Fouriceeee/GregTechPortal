@@ -140,6 +140,7 @@ public class GTPBlocks {
                 .addLayer(()->RenderType::translucent)
                 .lang(name)
                 .blockstate(GTPModels.createPortalBlockModel(id,texture))
+                .tag(GTPTags.PORTAL_BLOCKS)
                 .register();
     }
 
