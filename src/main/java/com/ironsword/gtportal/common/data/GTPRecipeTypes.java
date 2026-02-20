@@ -16,21 +16,16 @@ public class GTPRecipeTypes {
     public static final GTRecipeType MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE = GTRecipeTypes.register("multidimensional_teleport_recipe",GTRecipeTypes.MULTIBLOCK)
             .setMaxIOSize(1,0,0,0)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
-            .setIconSupplier(()->GTPItems.DIMENSION_DATA_STICK.asStack())
+            .setIconSupplier(()->GTPItems.DIMENSION_DATA_RECORDER.asStack())
             .setEUIO(IO.IN)
             .addDataInfo(data-> LocalizationUtils.format("gtportal.machine.tooltip.dimension") + ": " + LocalizationUtils.format("gtportal.dimension."+data.getString("dimension")));
 
-    public static final GTRecipeType OVERWORLD_TELEPORT_RECIPE_TYPE = GTRecipeTypes.register("overworld_teleport_recipe",GTRecipeTypes.MULTIBLOCK)
+    public static final GTRecipeType SINIGLE_DIMENSIONAL_TELEPORT_RECIPE_TYPE = GTRecipeTypes.register("single_dimensional_teleport_recipe",GTRecipeTypes.MULTIBLOCK)
             .setMaxIOSize(1,0,0,0)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
-            .setIconSupplier(()-> Blocks.GRASS_BLOCK.asItem().getDefaultInstance())
-            .setEUIO(IO.IN);
-
-    public static final GTRecipeType NETHER_TELEPORT_RECIPE_TYPE = GTRecipeTypes.register("nether_teleport_recipe",GTRecipeTypes.MULTIBLOCK)
-            .setMaxIOSize(1,0,0,0)
-            .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
-            .setIconSupplier(()-> Blocks.NETHERRACK.asItem().getDefaultInstance())
-            .setEUIO(IO.IN);
+            .setIconSupplier(()->GTPItems.DIMENSION_DATA_STICK.asStack())
+            .setEUIO(IO.IN)
+            .addDataInfo(data-> LocalizationUtils.format("gtportal.machine.tooltip.dimension") + ": " + LocalizationUtils.format("gtportal.dimension."+new ResourceLocation(data.getString("dimension")).getPath()));
 
     public static void init() {
 

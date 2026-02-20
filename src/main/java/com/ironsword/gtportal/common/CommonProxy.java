@@ -5,10 +5,13 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.GTPortal;
+import com.ironsword.gtportal.common.data.GTPBlocks;
+import com.ironsword.gtportal.common.data.GTPItems;
 import com.ironsword.gtportal.common.data.GTPMachines;
 import com.ironsword.gtportal.common.data.GTPRecipeTypes;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
+import com.ironsword.gtportal.data.GTPDatagen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -24,6 +27,10 @@ public class CommonProxy {
 
     public static void init(){
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        GTPDatagen.initPre();
+        GTPItems.init();
+        GTPBlocks.init();
 
         bus.addGenericListener(MachineDefinition.class,CommonProxy::registerMachines);
         bus.addGenericListener(GTRecipeType.class,CommonProxy::registerRecipeTypes);

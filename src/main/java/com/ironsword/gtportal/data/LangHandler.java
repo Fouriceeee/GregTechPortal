@@ -32,8 +32,7 @@ public class LangHandler extends com.gregtechceu.gtceu.data.lang.LangHandler {
 
         //jei
         provider.add("gtceu.multidimensional_teleport_recipe","Multidimensional Teleport Recipe");
-        provider.add("gtceu.overworld_teleport_recipe","Overworld Teleport Recipe");
-        provider.add("gtceu.nether_teleport_recipe","Nether Teleport Recipe");
+        provider.add("gtceu.single_dimensional_teleport_recipe","Single Dimensional Teleport Recipe");
 
     }
 }

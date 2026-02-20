@@ -139,7 +139,7 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         if (recipe == null) return false;
         if (!super.beforeWorking(recipe)) return false;
 
-        if (getLevel().dimension().location().equals(dimension)){
+        if (getLevel().dimension().location().equals(dimension)||!recipe.data.getString("dimension").equals(dimension.toString())){
             return false;
         }else {
             placePortalBlock();

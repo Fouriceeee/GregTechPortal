@@ -30,10 +30,6 @@ public class GTPortalAddon implements IGTAddon {
 
     @Override
     public void initializeAddon() {
-        GTPDatagen.initPre();
-        GTPItems.init();
-        GTPBlocks.init();
-
         if (LDLib.isModLoaded("aether")){
             MultidimensionalPortalControllerMachine.MAP.put(
                     AetherDimensions.AETHER_LEVEL.location(),
@@ -59,6 +55,8 @@ public class GTPortalAddon implements IGTAddon {
     public void addRecipes(Consumer<FinishedRecipe> provider) {
         GTPRecipes.init(provider);
     }
+
+
 
     @Override
     public String addonModId() {

@@ -174,7 +174,9 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        destroyPortalBlock();
+        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
+            destroyPortalBlock();
+        }
         unsubscribe(teleportSubscription);
         teleportSubscription = null;
         IBlockRenderMulti.super.onStructureInvalid();
@@ -201,7 +203,9 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
             return false;
         }
         else {
-            placePortalBlock();
+            if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
+                placePortalBlock();
+            }
             return true;
         }
         //return cache.getFirst() != null || getLevel().dimension().location().equals(cache.getFirst());
@@ -210,7 +214,9 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Override
     public void afterWorking() {
         clearCache();
-        fillAir();
+        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
+            fillAir();
+        }
         super.afterWorking();
     }
 

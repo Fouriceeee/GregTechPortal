@@ -1,0 +1,9 @@
+{
+  "values": [
+    "gtportal:simple_overworld_portal_frame",
+    "gtportal:simple_nether_portal_frame",
+    "gtportal:simple_end_portal_frame",
+    "gtportal:simple_aether_portal_frame",
+    "gtportal:simple_twilight_portal_frame"
+  ]
+}

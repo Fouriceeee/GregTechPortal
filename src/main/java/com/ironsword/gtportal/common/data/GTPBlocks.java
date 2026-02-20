@@ -1,11 +1,14 @@
 package com.ironsword.gtportal.common.data;
 
 import com.aetherteam.aether.Aether;
+import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
+import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
 import com.ironsword.gtportal.common.block.PortalBlock;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
+import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.lowdragmc.lowdraglib.LDLib;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
@@ -115,25 +118,35 @@ public class GTPBlocks {
             .simpleItem()
             .register();
 
-    public static final BlockEntry<Block> SIMPLE_OVERWORLD_PORTAL_FRAME = REGISTRATE
-            .block("simple_overworld_portal_frame",Block::new)
-            .initialProperties(()->Blocks.OBSIDIAN)
-            .addLayer(()->RenderType::solid)
-            .lang("Simple Overworld Portal Frame")
-            .exBlockstate(GTModels.cubeAllModel(GTPortal.id("block/simple_overworld_portal_frame")))
-            .simpleItem()
-            .register();
+    public static final BlockEntry<Block> SIMPLE_OVERWORLD_PORTAL_FRAME =
+            registerPortalFrame(
+            "simple_overworld_portal_frame",
+            "Simple Overworld Portal Frame",
+            GTPortal.id("block/simple_overworld_portal_frame")
+    );
 
-    public static final BlockEntry<Block> SIMPLE_NETHER_PORTAL_FRAME = REGISTRATE
-            .block("simple_nether_portal_frame",Block::new)
-            .initialProperties(()->Blocks.OBSIDIAN)
-            .addLayer(()->RenderType::solid)
-            .lang("Simple Nether Portal Frame")
-            .exBlockstate(GTModels.cubeAllModel(GTPortal.id("block/simple_nether_portal_frame")))
-            .simpleItem()
-            .register();
 
-    public static BlockEntry<PortalBlock> registerPortalBlock(String id, String name, ResourceLocation texture){
+    public static final BlockEntry<Block> SIMPLE_NETHER_PORTAL_FRAME =
+            registerPortalFrame(
+            "simple_nether_portal_frame",
+            "Simple Nether Portal Frame",
+            GTPortal.id("block/simple_nether_portal_frame")
+    );
+
+    public static final BlockEntry<Block> SIMPLE_END_PORTAL_FRAME =
+            registerPortalFrame(
+                    "simple_end_portal_frame",
+                    "Simple End Portal Frame",
+                    GTPortal.id("block/end")
+            );
+
+    public static BlockEntry<Block> SIMPLE_AETHER_PORTAL_FRAME;
+    public static BlockEntry<Block> SIMPLE_TWILIGHT_PORTAL_FRAME;
+
+    public static BlockEntry<PortalBlock> registerPortalBlock(
+            String id,
+            String name,
+            ResourceLocation texture){
         return REGISTRATE
                 .block(id, PortalBlock::new)
                 .initialProperties(()->Blocks.NETHER_PORTAL)
@@ -144,12 +157,30 @@ public class GTPBlocks {
                 .register();
     }
 
+    public static BlockEntry<Block> registerPortalFrame(
+            String id,
+            String name,
+            ResourceLocation texture){
+        return REGISTRATE
+                .block(id,Block::new)
+                .initialProperties(() -> Blocks.IRON_BLOCK)
+                .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
+                .addLayer(()->RenderType::solid)
+                .lang(name)
+                .exBlockstate(GTModels.cubeAllModel(texture))
+                .tag(CustomTags.MINEABLE_WITH_CONFIG_VALID_PICKAXE_WRENCH)
+                .simpleItem()
+                .register();
+    }
+
     public static void init() {
         if (LDLib.isModLoaded("aether")){
-            AETHER_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("aether_portal_block","Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
+            AETHER_PORTAL_BLOCK = registerPortalBlock("aether_portal_block","Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
+            SIMPLE_AETHER_PORTAL_FRAME = registerPortalFrame("simple_aether_portal_frame", "Simple Aether Portal Frame", GTPortal.id("block/aether"));
         }
         if (LDLib.isModLoaded("twilightforest")){
-            TWILIGHT_PORTAL_BLOCK = GTPBlocks.registerPortalBlock("twilight_portal_block","Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
+            TWILIGHT_PORTAL_BLOCK = registerPortalBlock("twilight_portal_block","Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
+            SIMPLE_TWILIGHT_PORTAL_FRAME = registerPortalFrame("simple_twilight_portal_frame","Simple Twilight Portal Frame",GTPortal.id("block/twilight"));
         }
     }
 
