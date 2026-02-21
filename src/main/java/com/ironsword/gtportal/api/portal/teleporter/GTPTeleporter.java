@@ -3,6 +3,7 @@ package com.ironsword.gtportal.api.portal.teleporter;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.ironsword.gtportal.common.data.GTPPoiTypes;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -69,8 +70,20 @@ public class GTPTeleporter implements ITeleporter {
             return makePortalInfo(entity, coordinate);
         }
 
-        BlockPos currPos = getScaledPos(destWorld,this.currPos),
-                destPos = searchDestPos(destWorld,currPos);
+        BlockPos currPos = getScaledPos(destWorld,this.currPos);
+
+        Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> pair = test(destWorld,currPos,destWorld.getWorldBorder());
+
+        if (pair.isPresent()){
+            BlockPos pos = pair.get().getSecond().minCorner;
+            if (pair.get().getFirst().isHorizontal()){
+                return makePortalInfo(entity,pos.relative(pair.get().getFirst(),1));
+            }else {
+                return makePortalInfo(entity,pos.offset(-1,1,-1));
+            }
+        }
+
+        BlockPos destPos = searchDestPos(destWorld,currPos);
 
         if (destPos == null){
             destPos = destWorld.getWorldBorder().isWithinBounds(currPos)
@@ -81,6 +94,22 @@ public class GTPTeleporter implements ITeleporter {
         }
 
         return makePortalInfo(entity,destPos);
+    }
+
+    protected Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> test(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
+        PoiManager manager = destWorld.getPoiManager();
+        manager.ensureLoadedAndValid(destWorld, scaledPos, 128);
+        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POI_TYPE_MAP.getOrDefault(destWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,128, PoiManager.Occupancy.ANY)
+                .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
+                .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
+                .filter((poiRecord) -> destWorld.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.AXIS))
+                .findFirst();
+        return optionalPoi.map((poiRecord) -> {
+            BlockPos poiPos = poiRecord.getPos();
+            destWorld.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(poiPos), 3, poiPos);
+            BlockState blockstate = destWorld.getBlockState(poiPos);
+            return Pair.of(blockstate.getValue(BlockStateProperties.AXIS),BlockUtil.getLargestRectangleAround(poiPos, blockstate.getValue(BlockStateProperties.AXIS), 21, Direction.Axis.Y, 21, (blockPos) -> destWorld.getBlockState(blockPos) == blockstate));
+        });
     }
 
     protected Optional<BlockUtil.FoundRectangle> findPortalControllerAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){

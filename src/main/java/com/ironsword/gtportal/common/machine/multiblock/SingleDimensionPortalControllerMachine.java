@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.Utils;
@@ -128,7 +129,9 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        destroyPortalBlock();
+        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
+            destroyPortalBlock();
+        }
         unsubscribe(teleportSubscription);
         teleportSubscription = null;
         IBlockRenderMulti.super.onStructureInvalid();
@@ -142,14 +145,18 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         if (getLevel().dimension().location().equals(dimension)||!recipe.data.getString("dimension").equals(dimension.toString())){
             return false;
         }else {
-            placePortalBlock();
+            if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
+                placePortalBlock();
+            }
             return true;
         }
     }
 
     @Override
     public void afterWorking() {
-        fillAir();
+        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
+            fillAir();
+        }
         super.afterWorking();
     }
 
