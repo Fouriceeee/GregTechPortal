@@ -5,10 +5,7 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.GTPortal;
-import com.ironsword.gtportal.common.data.GTPBlocks;
-import com.ironsword.gtportal.common.data.GTPItems;
-import com.ironsword.gtportal.common.data.GTPMachines;
-import com.ironsword.gtportal.common.data.GTPRecipeTypes;
+import com.ironsword.gtportal.common.data.*;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.ironsword.gtportal.data.GTPDatagen;
@@ -35,6 +32,7 @@ public class CommonProxy {
         bus.addGenericListener(MachineDefinition.class,CommonProxy::registerMachines);
         bus.addGenericListener(GTRecipeType.class,CommonProxy::registerRecipeTypes);
 
+        GTPPoiTypes.register(bus);
         GTPCreativeModeTabs.init();
         GTPRegistries.REGISTRATE.registerRegistrate();
         GTPConfigHolder.init();

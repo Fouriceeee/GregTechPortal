@@ -18,8 +18,8 @@ import java.util.function.Predicate;
 public class TwilightTeleporter extends GTPTeleporter{
     private Entity entity;
 
-    public TwilightTeleporter(ServerLevel world, @Nullable Vec3i pos, Block block, Entity entity) {
-        super(world, pos, block);
+    public TwilightTeleporter(ServerLevel world, BlockPos controllerPos,@Nullable Vec3i pos, Block block, Entity entity) {
+        super(world,controllerPos, pos, block);
         this.entity = entity;
     }
 
@@ -28,7 +28,7 @@ public class TwilightTeleporter extends GTPTeleporter{
         ServerLevel tfDim = destWorld.getServer().getLevel(TFGenerationSettings.DIMENSION_KEY);
         double scale = tfDim == null ? 0.125D : tfDim.dimensionType().coordinateScale();
         scale = destWorld.dimension().equals(TFGenerationSettings.DIMENSION_KEY) ? 1F / scale : scale;
-        return destWorld.getWorldBorder().clampToBounds(entity.blockPosition().getX() * scale, entity.blockPosition().getY(), entity.blockPosition().getZ() * scale);
+        return destWorld.getWorldBorder().clampToBounds(currentPos.getX() * scale, currentPos.getY(), currentPos.getZ() * scale);
     }
 
     //反射，爽！反射，爽！反射，爽！

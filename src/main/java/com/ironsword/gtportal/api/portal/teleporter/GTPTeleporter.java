@@ -1,16 +1,28 @@
 package com.ironsword.gtportal.api.portal.teleporter;
 
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
+import com.ironsword.gtportal.common.data.GTPPoiTypes;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
+import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiRecord;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.PortalInfo;
@@ -18,16 +30,28 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.ITeleporter;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class GTPTeleporter implements ITeleporter {
+    public static final Map<ResourceLocation, ResourceKey<PoiType>> POI_TYPE_MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(), GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey(),
+            Level.NETHER.location(), GTPPoiTypes.NETHER_PORTAL_POI.getKey(),
+            Level.END.location(), GTPPoiTypes.END_PORTAL_POI.getKey()
+    ));
+
     protected final ServerLevel currWorld;
-    protected BlockPos controllerPos = null;
+    protected final BlockPos currPos;
+    protected BlockPos coordinate = null;
     protected final Block platformBlock;
 
-    public GTPTeleporter(ServerLevel world, @Nullable Vec3i pos, Block block){
+    public GTPTeleporter(ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block){
         currWorld = world;
-        controllerPos = pos == null ? null : new BlockPos(pos);
+        currPos = controllerPos;
+        this.coordinate = coordinate == null ? null : new BlockPos(coordinate);
         platformBlock = block;
     }
 
@@ -37,15 +61,15 @@ public class GTPTeleporter implements ITeleporter {
 
     @Override
     public @Nullable PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel, PortalInfo> defaultPortalInfo) {
-        if (controllerPos != null){
-            BlockEntity blockEntity = destWorld.getBlockEntity(controllerPos);
+        if (coordinate != null){
+            BlockEntity blockEntity = destWorld.getBlockEntity(coordinate);
             if (blockEntity instanceof MetaMachineBlockEntity machineEntity && machineEntity.getMetaMachine() instanceof MultidimensionalPortalControllerMachine portalMachine){
                 return makePortalInfo(entity,portalMachine.getPos().relative(portalMachine.getFrontFacing()));
             }
-            return makePortalInfo(entity,controllerPos);
+            return makePortalInfo(entity, coordinate);
         }
 
-        BlockPos currPos = getScaledPos(destWorld,entity.blockPosition()),
+        BlockPos currPos = getScaledPos(destWorld,this.currPos),
                 destPos = searchDestPos(destWorld,currPos);
 
         if (destPos == null){
@@ -57,6 +81,22 @@ public class GTPTeleporter implements ITeleporter {
         }
 
         return makePortalInfo(entity,destPos);
+    }
+
+    protected Optional<BlockUtil.FoundRectangle> findPortalControllerAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
+        PoiManager manager = destWorld.getPoiManager();
+        manager.ensureLoadedAndValid(destWorld, scaledPos, 128);
+        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POI_TYPE_MAP.getOrDefault(destWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,128, PoiManager.Occupancy.ANY)
+                .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
+                .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
+                .filter((poiRecord) -> destWorld.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.AXIS))
+                .findFirst();
+        return optionalPoi.map((poiRecord) -> {
+            BlockPos poiPos = poiRecord.getPos();
+            destWorld.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(poiPos), 3, poiPos);
+            BlockState blockstate = destWorld.getBlockState(poiPos);
+            return BlockUtil.getLargestRectangleAround(poiPos, blockstate.getValue(BlockStateProperties.AXIS), 21, Direction.Axis.Y, 21, (blockPos) -> destWorld.getBlockState(blockPos) == blockstate);
+        });
     }
 
     protected BlockPos searchDestPos(ServerLevel destWorld, BlockPos scaledPos){

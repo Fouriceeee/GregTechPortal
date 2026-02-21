@@ -196,7 +196,7 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
             if (!(e instanceof Entity) ||!e.canChangeDimensions())
                 return;
 
-            MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,null);
+            MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,getPos(),null);
         });
     }
 }

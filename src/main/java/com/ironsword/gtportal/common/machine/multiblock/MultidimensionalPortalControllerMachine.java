@@ -46,22 +46,22 @@ import java.util.function.Supplier;
 
 public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
-    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK::get,(entity, currWorld, destWorld, coordinate) -> {});
+    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK::get,(entity, currWorld, destWorld, controllerPos,coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
                     GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
-                    (entity, currWorld, destWorld, coordinate) ->
-                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.COBBLESTONE))),
+                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
+                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
                     GTPBlocks.NETHER_PORTAL_BLOCK::get,
-                    (entity, currWorld, destWorld, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.NETHERRACK))),
+                    (entity, currWorld, destWorld,contrllerPos, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
                     GTPBlocks.END_PORTAL_BLOCK::get,
-                    (entity, currWorld, destWorld, coordinate) -> {
+                    (entity, currWorld, destWorld, contrllerPos,coordinate) -> {
                         if (coordinate == null){
                             entity.changeDimension(destWorld);
                         }else {
-                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,coordinate,Blocks.END_STONE));
+                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.END_STONE));
                         }
                     }
             )
@@ -306,13 +306,13 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
             if (!(e instanceof Entity) ||!e.canChangeDimensions())
                 return;
 
-            MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,cache.getSecond());
+            MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
         });
     }
 
     @FunctionalInterface
     public interface TeleportFunction{
-        void teleport(Entity entity, ServerLevel currWorld, ServerLevel destWorld, @Nullable Vec3i coordinate);
+        void teleport(Entity entity, ServerLevel currWorld, ServerLevel destWorld, BlockPos controllerPos,@Nullable Vec3i coordinate);
     }
 }
 
