@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
+import com.ironsword.gtportal.api.portal.teleporter.EndTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
@@ -54,17 +55,12 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
                             entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
                     GTPBlocks.NETHER_PORTAL_BLOCK::get,
-                    (entity, currWorld, destWorld,contrllerPos, coordinate) -> entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
+                    (entity, currWorld, destWorld,contrllerPos, coordinate) ->
+                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
                     GTPBlocks.END_PORTAL_BLOCK::get,
-                    (entity, currWorld, destWorld, contrllerPos,coordinate) -> {
-                        if (coordinate == null){
-                            entity.changeDimension(destWorld);
-                        }else {
-                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.END_STONE));
-                        }
-                    }
-            )
+                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
+                            entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
     ));
 
     @Getter
