@@ -23,14 +23,12 @@ public class GTPMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 
-        if (mixinClassName.equals("TFPortalBlockMixin")){
-            return isModLoaded("twilightforest");
-        }
-        if (mixinClassName.equals("DimensionHooksMixin")){
-            return isModLoaded("aether");
-        }
+        return switch (mixinClassName) {
+            case "TFPortalBlockMixin", "TFTeleportAccessor" -> isModLoaded("twilightforest");
+            case "DimensionHooksMixin" -> isModLoaded("aether");
+            default -> true;
+        };
 
-        return true;
     }
 
     @Override
