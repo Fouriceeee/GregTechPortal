@@ -5,22 +5,15 @@ import com.gregtechceu.gtceu.data.recipe.VanillaRecipeHelper;
 import com.lowdragmc.lowdraglib.LDLib;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.PartialNBTIngredient;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
-import org.checkerframework.checker.units.qual.A;
 import twilightforest.world.registration.TFGenerationSettings;
 
-import java.util.Map;
 import java.util.function.Consumer;
-
-import static com.ironsword.gtportal.common.item.component.DimensionDataComponent.putDimensionNbt;
 
 public class GTPRecipes {
 //    public static void createDefaultScannerRecipe(@NotNull String researchId,

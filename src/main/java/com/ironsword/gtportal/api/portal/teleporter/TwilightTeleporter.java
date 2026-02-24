@@ -7,14 +7,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.portal.PortalInfo;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import twilightforest.world.TFTeleporter;
 import twilightforest.world.registration.TFGenerationSettings;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.function.Predicate;
 
 public class TwilightTeleporter extends GTPTeleporter{
     private Entity entity;

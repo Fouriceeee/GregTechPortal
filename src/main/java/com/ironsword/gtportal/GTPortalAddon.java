@@ -7,11 +7,9 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.TwilightTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
-import com.ironsword.gtportal.common.data.GTPItems;
 import com.ironsword.gtportal.common.data.GTPRecipes;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
-import com.ironsword.gtportal.data.GTPDatagen;
 import com.lowdragmc.lowdraglib.LDLib;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -50,6 +48,8 @@ public class GTPortalAddon implements IGTAddon {
                     ));
         }
     }
+
+
 
     @Override
     public void addRecipes(Consumer<FinishedRecipe> provider) {

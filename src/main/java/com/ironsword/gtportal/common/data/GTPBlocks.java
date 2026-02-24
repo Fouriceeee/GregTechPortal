@@ -1,14 +1,12 @@
 package com.ironsword.gtportal.common.data;
 
 import com.aetherteam.aether.Aether;
-import com.gregtechceu.gtceu.common.data.GTBlocks;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 import com.gregtechceu.gtceu.data.recipe.CustomTags;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.common.block.BrokenEndPortalFrameBlock;
 import com.ironsword.gtportal.common.block.PortalBlock;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
-import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.lowdragmc.lowdraglib.LDLib;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
@@ -22,14 +20,6 @@ import net.minecraftforge.client.model.generators.ModelBuilder;
 import static com.ironsword.gtportal.common.registry.GTPRegistries.REGISTRATE;
 
 public class GTPBlocks {
-
-    public static final ResourceLocation
-            EMPTY_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/empty_portal"),
-            OVERWORLD_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/overworld_portal"),
-            NETHER_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/nether_portal"),
-            END_TEXTURE = new ResourceLocation(GTPortal.MODID,"block/portals/end_portal"),
-            AETHER_TEXTURE = new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"),
-            TWILIGHT_TEXTURE = new ResourceLocation("minecraft","block/nether_portal");
 
     static {
         REGISTRATE.creativeModeTab(()-> GTPCreativeModeTabs.GTP_TAB);

@@ -1,6 +1,5 @@
 package com.ironsword.gtportal.common.data;
 
-import com.aetherteam.aether.Aether;
 import com.aetherteam.aether.data.resources.registries.AetherDimensions;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
@@ -10,25 +9,18 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.FactoryBlockPattern;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
-import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
-import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.ironsword.gtportal.GTPortal;
 import com.ironsword.gtportal.client.renderer.PortalBlockRenderer;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
-import com.ironsword.gtportal.common.machine.multiblock.SingleDimensionPortalControllerMachine;
 import com.ironsword.gtportal.common.registry.GTPCreativeModeTabs;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.ironsword.gtportal.utils.MachineUtils;
 import com.lowdragmc.lowdraglib.LDLib;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.Nullable;
 import twilightforest.world.registration.TFGenerationSettings;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static com.gregtechceu.gtceu.api.pattern.Predicates.blocks;
 import static com.gregtechceu.gtceu.common.data.models.GTMachineModels.createWorkableCasingMachineModel;
