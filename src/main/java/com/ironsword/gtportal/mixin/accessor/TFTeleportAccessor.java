@@ -12,7 +12,7 @@ import twilightforest.world.TFTeleporter;
 
 import java.util.function.Predicate;
 
-@Mixin(TFTeleporter.class)
+@Mixin(value = TFTeleporter.class, remap = false)
 public interface TFTeleportAccessor {
 
     @Invoker

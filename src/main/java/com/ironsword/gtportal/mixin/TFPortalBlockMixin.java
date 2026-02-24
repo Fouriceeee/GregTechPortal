@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import twilightforest.block.TFPortalBlock;
 
-@Mixin(TFPortalBlock.class)
+//unused, cause runServer failure
+@Mixin(value = TFPortalBlock.class,remap = false)
 public class TFPortalBlockMixin {
 
     @Inject(
@@ -22,16 +23,14 @@ public class TFPortalBlockMixin {
                     target = "Ltwilightforest/block/TFPortalBlock;causeLightning(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Z)V",
                     shift = At.Shift.AFTER),
             method = "tryToCreatePortal",
-            cancellable = true,
-            remap = false)
+            cancellable = true)
     public void injectTryToCreatePortal(Level level, BlockPos pos, ItemEntity catalyst, @Nullable Player player,CallbackInfoReturnable<Boolean> cir){
         if (GTPConfigHolder.INSTANCE.portalGateConfigs.allowVanillaTwilightForestPortalGate){
             return;
         }
-
         if (player != null){
             player.displayClientMessage(Component.translatable("gtportal.clientmessage.banned_structure"),true);
         }
-        cir.setReturnValue(true);
+        cir.setReturnValue(false);
     }
 }

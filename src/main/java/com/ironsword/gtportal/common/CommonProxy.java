@@ -17,7 +17,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod.EventBusSubscriber(modid = GTPortal.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonProxy {
 
-
     public CommonProxy(){
         init();
     }

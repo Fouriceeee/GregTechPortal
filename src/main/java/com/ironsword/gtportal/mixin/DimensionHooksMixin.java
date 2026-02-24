@@ -20,14 +20,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 
-@Mixin(DimensionHooks.class)
+@Mixin(value = DimensionHooks.class,remap = false)
 public class DimensionHooksMixin {
 
     @Inject(
             method = "createPortal",
             at = @At(value = "INVOKE", target = "Lcom/aetherteam/aether/block/portal/AetherPortalShape;createPortalBlocks()V"),
-            cancellable = true,
-            remap = false
+            cancellable = true
     )
     private static void injectCreatePortal(Player player, Level level, BlockPos pos, @Nullable Direction direction, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<Boolean> cir){
         if (GTPConfigHolder.INSTANCE.portalGateConfigs.allowVanillaAetherPortalGate){
@@ -41,8 +40,7 @@ public class DimensionHooksMixin {
     @Inject(
             method = "detectWaterInFrame",
             at = @At(value = "INVOKE", target = "Lcom/aetherteam/aether/block/portal/AetherPortalShape;createPortalBlocks()V"),
-            cancellable = true,
-            remap = false
+            cancellable = true
     )
     private static void injectDetectWaterInFrame(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState,CallbackInfoReturnable<Boolean> cir){
         if (GTPConfigHolder.INSTANCE.portalGateConfigs.allowVanillaAetherPortalGate){

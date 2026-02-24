@@ -12,7 +12,7 @@ import twilightforest.world.registration.TFGenerationSettings;
 
 
 public class TwilightTeleporter extends GTPTeleporter{
-    private Entity entity;
+    private final Entity entity;
 
     public TwilightTeleporter(ServerLevel world, BlockPos controllerPos,@Nullable Vec3i pos, Block block, Entity entity) {
         super(world,controllerPos, pos, block);
