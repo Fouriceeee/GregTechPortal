@@ -88,7 +88,7 @@ public class GTPMachines {
             "Simple End Portal Controller",
             Level.END.location(),
             GTPBlocks.SIMPLE_END_PORTAL_FRAME,
-            GTPortal.id("block/end"),
+            GTPortal.id("block/simple_end_portal_frame"),
             GTPortal.id("block/portal_controller_overlay"),
             GTPBlocks.END_PORTAL_BLOCK,
             null
@@ -105,7 +105,7 @@ public class GTPMachines {
                     "Simple Aether Portal Controller",
                     AetherDimensions.AETHER_LEVEL.location(),
                     GTPBlocks.SIMPLE_AETHER_PORTAL_FRAME,
-                    GTPortal.id("block/aether"),
+                    GTPortal.id("block/simple_aether_portal_frame"),
                     GTPortal.id("block/portal_controller_overlay"),
                     GTPBlocks.AETHER_PORTAL_BLOCK,
                     null
@@ -117,7 +117,7 @@ public class GTPMachines {
                     "Simple Twilight Portal Controller",
                     TFGenerationSettings.DIMENSION,
                     GTPBlocks.SIMPLE_TWILIGHT_PORTAL_FRAME,
-                    GTPortal.id("block/twilight"),
+                    GTPortal.id("block/simple_twilight_portal_frame"),
                     GTPortal.id("block/portal_controller_overlay"),
                     GTPBlocks.TWILIGHT_PORTAL_BLOCK,
                     null

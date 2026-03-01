@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "gtportal:block/aether"
+    "all": "gtportal:block/simple_aether_portal_frame"
   }
 }

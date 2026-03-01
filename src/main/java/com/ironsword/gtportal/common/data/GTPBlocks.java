@@ -127,7 +127,7 @@ public class GTPBlocks {
             registerPortalFrame(
                     "simple_end_portal_frame",
                     "Simple End Portal Frame",
-                    GTPortal.id("block/end")
+                    GTPortal.id("block/simple_end_portal_frame")
             );
 
     public static BlockEntry<Block> SIMPLE_AETHER_PORTAL_FRAME;
@@ -166,11 +166,11 @@ public class GTPBlocks {
     public static void init() {
         if (LDLib.isModLoaded("aether")){
             AETHER_PORTAL_BLOCK = registerPortalBlock("aether_portal_block","Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
-            SIMPLE_AETHER_PORTAL_FRAME = registerPortalFrame("simple_aether_portal_frame", "Simple Aether Portal Frame", GTPortal.id("block/aether"));
+            SIMPLE_AETHER_PORTAL_FRAME = registerPortalFrame("simple_aether_portal_frame", "Simple Aether Portal Frame", GTPortal.id("block/simple_aether_portal_frame"));
         }
         if (LDLib.isModLoaded("twilightforest")){
             TWILIGHT_PORTAL_BLOCK = registerPortalBlock("twilight_portal_block","Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
-            SIMPLE_TWILIGHT_PORTAL_FRAME = registerPortalFrame("simple_twilight_portal_frame","Simple Twilight Portal Frame",GTPortal.id("block/twilight"));
+            SIMPLE_TWILIGHT_PORTAL_FRAME = registerPortalFrame("simple_twilight_portal_frame","Simple Twilight Portal Frame",GTPortal.id("block/simple_twilight_portal_frame"));
         }
     }
 

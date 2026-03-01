@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "gtportal:block/twilight"
+    "all": "gtportal:block/simple_twilight_portal_frame"
   }
 }

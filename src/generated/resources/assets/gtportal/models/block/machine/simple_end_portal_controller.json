@@ -9,14 +9,14 @@
   "loader": "gtceu:machine",
   "machine": "gtportal:simple_end_portal_controller",
   "texture_overrides": {
-    "all": "gtportal:block/end"
+    "all": "gtportal:block/simple_end_portal_frame"
   },
   "variants": {
     "is_formed=false,recipe_logic_status=idle": {
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
         }
@@ -26,7 +26,7 @@
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
         }
@@ -36,7 +36,7 @@
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
         }
@@ -46,7 +46,7 @@
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
         }
@@ -56,7 +56,7 @@
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
         }
@@ -66,7 +66,7 @@
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
         }
@@ -76,7 +76,7 @@
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
         }
@@ -86,7 +86,7 @@
       "model": {
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
-          "all": "gtportal:block/end",
+          "all": "gtportal:block/simple_end_portal_frame",
           "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
           "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
         }

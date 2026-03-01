@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "gtportal:block/end"
+    "all": "gtportal:block/simple_end_portal_frame"
   }
 }
