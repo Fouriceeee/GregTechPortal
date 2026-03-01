@@ -55,7 +55,7 @@ public class GTPMachines {
             .hasBER(true)
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
             .model(createWorkableCasingMachineModel(GTPortal.id("block/portal_frame"),
-                    GTPortal.id("block/portal_controller_overlay"))
+                    GTPortal.id("block/multidimensional_portal_controller_overlay"))
                     .andThen(b->b.addDynamicRenderer(()->new PortalBlockRenderer(Optional.empty()))))
             .register();
 
@@ -66,7 +66,7 @@ public class GTPMachines {
                     Level.OVERWORLD.location(),
                     GTPBlocks.SIMPLE_OVERWORLD_PORTAL_FRAME,
                     GTPortal.id("block/simple_overworld_portal_frame"),
-                    GTPortal.id("block/portal_controller_overlay"),
+                    GTPortal.id("block/single_dimensional_portal_controller_overlay"),
                     GTPBlocks.OVERWORLD_PORTAL_BLOCK,
                     null
             );
@@ -78,7 +78,7 @@ public class GTPMachines {
             Level.NETHER.location(),
             GTPBlocks.SIMPLE_NETHER_PORTAL_FRAME,
             GTPortal.id("block/simple_nether_portal_frame"),
-            GTPortal.id("block/portal_controller_overlay"),
+            GTPortal.id("block/single_dimensional_portal_controller_overlay"),
             GTPBlocks.NETHER_PORTAL_BLOCK,
             Component.translatable("gtportal.tooltip.machine.simple_nether_portal_controller")
     );
@@ -89,7 +89,7 @@ public class GTPMachines {
             Level.END.location(),
             GTPBlocks.SIMPLE_END_PORTAL_FRAME,
             GTPortal.id("block/simple_end_portal_frame"),
-            GTPortal.id("block/portal_controller_overlay"),
+            GTPortal.id("block/single_dimensional_portal_controller_overlay"),
             GTPBlocks.END_PORTAL_BLOCK,
             null
     );
@@ -106,7 +106,7 @@ public class GTPMachines {
                     AetherDimensions.AETHER_LEVEL.location(),
                     GTPBlocks.SIMPLE_AETHER_PORTAL_FRAME,
                     GTPortal.id("block/simple_aether_portal_frame"),
-                    GTPortal.id("block/portal_controller_overlay"),
+                    GTPortal.id("block/single_dimensional_portal_controller_overlay"),
                     GTPBlocks.AETHER_PORTAL_BLOCK,
                     null
             );
@@ -118,7 +118,7 @@ public class GTPMachines {
                     TFGenerationSettings.DIMENSION,
                     GTPBlocks.SIMPLE_TWILIGHT_PORTAL_FRAME,
                     GTPortal.id("block/simple_twilight_portal_frame"),
-                    GTPortal.id("block/portal_controller_overlay"),
+                    GTPortal.id("block/single_dimensional_portal_controller_overlay"),
                     GTPBlocks.TWILIGHT_PORTAL_BLOCK,
                     null
             );

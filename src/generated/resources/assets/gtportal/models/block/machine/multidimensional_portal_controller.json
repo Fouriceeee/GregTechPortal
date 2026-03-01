@@ -16,8 +16,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_emissive"
         }
       }
     },
@@ -26,8 +26,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_emissive"
         }
       }
     },
@@ -36,8 +36,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active_emissive"
         }
       }
     },
@@ -46,8 +46,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active_emissive"
         }
       }
     },
@@ -56,8 +56,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_emissive"
         }
       }
     },
@@ -66,8 +66,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_emissive"
         }
       }
     },
@@ -76,8 +76,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active_emissive"
         }
       }
     },
@@ -86,8 +86,8 @@
         "parent": "gtceu:block/machine/template/cube_all/sided",
         "textures": {
           "all": "gtportal:block/portal_frame",
-          "overlay_front": "gtportal:block/portal_controller_overlay/overlay_front_active",
-          "overlay_front_emissive": "gtportal:block/portal_controller_overlay/overlay_front_active_emissive"
+          "overlay_front": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active",
+          "overlay_front_emissive": "gtportal:block/multidimensional_portal_controller_overlay/overlay_front_active_emissive"
         }
       }
     }
