@@ -12,6 +12,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -96,17 +97,15 @@ public class GTPBlocks {
                         .texture("particle",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/bottom"));
                 prov.getVariantBuilder(ctx.getEntry()).partialState().setModels(ConfiguredModel.builder().modelFile(model).build());
             })
+            .tag(BlockTags.MINEABLE_WITH_PICKAXE)
             .simpleItem()
             .register();
 
-    public static final BlockEntry<Block> MULTIDIMENSIONAL_PORTAL_FRAME = REGISTRATE
-            .block("portal_frame",Block::new)
-            .initialProperties(()->Blocks.OBSIDIAN)
-            .addLayer(()->RenderType::solid)
-            .lang("Portal Frame")
-            .exBlockstate(GTModels.cubeAllModel(GTPortal.id("block/portal_frame")))
-            .simpleItem()
-            .register();
+    public static final BlockEntry<Block> MULTIDIMENSIONAL_PORTAL_FRAME = registerPortalFrame(
+            "multidimensional_portal_frame",
+            "Multidimensional Portal Frame",
+            GTPortal.id("block/multidimensional_portal_frame")
+    );
 
     public static final BlockEntry<Block> SIMPLE_OVERWORLD_PORTAL_FRAME =
             registerPortalFrame(

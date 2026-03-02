@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "gtportal:block/multidimensional_portal_frame"
+    }
+  }
+}

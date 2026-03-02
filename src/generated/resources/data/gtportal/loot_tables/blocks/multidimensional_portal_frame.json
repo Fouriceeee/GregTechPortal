@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "gtportal:portal_frame"
+          "name": "gtportal:multidimensional_portal_frame"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "gtportal:blocks/portal_frame"
+  "random_sequence": "gtportal:blocks/multidimensional_portal_frame"
 }

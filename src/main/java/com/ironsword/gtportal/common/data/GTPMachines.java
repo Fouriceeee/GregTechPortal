@@ -54,7 +54,7 @@ public class GTPMachines {
             .langValue("Multidimensional Portal Controller")
             .hasBER(true)
             .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
-            .model(createWorkableCasingMachineModel(GTPortal.id("block/portal_frame"),
+            .model(createWorkableCasingMachineModel(GTPortal.id("block/multidimensional_portal_frame"),
                     GTPortal.id("block/multidimensional_portal_controller_overlay"))
                     .andThen(b->b.addDynamicRenderer(()->new PortalBlockRenderer(Optional.empty()))))
             .register();

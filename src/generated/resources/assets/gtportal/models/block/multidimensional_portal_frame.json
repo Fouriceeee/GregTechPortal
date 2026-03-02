@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "gtportal:block/portal_frame"
+    "all": "gtportal:block/multidimensional_portal_frame"
   }
 }

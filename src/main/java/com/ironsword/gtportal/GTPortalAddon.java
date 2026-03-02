@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.TwilightTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
+import com.ironsword.gtportal.common.data.GTPPoiTypes;
 import com.ironsword.gtportal.common.data.GTPRecipes;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
@@ -36,6 +37,7 @@ public class GTPortalAddon implements IGTAddon {
                             (entity, currWorld, destWorld, contrllerPos,coordinate) ->
                                     entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate, Blocks.GLOWSTONE))
                     ));
+            GTPTeleporter.POI_TYPE_MAP.put(AetherDimensions.AETHER_LEVEL.location(), GTPPoiTypes.AETHER_PORTAL_POI.getKey());
         }
 
         if (LDLib.isModLoaded("twilightforest")){
@@ -46,6 +48,7 @@ public class GTPortalAddon implements IGTAddon {
                             (entity, currWorld, destWorld,contrllerPos, coordinate) ->
                                     entity.changeDimension(destWorld,new TwilightTeleporter(currWorld,contrllerPos,coordinate, TFBlocks.ROOT_BLOCK.get(),entity))
                     ));
+            GTPTeleporter.POI_TYPE_MAP.put(TFGenerationSettings.DIMENSION, GTPPoiTypes.TWILIGHT_PORTAL_POI.getKey());
         }
     }
 
