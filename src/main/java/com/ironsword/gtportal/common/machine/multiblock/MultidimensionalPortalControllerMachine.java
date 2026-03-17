@@ -151,6 +151,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Override
     public void onLoad() {
         super.onLoad();
+        teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
     }
 
     @Override

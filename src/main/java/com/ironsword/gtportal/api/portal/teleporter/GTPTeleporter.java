@@ -98,8 +98,8 @@ public class GTPTeleporter implements ITeleporter {
 
     protected Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> findPortalAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
         PoiManager manager = destWorld.getPoiManager();
-        manager.ensureLoadedAndValid(destWorld, scaledPos, 128);
-        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POI_TYPE_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,128, PoiManager.Occupancy.ANY)
+        manager.ensureLoadedAndValid(destWorld, scaledPos, 32);
+        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POI_TYPE_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
                 .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
                 .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
                 .filter((poiRecord) -> destWorld.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.AXIS))

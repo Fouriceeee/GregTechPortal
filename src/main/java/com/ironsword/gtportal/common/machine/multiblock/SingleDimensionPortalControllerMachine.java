@@ -110,6 +110,7 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     @Override
     public void onLoad() {
         super.onLoad();
+        //teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
     }
 
     @Override

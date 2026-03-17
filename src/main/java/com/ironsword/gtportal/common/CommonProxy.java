@@ -14,6 +14,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+@SuppressWarnings({"unused"})
 @Mod.EventBusSubscriber(modid = GTPortal.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CommonProxy {
 
