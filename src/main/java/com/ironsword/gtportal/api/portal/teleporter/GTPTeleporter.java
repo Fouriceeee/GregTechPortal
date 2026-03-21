@@ -77,7 +77,10 @@ public class GTPTeleporter implements ITeleporter {
         if (pair.isPresent()){
             BlockPos pos = pair.get().getSecond().minCorner;
             if (pair.get().getFirst().isHorizontal()){
-                return makePortalInfo(entity,pos.relative(pair.get().getFirst(),1));
+                Optional<BlockPos> safePos = safePortalEntrance(destWorld,pair.get().getFirst(),pair.get().getSecond());
+                if (safePos.isPresent()){
+                    return makePortalInfo(entity,safePos.get());
+                }
             }else {
                 return makePortalInfo(entity,pos.offset(-1,1,-1));
             }
@@ -110,6 +113,16 @@ public class GTPTeleporter implements ITeleporter {
             BlockState blockstate = destWorld.getBlockState(poiPos);
             return Pair.of(blockstate.getValue(BlockStateProperties.AXIS),BlockUtil.getLargestRectangleAround(poiPos, blockstate.getValue(BlockStateProperties.AXIS), 21, Direction.Axis.Y, 21, (blockPos) -> destWorld.getBlockState(blockPos) == blockstate));
         });
+    }
+
+    protected Optional<BlockPos> safePortalEntrance(ServerLevel destWorld, Direction.Axis axis,BlockUtil.FoundRectangle rectangle){
+        BlockPos corner = rectangle.minCorner;
+        for (BlockPos pos:BlockPos.betweenClosed(corner.relative(axis,-1),corner.relative(axis,-1).offset(2,2,2))){
+            if (destWorld.getBlockState(pos).isAir()&&destWorld.getBlockState(pos.above()).isAir()){
+                return Optional.of(pos);
+            }
+        }
+        return Optional.empty();
     }
 
     protected BlockPos searchDestPos(ServerLevel destWorld, BlockPos scaledPos){
