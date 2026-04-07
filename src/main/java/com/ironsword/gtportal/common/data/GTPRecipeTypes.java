@@ -23,7 +23,7 @@ public class GTPRecipeTypes {
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressTexture.FillDirection.LEFT_TO_RIGHT)
             .setIconSupplier(()->GTPItems.DIMENSION_DATA_STICK.asStack())
             .setEUIO(IO.IN)
-            .addDataInfo(data-> LocalizationUtils.format("gtportal.machine.tooltip.dimension") + ": " + LocalizationUtils.format("gtportal.dimension."+new ResourceLocation(data.getString("dimension")).getPath()));
+            .addDataInfo(data-> LocalizationUtils.format("gtportal.machine.tooltip.dimension") + ": " + LocalizationUtils.format("gtportal.dimension."+ResourceLocation.parse(data.getString("dimension")).getPath()));
 
     public static void init() {
 

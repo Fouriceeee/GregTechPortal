@@ -2,7 +2,9 @@ package com.ironsword.gtportal.common.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -22,6 +24,13 @@ public class PortalBlock extends Block {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
     }
+
+//    @Override
+//    public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
+//        if (pEntity.isOnPortalCooldown()){
+//            pEntity.setPortalCooldown();
+//        }
+//    }
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

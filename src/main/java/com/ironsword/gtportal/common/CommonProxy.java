@@ -23,6 +23,7 @@ public class CommonProxy {
     }
 
     public static void init(){
+        @SuppressWarnings("removal")
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         GTPDatagen.initPre();

@@ -9,7 +9,7 @@ import net.minecraftforge.client.model.generators.ModelFile;
 public class BlockStateHandler {
     public static void init(GTBlockstateProvider provider){
         BlockModelProvider models = provider.models();
-        final ModelFile BLOCK = models.getExistingFile(new ResourceLocation("minecraft:block/block"));
+        final ModelFile BLOCK = models.getExistingFile(ResourceLocation.parse("minecraft:block/block"));
         models.getBuilder("block/portal/parent/portal_x").parent(BLOCK)
                 .element().from(6,0,0).to(10,16,16)
                 .face(Direction.EAST).texture("#portal").end()

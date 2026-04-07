@@ -81,7 +81,7 @@ public class GTPBlocks {
             .initialProperties(()->Blocks.END_STONE)
             .lang("Broken End Portal Frame")
             .blockstate((ctx,prov)->{
-                ModelBuilder<?> model = prov.models().getBuilder("broken_end_portal_frame").parent(prov.models().getExistingFile(new ResourceLocation("minecraft:block/block")));
+                ModelBuilder<?> model = prov.models().getBuilder("broken_end_portal_frame").parent(prov.models().getExistingFile(ResourceLocation.parse("minecraft:block/block")));
                 model.element()
                         .from(0,0,0).to(16,13,16)
                         .face(Direction.DOWN).uvs(0,0,16,16).texture("#bottom").cullface(Direction.DOWN).end()
@@ -91,10 +91,10 @@ public class GTPBlocks {
                         .face(Direction.WEST).uvs(0,3,16,16).texture("#side").cullface(Direction.WEST).end()
                         .face(Direction.EAST).uvs(0,3,16,16).texture("#side").cullface(Direction.EAST).end()
                         .end();
-                model.texture("bottom",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/bottom"))
-                        .texture("top",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/top"))
-                        .texture("side",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/side"))
-                        .texture("particle",new ResourceLocation(GTPortal.MODID,"block/broken_end_portal_frame/bottom"));
+                model.texture("bottom",GTPortal.id("block/broken_end_portal_frame/bottom"))
+                        .texture("top",GTPortal.id("block/broken_end_portal_frame/top"))
+                        .texture("side",GTPortal.id("block/broken_end_portal_frame/side"))
+                        .texture("particle",GTPortal.id("block/broken_end_portal_frame/bottom"));
                 prov.getVariantBuilder(ctx.getEntry()).partialState().setModels(ConfiguredModel.builder().modelFile(model).build());
             })
             .tag(BlockTags.MINEABLE_WITH_PICKAXE)
@@ -164,11 +164,11 @@ public class GTPBlocks {
 
     public static void init() {
         if (LDLib.isModLoaded("aether")){
-            AETHER_PORTAL_BLOCK = registerPortalBlock("aether_portal_block","Aether Portal Block",new ResourceLocation(Aether.MODID,"block/miscellaneous/aether_portal"));
+            AETHER_PORTAL_BLOCK = registerPortalBlock("aether_portal_block","Aether Portal Block",ResourceLocation.tryBuild(Aether.MODID,"block/miscellaneous/aether_portal"));
             SIMPLE_AETHER_PORTAL_FRAME = registerPortalFrame("simple_aether_portal_frame", "Simple Aether Portal Frame", GTPortal.id("block/simple_aether_portal_frame"));
         }
         if (LDLib.isModLoaded("twilightforest")){
-            TWILIGHT_PORTAL_BLOCK = registerPortalBlock("twilight_portal_block","Twilight Portal Block",new ResourceLocation("minecraft","block/nether_portal"));
+            TWILIGHT_PORTAL_BLOCK = registerPortalBlock("twilight_portal_block","Twilight Portal Block",ResourceLocation.tryBuild("minecraft","block/nether_portal"));
             SIMPLE_TWILIGHT_PORTAL_FRAME = registerPortalFrame("simple_twilight_portal_frame","Simple Twilight Portal Frame",GTPortal.id("block/simple_twilight_portal_frame"));
         }
     }

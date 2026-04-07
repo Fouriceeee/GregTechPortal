@@ -76,7 +76,7 @@ public class PortalBlockRenderer extends DynamicRender<IBlockRenderMulti, Portal
             }else if (machine.self().getOffsetTimer() % 20 == 0 || lastRecipe.id != cachedRecipe){
                 cachedRecipe = lastRecipe.id;
                 if (machine.getRecipeLogic().isWorking()){
-                    cachedBlock = MultidimensionalPortalControllerMachine.MAP.getOrDefault(new ResourceLocation(lastRecipe.data.getString("dimension")), MultidimensionalPortalControllerMachine.EMPTY).getFirst().get();
+                    cachedBlock = MultidimensionalPortalControllerMachine.MAP.getOrDefault(ResourceLocation.parse(lastRecipe.data.getString("dimension")), MultidimensionalPortalControllerMachine.EMPTY).getFirst().get();
                 }else {
                     cachedBlock = null;
                 }

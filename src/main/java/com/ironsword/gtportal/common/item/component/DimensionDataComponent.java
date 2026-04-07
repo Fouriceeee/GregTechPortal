@@ -19,7 +19,7 @@ public class DimensionDataComponent implements IAddInformation {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         CompoundTag tag = stack.getOrCreateTag();
         if (tag.contains("dimension")){
-            tooltipComponents.add(Component.translatable("gtportal.machine.tooltip.dimension").append(": ").append(Component.translatable("gtportal.dimension.%s".formatted(new ResourceLocation(tag.getString("dimension")).getPath()))));
+            tooltipComponents.add(Component.translatable("gtportal.machine.tooltip.dimension").append(": ").append(Component.translatable("gtportal.dimension.%s".formatted(ResourceLocation.parse(tag.getString("dimension")).getPath()))));
         }
         if (tag.contains("coordinate")){
             tooltipComponents.add(Component.translatable("gtportal.machine.tooltip.coordinate").append(": ").append(Arrays.toString(tag.getIntArray("coordinate"))));
@@ -33,7 +33,7 @@ public class DimensionDataComponent implements IAddInformation {
 
     @Nullable
     public static ResourceLocation dimensionFromNbt(CompoundTag tag){
-        return tag.contains("dimension") ? new ResourceLocation(tag.getString("dimension")) : null;
+        return tag.contains("dimension") ? ResourceLocation.parse(tag.getString("dimension")) : null;
     }
 
     @Nullable

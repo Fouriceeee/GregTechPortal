@@ -29,7 +29,15 @@ public class GTPPoiTypes {
     public static RegistryObject<PoiType> AETHER_PORTAL_POI;
     public static RegistryObject<PoiType> TWILIGHT_PORTAL_POI;
 
-    private static Set<BlockState> getBlockStates(Block block) {
+    public static final RegistryObject<PoiType> OW_PORTAL_MACHINE_POI = POI_TYPES.register("ow_portal_machine",()->createSimplePoiType(GTPMachines.SIMPLE_OVERWORLD_PORTAL_CONTROLLER.getBlock()));
+    public static final RegistryObject<PoiType> NT_PORTAL_MACHINE_POI = POI_TYPES.register("nt_portal_machine",()->createSimplePoiType(GTPMachines.SIMPLE_NETHER_PORTAL_CONTROLLER.getBlock()));
+
+
+    private static <T extends Block> PoiType createSimplePoiType(T block){
+        return new PoiType(ImmutableSet.copyOf(block.getStateDefinition().getPossibleStates()),0,1);
+    }
+
+    private static <T extends Block> Set<BlockState> getBlockStates(T block) {
 
 //        return Arrays.stream(blocks)
 //                .flatMap(block -> block.getStateDefinition().getPossibleStates().stream())

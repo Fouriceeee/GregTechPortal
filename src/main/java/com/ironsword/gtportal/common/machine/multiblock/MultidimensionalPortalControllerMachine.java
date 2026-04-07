@@ -13,6 +13,7 @@ import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
 import com.ironsword.gtportal.api.portal.teleporter.EndTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
+import com.ironsword.gtportal.api.portal.teleporter.TestTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
@@ -48,15 +49,29 @@ import java.util.function.Supplier;
 public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
     public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK::get,(entity, currWorld, destWorld, controllerPos,coordinate) -> {});
+//    public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
+//            Level.OVERWORLD.location(),Pair.of(
+//                    GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
+//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
+//                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
+//            Level.NETHER.location(),Pair.of(
+//                    GTPBlocks.NETHER_PORTAL_BLOCK::get,
+//                    (entity, currWorld, destWorld,contrllerPos, coordinate) ->
+//                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
+//            Level.END.location(),Pair.of(
+//                    GTPBlocks.END_PORTAL_BLOCK::get,
+//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
+//                            entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
+//    ));
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
                     GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
+                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
                     GTPBlocks.NETHER_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld,contrllerPos, coordinate) ->
-                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
+                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
                     GTPBlocks.END_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld, contrllerPos,coordinate) ->
