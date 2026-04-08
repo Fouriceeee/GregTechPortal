@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -28,6 +29,8 @@ import static com.ironsword.gtportal.common.machine.multiblock.MultidimensionalP
 public class SingleDimensionPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
 
     private final ResourceLocation dimension;
+    @Nullable
+    private AABB portalBlockAABB;
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(SingleDimensionPortalControllerMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -63,6 +66,23 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         }
 
         return poses;
+    }
+
+    private void cachePortalBlockBox(){
+        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+
+        BlockPos startingPos = getPos().relative(up).relative(clockwise),
+                endingPos = getPos().relative(up,3).relative(counterClockwise);
+
+        portalBlockAABB = Utils.getPortalBlockBox(startingPos,endingPos,getFrontFacing().getAxis());
+    }
+
+    @Override
+    public void onStructureFormed() {
+        super.onStructureFormed();
+        cachePortalBlockBox();
     }
 
     @Override
@@ -123,18 +143,16 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         if (serverLevel == null)
             return;
 
-        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        if (portalBlockAABB == null){
+            cachePortalBlockBox();
+        }
 
-        BlockPos startingPos = getPos().relative(up).relative(clockwise),
-                endingPos = getPos().relative(up,3).relative(counterClockwise);
-
-        getLevel().getEntities(null, Utils.getMaxBox(startingPos,endingPos)).forEach(e->{
-            if (!(e instanceof Entity) ||!e.canChangeDimensions())
+        getLevel().getEntities(null, portalBlockAABB).forEach(e->{
+            if (!(e instanceof Entity) ||!e.canChangeDimensions() || e.isOnPortalCooldown())
                 return;
 
             MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,getPos(),null);
         });
+
     }
 }

@@ -1,6 +1,7 @@
 package com.ironsword.gtportal.utils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +19,35 @@ public class Utils {
                 Math.max(pos1.getY(), pos2.getY()) + 1,
                 Math.max(pos1.getZ(), pos2.getZ()) + 1
         );
+    }
+
+    public static AABB getPortalBlockBox(Vec3i pos1, Vec3i pos2, Direction.Axis axis){
+        return switch (axis){
+            case X -> new AABB(
+                    Math.min(pos1.getX(), pos2.getX()) + 6.0d/16.0d,
+                    Math.min(pos1.getY(), pos2.getY()),
+                    Math.min(pos1.getZ(), pos2.getZ()),
+                    Math.max(pos1.getX(), pos2.getX()) + 10.0d/16.0d,
+                    Math.max(pos1.getY(), pos2.getY()) + 1,
+                    Math.max(pos1.getZ(), pos2.getZ()) + 1
+            );
+            case Y -> new AABB(
+                    Math.min(pos1.getX(), pos2.getX()),
+                    Math.min(pos1.getY(), pos2.getY()) + 6.0d/16.0d,
+                    Math.min(pos1.getZ(), pos2.getZ()),
+                    Math.max(pos1.getX(), pos2.getX()) + 1,
+                    Math.max(pos1.getY(), pos2.getY()) + 10.0d/16.0d,
+                    Math.max(pos1.getZ(), pos2.getZ()) + 1
+            );
+            case Z -> new AABB(
+                    Math.min(pos1.getX(), pos2.getX()),
+                    Math.min(pos1.getY(), pos2.getY()),
+                    Math.min(pos1.getZ(), pos2.getZ()) + 6.0d/16.0d,
+                    Math.max(pos1.getX(), pos2.getX()) + 1,
+                    Math.max(pos1.getY(), pos2.getY()) + 1,
+                    Math.max(pos1.getZ(), pos2.getZ()) + 10.0d/16.0d
+            );
+        };
     }
 
     public static void displayMessageInBoxes(Level level, BlockPos pos,int range, Component message){

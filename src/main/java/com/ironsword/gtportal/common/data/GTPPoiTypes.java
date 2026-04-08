@@ -29,8 +29,14 @@ public class GTPPoiTypes {
     public static RegistryObject<PoiType> AETHER_PORTAL_POI;
     public static RegistryObject<PoiType> TWILIGHT_PORTAL_POI;
 
-    public static final RegistryObject<PoiType> OW_PORTAL_MACHINE_POI = POI_TYPES.register("ow_portal_machine",()->createSimplePoiType(GTPMachines.SIMPLE_OVERWORLD_PORTAL_CONTROLLER.getBlock()));
-    public static final RegistryObject<PoiType> NT_PORTAL_MACHINE_POI = POI_TYPES.register("nt_portal_machine",()->createSimplePoiType(GTPMachines.SIMPLE_NETHER_PORTAL_CONTROLLER.getBlock()));
+    public static final RegistryObject<PoiType> MULTI_PCM_POI = POI_TYPES.register("multi_pcm",()->createSimplePoiType(GTPMachines.MULTIDIMENSIONAL_PORTAL_CONTROLLER.getBlock()));
+
+    public static final RegistryObject<PoiType> OVERWORLD_PCM_POI = POI_TYPES.register("overworld_pcm",()->createSimplePoiType(GTPMachines.SIMPLE_OVERWORLD_PORTAL_CONTROLLER.getBlock()));
+    public static final RegistryObject<PoiType> NETHER_PCM_POI = POI_TYPES.register("nether_pcm",()->createSimplePoiType(GTPMachines.SIMPLE_NETHER_PORTAL_CONTROLLER.getBlock()));
+    public static final RegistryObject<PoiType> END_PCM_POI = POI_TYPES.register("end_pcm",()->createSimplePoiType(GTPMachines.SIMPLE_END_PORTAL_CONTROLLER.getBlock()));
+
+    public static RegistryObject<PoiType> AETHER_PCM_POI;
+    public static RegistryObject<PoiType> TWILIGHT_PCM_POI;
 
 
     private static <T extends Block> PoiType createSimplePoiType(T block){
@@ -51,11 +57,15 @@ public class GTPPoiTypes {
             AETHER_PORTAL_POI = POI_TYPES.register("aether_portal",()->new PoiType(getBlockStates(
                     GTPBlocks.AETHER_PORTAL_BLOCK.get()
             ),0,1));
+
+            AETHER_PCM_POI = POI_TYPES.register("aether_pcm",()->createSimplePoiType(GTPMachines.SIMPLE_AETHER_PORTAL_CONTROLLER.getBlock()));
         }
         if (LDLib.isModLoaded("twilightforest")){
             TWILIGHT_PORTAL_POI = POI_TYPES.register("twilight_portal",()->new PoiType(getBlockStates(
                     GTPBlocks.TWILIGHT_PORTAL_BLOCK.get()
             ),0,1));
+
+            TWILIGHT_PCM_POI = POI_TYPES.register("twilight_pcm",()->createSimplePoiType(GTPMachines.SIMPLE_TWILIGHT_PORTAL_CONTROLLER.getBlock()));
         }
         POI_TYPES.register(bus);
     }

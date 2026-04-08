@@ -25,12 +25,12 @@ public class PortalBlock extends Block {
         this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
     }
 
-//    @Override
-//    public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-//        if (pEntity.isOnPortalCooldown()){
-//            pEntity.setPortalCooldown();
-//        }
-//    }
+    @Override
+    public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
+        if (pEntity.isOnPortalCooldown()){
+            pEntity.setPortalCooldown();
+        }
+    }
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

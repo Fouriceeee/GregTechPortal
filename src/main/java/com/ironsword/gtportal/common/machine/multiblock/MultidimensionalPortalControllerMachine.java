@@ -4,12 +4,10 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.api.portal.teleporter.EndTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
@@ -35,6 +33,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,35 +43,21 @@ import java.util.function.Supplier;
 
 public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
-    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK::get,(entity, currWorld, destWorld, controllerPos,coordinate) -> {});
+    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity, currWorld, destWorld, controllerPos, coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
-                    GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
+                    GTPBlocks.OVERWORLD_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, contrllerPos,coordinate) ->
                             entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
-                    GTPBlocks.NETHER_PORTAL_BLOCK::get,
+                    GTPBlocks.NETHER_PORTAL_BLOCK,
                     (entity, currWorld, destWorld,contrllerPos, coordinate) ->
                             entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
-                    GTPBlocks.END_PORTAL_BLOCK::get,
+                    GTPBlocks.END_PORTAL_BLOCK,
                     (entity, currWorld, destWorld, contrllerPos,coordinate) ->
                             entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
     ));
-//    public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
-//            Level.OVERWORLD.location(),Pair.of(
-//                    GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
-//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-//                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
-//            Level.NETHER.location(),Pair.of(
-//                    GTPBlocks.NETHER_PORTAL_BLOCK::get,
-//                    (entity, currWorld, destWorld,contrllerPos, coordinate) ->
-//                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
-//            Level.END.location(),Pair.of(
-//                    GTPBlocks.END_PORTAL_BLOCK::get,
-//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-//                            entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
-//    ));
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MultidimensionalPortalControllerMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -80,6 +65,8 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Nonnull
     @Getter
     protected Pair<ResourceLocation, Vec3i> cache = Pair.of(null,null);
+    @Nullable
+    private AABB portalBlockAABB;
 
     public MultidimensionalPortalControllerMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -109,6 +96,17 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         }
     }
 
+    private void cachePortalBlockBox(){
+        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+
+        BlockPos startingPos = getPos().relative(up).relative(clockwise),
+                endingPos = getPos().relative(up,3).relative(counterClockwise);
+
+        portalBlockAABB = Utils.getPortalBlockBox(startingPos,endingPos,getFrontFacing().getAxis());
+    }
+
     public Set<BlockPos> getPortalPoses(){
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
         Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
@@ -126,6 +124,12 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         }
 
         return poses;
+    }
+
+    @Override
+    public void onStructureFormed() {
+        super.onStructureFormed();
+        cachePortalBlockBox();
     }
 
     @Override
@@ -244,14 +248,11 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         if (serverLevel == null)
             return;
 
-        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
+        if (portalBlockAABB == null){
+            cachePortalBlockBox();
+        }
 
-        BlockPos startingPos = getPos().relative(up).relative(clockwise),
-                endingPos = getPos().relative(up,3).relative(counterClockwise);
-
-        getLevel().getEntities(null, Utils.getMaxBox(startingPos,endingPos)).forEach(e->{
+        getLevel().getEntities(null, portalBlockAABB).forEach(e->{
             if (!(e instanceof Entity) ||!e.canChangeDimensions())
                 return;
 

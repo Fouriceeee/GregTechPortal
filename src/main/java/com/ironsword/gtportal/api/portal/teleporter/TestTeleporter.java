@@ -36,8 +36,8 @@ import java.util.function.Function;
 
 public class TestTeleporter implements ITeleporter {
     public static final Map<ResourceLocation, ResourceKey<PoiType>> SIMPLE_PORTAL_MACHINE_POI_TYPE_MAP = new HashMap<>(Map.of(
-            Level.OVERWORLD.location(), GTPPoiTypes.OW_PORTAL_MACHINE_POI.getKey(),
-            Level.NETHER.location(), GTPPoiTypes.NT_PORTAL_MACHINE_POI.getKey()
+            Level.OVERWORLD.location(), GTPPoiTypes.OVERWORLD_PCM_POI.getKey(),
+            Level.NETHER.location(), GTPPoiTypes.NETHER_PCM_POI.getKey()
     ));
 
     protected final ServerLevel currWorld;

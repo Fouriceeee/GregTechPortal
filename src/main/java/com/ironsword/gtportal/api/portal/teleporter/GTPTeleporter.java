@@ -168,6 +168,7 @@ public class GTPTeleporter implements ITeleporter {
 
     @Override
     public Entity placeEntity(Entity entity, ServerLevel currentWorld, ServerLevel destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
+        entity.setPortalCooldown();
         return repositionEntity.apply(false);
     }
 }
