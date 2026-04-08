@@ -2,7 +2,7 @@ package com.ironsword.gtportal.mixin;
 
 import com.aetherteam.aether.event.hooks.DimensionHooks;
 import com.ironsword.gtportal.GTPConfigHolder;
-import com.ironsword.gtportal.utils.Utils;
+import com.ironsword.gtportal.utils.PhyUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -47,7 +47,7 @@ public class DimensionHooksMixin {
             return;
         }
 
-        Utils.displayMessageInBoxes((Level) levelAccessor,pos,5,Component.translatable("gtportal.clientmessage.banned_structure"));
+        PhyUtils.displayMessageInBoxes((Level) levelAccessor,pos,5,Component.translatable("gtportal.clientmessage.banned_structure"));
         cir.setReturnValue(false);
     }
 }

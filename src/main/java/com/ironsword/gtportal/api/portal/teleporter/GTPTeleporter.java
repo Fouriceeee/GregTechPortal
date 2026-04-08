@@ -3,6 +3,7 @@ package com.ironsword.gtportal.api.portal.teleporter;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.ironsword.gtportal.common.data.GTPPoiTypes;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
+import com.ironsword.gtportal.common.machine.multiblock.SingleDimensionPortalControllerMachine;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
@@ -44,12 +45,20 @@ public class GTPTeleporter implements ITeleporter {
             Level.END.location(), GTPPoiTypes.END_PORTAL_POI.getKey()
     ));
 
+    public static final Map<ResourceLocation, ResourceKey<PoiType>> TEST_MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(), GTPPoiTypes.OVERWORLD_PCM_POI.getKey(),
+            Level.NETHER.location(), GTPPoiTypes.NETHER_PCM_POI.getKey(),
+            Level.END.location(), GTPPoiTypes.END_PCM_POI.getKey()
+    ));
+
+    protected final Vec3 offset;
     protected final ServerLevel currWorld;
     protected final BlockPos currPos;
     protected BlockPos coordinate = null;
     protected final Block platformBlock;
 
-    public GTPTeleporter(ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block){
+    public GTPTeleporter(Vec3 offset,ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block){
+        this.offset = offset;
         currWorld = world;
         currPos = controllerPos;
         this.coordinate = coordinate == null ? null : new BlockPos(coordinate);
@@ -57,8 +66,14 @@ public class GTPTeleporter implements ITeleporter {
     }
 
     protected static PortalInfo makePortalInfo(Entity entity,BlockPos pos){
-        return new PortalInfo(new Vec3(pos.getX()+0.5,pos.getY(),pos.getZ()+0.5),Vec3.ZERO,entity.getXRot(), entity.getYRot());
+        return new PortalInfo(new Vec3(pos.getX()+0.5,pos.getY(),pos.getZ()+0.5),Vec3.ZERO,entity.getYRot(), entity.getXRot());
     }
+
+//    protected PortalInfo makeOffsetPortalInfo(Entity entity,BlockPos pos){
+//        Vec3 offset = entity.position().subtract(currPos.getCenter());
+//
+//        return new PortalInfo(pos.getCenter().add(offset),Vec3.ZERO, entity.getXRot(), entity.getYRot());
+//    }
 
     @Override
     public @Nullable PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel, PortalInfo> defaultPortalInfo) {
@@ -70,9 +85,18 @@ public class GTPTeleporter implements ITeleporter {
             return makePortalInfo(entity, coordinate);
         }
 
-        BlockPos currPos = getScaledPos(destWorld,this.currPos);
+        BlockPos scaledPos = getScaledPos(destWorld,this.currPos);
 
-        Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> pair = findPortalAround(destWorld,currPos,destWorld.getWorldBorder());
+
+        //find near single dimension pcm
+        Optional<PortalInfo> info1 = createSingleDimensionPCMPortalInfo(entity,destWorld,scaledPos,destWorld.getWorldBorder());
+
+        if (info1.isPresent()){
+            return info1.get();
+        }
+
+        //find near portal block
+        Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> pair = findPortalAround(destWorld,scaledPos,destWorld.getWorldBorder());
 
         if (pair.isPresent()){
             BlockPos pos = pair.get().getSecond().minCorner;
@@ -86,17 +110,45 @@ public class GTPTeleporter implements ITeleporter {
             }
         }
 
-        BlockPos destPos = searchDestPos(destWorld,currPos);
+
+        //find safe position to tp
+        BlockPos destPos = searchDestPos(destWorld,scaledPos);
 
         if (destPos == null){
-            destPos = destWorld.getWorldBorder().isWithinBounds(currPos)
-                    && destWorld.getMinBuildHeight() < currPos.getY() - 1
-                    && destWorld.getMaxBuildHeight() > currPos.getY() + 2
-                    ? currPos : new BlockPos(currPos.getX(), Math.max(destWorld.getMinBuildHeight(), 70), currPos.getZ());
+            destPos = destWorld.getWorldBorder().isWithinBounds(scaledPos)
+                    && destWorld.getMinBuildHeight() < scaledPos.getY() - 1
+                    && destWorld.getMaxBuildHeight() > scaledPos.getY() + 2
+                    ? scaledPos : new BlockPos(scaledPos.getX(), Math.max(destWorld.getMinBuildHeight(), 70), scaledPos.getZ());
             if (!isPositionSafe(destWorld,destPos)) buildPlatForm(destWorld,platformBlock.defaultBlockState(),destPos);
         }
 
         return makePortalInfo(entity,destPos);
+    }
+
+    protected Optional<BlockPos> findSingleDimensionPCMAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
+        PoiManager manager = destWorld.getPoiManager();
+        manager.ensureLoadedAndValid(destWorld, scaledPos, 32);
+        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(TEST_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
+                .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
+                .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
+                .findFirst();
+        return optionalPoi.map(PoiRecord::getPos);
+    }
+
+    protected Optional<PortalInfo> createSingleDimensionPCMPortalInfo(Entity entity, ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
+        Optional<BlockPos> machinePos = findSingleDimensionPCMAround(destWorld,scaledPos,worldBorder);
+        Optional<PortalInfo> info = Optional.empty();
+        if (machinePos.isPresent()
+                && destWorld.getBlockEntity(machinePos.get()) instanceof MetaMachineBlockEntity machineEntity
+                && machineEntity.getMetaMachine() instanceof SingleDimensionPortalControllerMachine machine
+                && machine.isActive()){
+
+            info = Optional.of(new PortalInfo(
+                    machine.applyRelativeOffset(offset)
+                    ,Vec3.ZERO, entity.getYRot(), entity.getXRot()));
+            //info = Optional.of(makeOffsetPortalInfo(entity,machine.getPos().relative(machine.getFrontFacing())));
+        }
+        return info;
     }
 
     protected Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> findPortalAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){

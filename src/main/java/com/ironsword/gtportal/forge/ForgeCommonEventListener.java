@@ -2,7 +2,7 @@ package com.ironsword.gtportal.forge;
 
 import com.ironsword.gtportal.GTPConfigHolder;
 import com.ironsword.gtportal.GTPortal;
-import com.ironsword.gtportal.utils.Utils;
+import com.ironsword.gtportal.utils.PhyUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.level.BlockEvent;
@@ -18,7 +18,7 @@ public class ForgeCommonEventListener {
         }
 
         if (event.getLevel() instanceof Level level){
-            Utils.displayMessageInBoxes(level,event.getPos(),5,Component.translatable("gtportal.clientmessage.banned_structure"));
+            PhyUtils.displayMessageInBoxes(level,event.getPos(),5,Component.translatable("gtportal.clientmessage.banned_structure"));
         }
         event.setCanceled(true);
     }

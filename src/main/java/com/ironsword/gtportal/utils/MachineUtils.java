@@ -60,6 +60,8 @@ public class MachineUtils {
         return registrate
                 .multiblock(id,iMachineBlockEntity -> new SingleDimensionPortalControllerMachine(iMachineBlockEntity,dimension))
                 .rotationState(RotationState.ALL)
+//                .allowExtendedFacing(true)
+//                .rotationState(RotationState.NON_Y_AXIS)
                 .recipeType(GTPRecipeTypes.SINIGLE_DIMENSIONAL_TELEPORT_RECIPE_TYPE)
                 .recipeModifier(RecipeModifier.NO_MODIFIER)
                 .appearanceBlock(frame)

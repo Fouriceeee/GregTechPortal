@@ -14,7 +14,7 @@ import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
-import com.ironsword.gtportal.utils.Utils;
+import com.ironsword.gtportal.utils.PhyUtils;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,20 +44,20 @@ import java.util.function.Supplier;
 
 public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
-    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity, currWorld, destWorld, controllerPos, coordinate) -> {});
+    public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity,offset,  currWorld, destWorld, controllerPos, coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
                     GTPBlocks.OVERWORLD_PORTAL_BLOCK,
-                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
+                    (entity,offset, currWorld, destWorld, contrllerPos,coordinate) ->
+                            entity.changeDimension(destWorld,new GTPTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
                     GTPBlocks.NETHER_PORTAL_BLOCK,
-                    (entity, currWorld, destWorld,contrllerPos, coordinate) ->
-                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
+                    (entity,offset, currWorld, destWorld,contrllerPos, coordinate) ->
+                            entity.changeDimension(destWorld,new GTPTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
                     GTPBlocks.END_PORTAL_BLOCK,
-                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-                            entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
+                    (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
+                            entity.changeDimension(destWorld,new EndTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
     ));
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MultidimensionalPortalControllerMachine.class,
@@ -104,7 +105,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         BlockPos startingPos = getPos().relative(up).relative(clockwise),
                 endingPos = getPos().relative(up,3).relative(counterClockwise);
 
-        portalBlockAABB = Utils.getPortalBlockBox(startingPos,endingPos,getFrontFacing().getAxis());
+        portalBlockAABB = PhyUtils.getPortalBlockBox(startingPos,endingPos,getFrontFacing().getAxis());
     }
 
     public Set<BlockPos> getPortalPoses(){
@@ -234,6 +235,32 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         cache = EMPTY_PAIR;
     }
 
+    public Vec3 getEntityRelativeOffset(Entity entity){
+        Vec3 offset = getPos().getCenter().vectorTo(entity.position());
+
+        Direction
+                front  = getFrontFacing(),
+                up     = PhyUtils.getMachineUpFacing(front,getUpwardsFacing()),
+                right  = PhyUtils.getMachineRightFacing(front,up);
+
+        return new Vec3(
+                offset.get(front.getAxis()) * front.getAxisDirection().getStep(),
+                offset.get(up.getAxis()) * up.getAxisDirection().getStep(),
+                offset.get(right.getAxis()) * right.getAxisDirection().getStep()
+        );
+    }
+
+    public Vec3 applyRelativeOffset(Vec3 offset){
+        Vec3 center = getPos().getCenter();
+
+        Direction
+                front  = getFrontFacing(),
+                up     = PhyUtils.getMachineUpFacing(front,getUpwardsFacing()),
+                right  = PhyUtils.getMachineRightFacing(front,up);
+
+        return center.relative(front,offset.x).relative(up,offset.y).relative(right,offset.z);
+    }
+
     @Override
     public void teleportEntities(){
         if (!(getLevel() instanceof ServerLevel)||!getRecipeLogic().isWorking())
@@ -256,13 +283,13 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
             if (!(e instanceof Entity) ||!e.canChangeDimensions())
                 return;
 
-            MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
+            MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
         });
     }
 
     @FunctionalInterface
     public interface TeleportFunction{
-        void teleport(Entity entity, ServerLevel currWorld, ServerLevel destWorld, BlockPos controllerPos,@Nullable Vec3i coordinate);
+        void teleport(Entity entity,Vec3 offset, ServerLevel currWorld, ServerLevel destWorld, BlockPos controllerPos,@Nullable Vec3i coordinate);
     }
 }
 

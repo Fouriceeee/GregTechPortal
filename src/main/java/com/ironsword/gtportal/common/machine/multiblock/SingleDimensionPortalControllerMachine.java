@@ -7,7 +7,7 @@ import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
-import com.ironsword.gtportal.utils.Utils;
+import com.ironsword.gtportal.utils.PhyUtils;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,6 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -76,7 +77,7 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         BlockPos startingPos = getPos().relative(up).relative(clockwise),
                 endingPos = getPos().relative(up,3).relative(counterClockwise);
 
-        portalBlockAABB = Utils.getPortalBlockBox(startingPos,endingPos,getFrontFacing().getAxis());
+        portalBlockAABB = PhyUtils.getPortalBlockBox(startingPos,endingPos,getFrontFacing().getAxis());
     }
 
     @Override
@@ -134,6 +135,32 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         }
     }
 
+    public Vec3 getEntityRelativeOffset(Entity entity){
+        Vec3 offset = getPos().getCenter().vectorTo(entity.position());
+
+        Direction
+                front  = getFrontFacing(),
+                up     = PhyUtils.getMachineUpFacing(front,getUpwardsFacing()),
+                right  = PhyUtils.getMachineRightFacing(front,up);
+
+        return new Vec3(
+                offset.get(front.getAxis()) * front.getAxisDirection().getStep(),
+                offset.get(up.getAxis()) * up.getAxisDirection().getStep(),
+                offset.get(right.getAxis()) * right.getAxisDirection().getStep()
+        );
+    }
+
+    public Vec3 applyRelativeOffset(Vec3 offset){
+        Vec3 center = getPos().getCenter();
+
+        Direction
+                front  = getFrontFacing(),
+                up     = PhyUtils.getMachineUpFacing(front,getUpwardsFacing()),
+                right  = PhyUtils.getMachineRightFacing(front,up);
+
+        return center.relative(front,offset.x).relative(up,offset.y).relative(right,offset.z);
+    }
+
     @Override
     public void teleportEntities(){
         if (!(getLevel() instanceof ServerLevel)||!getRecipeLogic().isWorking())
@@ -151,7 +178,7 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
             if (!(e instanceof Entity) ||!e.canChangeDimensions() || e.isOnPortalCooldown())
                 return;
 
-            MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,(ServerLevel) getLevel(),serverLevel,getPos(),null);
+            MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),null);
         });
 
     }

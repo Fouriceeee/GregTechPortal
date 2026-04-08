@@ -34,8 +34,8 @@ public class GTPortalAddon implements IGTAddon {
                     AetherDimensions.AETHER_LEVEL.location(),
                     Pair.of(
                             GTPBlocks.AETHER_PORTAL_BLOCK,
-                            (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-                                    entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate, Blocks.GLOWSTONE))
+                            (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
+                                    entity.changeDimension(destWorld,new GTPTeleporter(offset,currWorld,contrllerPos,coordinate, Blocks.GLOWSTONE))
                     ));
             GTPTeleporter.POI_TYPE_MAP.put(AetherDimensions.AETHER_LEVEL.location(), GTPPoiTypes.AETHER_PORTAL_POI.getKey());
         }
@@ -45,8 +45,8 @@ public class GTPortalAddon implements IGTAddon {
                     TFGenerationSettings.DIMENSION,
                     Pair.of(
                             GTPBlocks.TWILIGHT_PORTAL_BLOCK,
-                            (entity, currWorld, destWorld,contrllerPos, coordinate) ->
-                                    entity.changeDimension(destWorld,new TwilightTeleporter(currWorld,contrllerPos,coordinate, TFBlocks.ROOT_BLOCK.get(),entity))
+                            (entity, offset,currWorld, destWorld,contrllerPos, coordinate) ->
+                                    entity.changeDimension(destWorld,new TwilightTeleporter(offset,currWorld,contrllerPos,coordinate, TFBlocks.ROOT_BLOCK.get(),entity))
                     ));
             GTPTeleporter.POI_TYPE_MAP.put(TFGenerationSettings.DIMENSION, GTPPoiTypes.TWILIGHT_PORTAL_POI.getKey());
         }

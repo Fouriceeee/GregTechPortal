@@ -12,14 +12,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.portal.PortalInfo;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Function;
 
 public class EndTeleporter extends GTPTeleporter{
-    public EndTeleporter(ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block) {
-        super(world, controllerPos, coordinate, block);
+
+
+    public EndTeleporter(Vec3 offset, ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block) {
+        super(offset, world, controllerPos, coordinate, block);
     }
 
     @Override

@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.portal.PortalInfo;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.world.registration.TFGenerationSettings;
 
@@ -14,10 +15,11 @@ import twilightforest.world.registration.TFGenerationSettings;
 public class TwilightTeleporter extends GTPTeleporter{
     private final Entity entity;
 
-    public TwilightTeleporter(ServerLevel world, BlockPos controllerPos,@Nullable Vec3i pos, Block block, Entity entity) {
-        super(world,controllerPos, pos, block);
+    public TwilightTeleporter(Vec3 offset, ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block, Entity entity) {
+        super(offset, world, controllerPos, coordinate, block);
         this.entity = entity;
     }
+
 
     @Override
     protected BlockPos getScaledPos(ServerLevel destWorld, BlockPos currentPos) {

@@ -34,6 +34,8 @@ public class GTPMachines {
     public static final MultiblockMachineDefinition MULTIDIMENSIONAL_PORTAL_CONTROLLER = GTPRegistries.REGISTRATE
             .multiblock("multidimensional_portal_controller", MultidimensionalPortalControllerMachine::new)
             .rotationState(RotationState.ALL)
+//            .allowExtendedFacing(true)
+//            .rotationState(RotationState.NON_Y_AXIS)
             .recipeType(GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE)
             .recipeModifier(RecipeModifier.NO_MODIFIER)
             .appearanceBlock(()->GTPBlocks.MULTIDIMENSIONAL_PORTAL_FRAME.get())
