@@ -13,6 +13,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     public static void init(){
-        DynamicRenderManager.register(GTPortal.id("portal_block"), PortalBlockRenderer.TYPE);
+        //DynamicRenderManager.register(GTPortal.id("portal_block"), PortalBlockRenderer.TYPE);
     }
 }

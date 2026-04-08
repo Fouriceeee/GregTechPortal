@@ -8,6 +8,7 @@ import java.util.Set;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+@Deprecated
 public interface IBlockRenderMulti extends IWorkableMultiController, IMachineFeature {
 
     @ApiStatus.NonExtendable

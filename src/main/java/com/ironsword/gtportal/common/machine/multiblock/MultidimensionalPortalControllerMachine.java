@@ -10,20 +10,16 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.GTPConfigHolder;
-import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
+import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.api.portal.teleporter.EndTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
-import com.ironsword.gtportal.api.portal.teleporter.TestTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.Utils;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -46,43 +42,37 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
+public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
     public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK::get,(entity, currWorld, destWorld, controllerPos,coordinate) -> {});
-//    public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
-//            Level.OVERWORLD.location(),Pair.of(
-//                    GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
-//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-//                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
-//            Level.NETHER.location(),Pair.of(
-//                    GTPBlocks.NETHER_PORTAL_BLOCK::get,
-//                    (entity, currWorld, destWorld,contrllerPos, coordinate) ->
-//                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
-//            Level.END.location(),Pair.of(
-//                    GTPBlocks.END_PORTAL_BLOCK::get,
-//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-//                            entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
-//    ));
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
                     GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld, contrllerPos,coordinate) ->
-                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
+                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
             Level.NETHER.location(),Pair.of(
                     GTPBlocks.NETHER_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld,contrllerPos, coordinate) ->
-                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
+                            entity.changeDimension(destWorld,new GTPTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
             Level.END.location(),Pair.of(
                     GTPBlocks.END_PORTAL_BLOCK::get,
                     (entity, currWorld, destWorld, contrllerPos,coordinate) ->
                             entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
     ));
-
-    @Getter
-    @Setter
-    @DescSynced
-    @RequireRerender
-    private @NotNull Set<BlockPos> blockOffsets = new HashSet<>();
+//    public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
+//            Level.OVERWORLD.location(),Pair.of(
+//                    GTPBlocks.OVERWORLD_PORTAL_BLOCK::get,
+//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
+//                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.COBBLESTONE))),
+//            Level.NETHER.location(),Pair.of(
+//                    GTPBlocks.NETHER_PORTAL_BLOCK::get,
+//                    (entity, currWorld, destWorld,contrllerPos, coordinate) ->
+//                            entity.changeDimension(destWorld,new TestTeleporter(currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
+//            Level.END.location(),Pair.of(
+//                    GTPBlocks.END_PORTAL_BLOCK::get,
+//                    (entity, currWorld, destWorld, contrllerPos,coordinate) ->
+//                            entity.changeDimension(destWorld,new EndTeleporter(currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
+//    ));
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MultidimensionalPortalControllerMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
@@ -90,8 +80,6 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Nonnull
     @Getter
     protected Pair<ResourceLocation, Vec3i> cache = Pair.of(null,null);
-
-    protected TickableSubscription teleportSubscription;
 
     public MultidimensionalPortalControllerMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
@@ -119,29 +107,6 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
                 textList.add(Component.translatable("gtportal.machine.tooltip.coordinate").append(": ").append("[%d %d %d]".formatted(cache.getSecond().getX(),cache.getSecond().getY(),cache.getSecond().getZ())));
             }
         }
-
-
-    }
-
-    @Override
-    public @NotNull Set<BlockPos> saveOffsets() {
-        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-
-        BlockPos pos = getPos();
-        BlockPos center = pos;
-
-        Set<BlockPos> offsets = new HashSet<>();
-
-        for (int i=0;i<3;i++){
-            center = center.relative(up);
-            offsets.add(center.subtract(pos));
-            offsets.add(center.relative(clockwise).subtract(pos));
-            offsets.add(center.relative(counterClockwise).subtract(pos));
-        }
-
-        return offsets;
     }
 
     public Set<BlockPos> getPortalPoses(){
@@ -164,34 +129,9 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-        teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
-    }
-
-    @Override
-    public void onUnload() {
-        super.onUnload();
-        unsubscribe(teleportSubscription);
-        teleportSubscription = null;
-    }
-
-    @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
-        teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
-        IBlockRenderMulti.super.onStructureFormed();
-    }
-
-    @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
-            destroyPortalBlock();
-        }
-        unsubscribe(teleportSubscription);
-        teleportSubscription = null;
-        IBlockRenderMulti.super.onStructureInvalid();
+        destroyPortalBlock();
     }
 
     @Override
@@ -215,9 +155,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
             return false;
         }
         else {
-            if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
-                placePortalBlock();
-            }
+            placePortalBlock();
             return true;
         }
         //return cache.getFirst() != null || getLevel().dimension().location().equals(cache.getFirst());
@@ -226,9 +164,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     @Override
     public void afterWorking() {
         clearCache();
-        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
-            fillAir();
-        }
+        fillAir();
         super.afterWorking();
     }
 
@@ -294,7 +230,8 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         cache = EMPTY_PAIR;
     }
 
-    protected void teleportEntities(){
+    @Override
+    public void teleportEntities(){
         if (!(getLevel() instanceof ServerLevel)||!getRecipeLogic().isWorking())
             return;
 

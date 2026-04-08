@@ -81,7 +81,8 @@ public class MachineUtils {
                 .hasBER(true)
                 .modelProperty(GTMachineModelProperties.RECIPE_LOGIC_STATUS, RecipeLogic.Status.IDLE)
                 .model(createWorkableCasingMachineModel(texture, overlayTexture)
-                        .andThen(b->b.addDynamicRenderer(()->new PortalBlockRenderer(Optional.of(portal.get())))))
+                        //.andThen(b->b.addDynamicRenderer(()->new PortalBlockRenderer(Optional.of(portal.get()))))
+                )
                 .tooltips(tooltips)
                 .register();
     }

@@ -1,20 +1,14 @@
 package com.ironsword.gtportal.common.machine.multiblock;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.ironsword.gtportal.GTPConfigHolder;
-import com.ironsword.gtportal.api.machine.feature.IBlockRenderMulti;
+import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.Utils;
-import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
-import com.lowdragmc.lowdraglib.syncdata.annotation.RequireRerender;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -24,7 +18,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -32,20 +25,12 @@ import java.util.Set;
 
 import static com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine.MAP;
 
-public class SingleDimensionPortalControllerMachine extends WorkableElectricMultiblockMachine implements IBlockRenderMulti {
+public class SingleDimensionPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
 
     private final ResourceLocation dimension;
 
-    @Getter
-    @Setter
-    @DescSynced
-    @RequireRerender
-    private @NotNull Set<BlockPos> blockOffsets = new HashSet<>();
-
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(SingleDimensionPortalControllerMachine.class,
             WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
-
-    protected TickableSubscription teleportSubscription;
 
     public SingleDimensionPortalControllerMachine(IMachineBlockEntity holder, ResourceLocation dimension, Object... args) {
         super(holder, args);
@@ -59,33 +44,6 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     @Override
     protected RecipeLogic createRecipeLogic(Object... args) {
         return new PortalLogic(this);
-    }
-
-    @Override
-    public @NotNull Set<BlockPos> saveOffsets() {
-//        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-//
-//        BlockPos pos = getPos();
-//
-//        return Set.of(pos.relative(up).subtract(pos),pos.relative(up,2).subtract(pos));
-
-        Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-        Direction counterClockwise = RelativeDirection.LEFT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
-
-        BlockPos pos = getPos();
-        BlockPos center = pos;
-
-        Set<BlockPos> offsets = new HashSet<>();
-
-        for (int i=0;i<3;i++){
-            center = center.relative(up);
-            offsets.add(center.subtract(pos));
-            offsets.add(center.relative(clockwise).subtract(pos));
-            offsets.add(center.relative(counterClockwise).subtract(pos));
-        }
-
-        return offsets;
     }
 
     public Set<BlockPos> getPortalPoses(){
@@ -108,34 +66,9 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-        //teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
-    }
-
-    @Override
-    public void onUnload() {
-        super.onUnload();
-        unsubscribe(teleportSubscription);
-        teleportSubscription = null;
-    }
-
-    @Override
-    public void onStructureFormed() {
-        super.onStructureFormed();
-        teleportSubscription = subscribeServerTick(teleportSubscription,this::teleportEntities);
-        IBlockRenderMulti.super.onStructureFormed();
-    }
-
-    @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
-            destroyPortalBlock();
-        }
-        unsubscribe(teleportSubscription);
-        teleportSubscription = null;
-        IBlockRenderMulti.super.onStructureInvalid();
+        destroyPortalBlock();
     }
 
     @Override
@@ -143,21 +76,17 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         if (recipe == null) return false;
         if (!super.beforeWorking(recipe)) return false;
 
-        if (getLevel().dimension().location().equals(dimension)||!recipe.data.getString("dimension").equals(dimension.toString())){
+        if (getLevel() == null || getLevel().dimension().location().equals(dimension) || !recipe.data.getString("dimension").equals(dimension.toString())){
             return false;
         }else {
-            if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
-                placePortalBlock();
-            }
+            placePortalBlock();
             return true;
         }
     }
 
     @Override
     public void afterWorking() {
-        if (GTPConfigHolder.INSTANCE.portalBlockConfigs.generatePortalBlocks){
-            fillAir();
-        }
+        fillAir();
         super.afterWorking();
     }
 
@@ -185,7 +114,8 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         }
     }
 
-    protected void teleportEntities(){
+    @Override
+    public void teleportEntities(){
         if (!(getLevel() instanceof ServerLevel)||!getRecipeLogic().isWorking())
             return;
 

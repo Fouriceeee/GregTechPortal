@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
+@Deprecated
 public class PortalBlockRenderer extends DynamicRender<IBlockRenderMulti, PortalBlockRenderer> {
 
     public static final Codec<PortalBlockRenderer> CODEC = RecordCodecBuilder.create(instance->instance.group(

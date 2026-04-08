@@ -1,11 +1,5 @@
 {
   "parent": "minecraft:block/block",
-  "dynamic_renders": [
-    {
-      "type": "gtportal:portal_block",
-      "fixed_block": "gtportal:aether_portal_block"
-    }
-  ],
   "loader": "gtceu:machine",
   "machine": "gtportal:simple_aether_portal_controller",
   "texture_overrides": {

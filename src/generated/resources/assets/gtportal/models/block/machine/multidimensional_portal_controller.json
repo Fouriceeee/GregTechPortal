@@ -1,10 +1,5 @@
 {
   "parent": "minecraft:block/block",
-  "dynamic_renders": [
-    {
-      "type": "gtportal:portal_block"
-    }
-  ],
   "loader": "gtceu:machine",
   "machine": "gtportal:multidimensional_portal_controller",
   "texture_overrides": {
