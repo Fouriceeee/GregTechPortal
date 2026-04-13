@@ -35,17 +35,18 @@ public class EndTeleporter extends GTPTeleporter{
             return makePortalInfo(entity, coordinate);
         }
 
-        BlockPos currPos = getScaledPos(destWorld,this.currPos);
+        BlockPos scaledPos = getScaledPos(destWorld,this.currPos);
 
-        Optional<Pair<Direction.Axis, BlockUtil.FoundRectangle>> pair = findPortalAround(destWorld,currPos,destWorld.getWorldBorder());
+        Optional<PortalInfo> info1 = createSingleDimensionPCMPortalInfo(entity,destWorld,scaledPos,destWorld.getWorldBorder());
 
-        if (pair.isPresent()){
-            BlockPos pos = pair.get().getSecond().minCorner;
-            if (pair.get().getFirst().isHorizontal()){
-                return makePortalInfo(entity,pos.relative(pair.get().getFirst(),1));
-            }else {
-                return makePortalInfo(entity,pos.offset(-1,1,-1));
-            }
+        if (info1.isPresent()){
+            return info1.get();
+        }
+
+        Optional<PortalInfo> info2 = createMultiDimensionPCMPortalInfo(entity,destWorld,scaledPos,destWorld.getWorldBorder());
+
+        if (info2.isPresent()){
+            return info2.get();
         }
 
         ServerLevel.makeObsidianPlatform(destWorld);

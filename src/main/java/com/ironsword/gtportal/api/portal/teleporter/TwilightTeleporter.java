@@ -13,11 +13,8 @@ import twilightforest.world.registration.TFGenerationSettings;
 
 
 public class TwilightTeleporter extends GTPTeleporter{
-    private final Entity entity;
-
-    public TwilightTeleporter(Vec3 offset, ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block, Entity entity) {
+    public TwilightTeleporter(Vec3 offset, ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block) {
         super(offset, world, controllerPos, coordinate, block);
-        this.entity = entity;
     }
 
 
@@ -30,7 +27,7 @@ public class TwilightTeleporter extends GTPTeleporter{
     }
 
     @Override
-    protected BlockPos searchDestPos(ServerLevel destWorld, BlockPos scaledPos) {
+    protected BlockPos searchDestPos(Entity entity,ServerLevel destWorld, BlockPos scaledPos) {
 
         PortalInfo info = TFTeleportAccessor.callMoveToSafeCoords(destWorld,entity,scaledPos);
         TFTeleportAccessor.callLoadSurroundingArea(destWorld,info.pos);
@@ -45,7 +42,7 @@ public class TwilightTeleporter extends GTPTeleporter{
         if (spot != null) {
             return spot.above();
         }
-        return super.searchDestPos(destWorld,scaledPos);
+        return super.searchDestPos(entity,destWorld,scaledPos);
 
         //旧的反射写法
 //        Class<?> clazz = TFTeleporter.class;

@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.ironsword.gtportal.common.data.GTPPoiTypes;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import com.ironsword.gtportal.common.machine.multiblock.SingleDimensionPortalControllerMachine;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,7 +22,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -39,13 +37,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class GTPTeleporter implements ITeleporter {
-    public static final Map<ResourceLocation, ResourceKey<PoiType>> POI_TYPE_MAP = new HashMap<>(Map.of(
-            Level.OVERWORLD.location(), GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey(),
-            Level.NETHER.location(), GTPPoiTypes.NETHER_PORTAL_POI.getKey(),
-            Level.END.location(), GTPPoiTypes.END_PORTAL_POI.getKey()
-    ));
-
-    public static final Map<ResourceLocation, ResourceKey<PoiType>> TEST_MAP = new HashMap<>(Map.of(
+    public static final Map<ResourceLocation, ResourceKey<PoiType>> POITYPE_MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(), GTPPoiTypes.OVERWORLD_PCM_POI.getKey(),
             Level.NETHER.location(), GTPPoiTypes.NETHER_PCM_POI.getKey(),
             Level.END.location(), GTPPoiTypes.END_PCM_POI.getKey()
@@ -69,14 +61,9 @@ public class GTPTeleporter implements ITeleporter {
         return new PortalInfo(new Vec3(pos.getX()+0.5,pos.getY(),pos.getZ()+0.5),Vec3.ZERO,entity.getYRot(), entity.getXRot());
     }
 
-//    protected PortalInfo makeOffsetPortalInfo(Entity entity,BlockPos pos){
-//        Vec3 offset = entity.position().subtract(currPos.getCenter());
-//
-//        return new PortalInfo(pos.getCenter().add(offset),Vec3.ZERO, entity.getXRot(), entity.getYRot());
-//    }
-
     @Override
     public @Nullable PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel, PortalInfo> defaultPortalInfo) {
+        //if coordinate is not null, teleport to there directly
         if (coordinate != null){
             BlockEntity blockEntity = destWorld.getBlockEntity(coordinate);
             if (blockEntity instanceof MetaMachineBlockEntity machineEntity && machineEntity.getMetaMachine() instanceof MultidimensionalPortalControllerMachine portalMachine){
@@ -85,34 +72,43 @@ public class GTPTeleporter implements ITeleporter {
             return makePortalInfo(entity, coordinate);
         }
 
+        //else, find a proper place to teleport
+
         BlockPos scaledPos = getScaledPos(destWorld,this.currPos);
 
-
-        //find near single dimension pcm
+        //find nearest single dimension pcm
         Optional<PortalInfo> info1 = createSingleDimensionPCMPortalInfo(entity,destWorld,scaledPos,destWorld.getWorldBorder());
 
         if (info1.isPresent()){
             return info1.get();
         }
 
-        //find near portal block
-        Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> pair = findPortalAround(destWorld,scaledPos,destWorld.getWorldBorder());
+        //find nearest multi dimension pcm
+        Optional<PortalInfo> info2 = createMultiDimensionPCMPortalInfo(entity,destWorld,scaledPos,destWorld.getWorldBorder());
 
-        if (pair.isPresent()){
-            BlockPos pos = pair.get().getSecond().minCorner;
-            if (pair.get().getFirst().isHorizontal()){
-                Optional<BlockPos> safePos = safePortalEntrance(destWorld,pair.get().getFirst(),pair.get().getSecond());
-                if (safePos.isPresent()){
-                    return makePortalInfo(entity,safePos.get());
-                }
-            }else {
-                return makePortalInfo(entity,pos.offset(-1,1,-1));
-            }
+        if (info2.isPresent()){
+            return info2.get();
         }
 
 
+        //find near portal block
+//        Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> pair = findPortalAround(destWorld,scaledPos,destWorld.getWorldBorder());
+//
+//        if (pair.isPresent()){
+//            BlockPos pos = pair.get().getSecond().minCorner;
+//            if (pair.get().getFirst().isHorizontal()){
+//                Optional<BlockPos> safePos = safePortalEntrance(destWorld,pair.get().getFirst(),pair.get().getSecond());
+//                if (safePos.isPresent()){
+//                    return makePortalInfo(entity,safePos.get());
+//                }
+//            }else {
+//                return makePortalInfo(entity,pos.offset(-1,1,-1));
+//            }
+//        }
+
+
         //find safe position to tp
-        BlockPos destPos = searchDestPos(destWorld,scaledPos);
+        BlockPos destPos = searchDestPos(entity,destWorld,scaledPos);
 
         if (destPos == null){
             destPos = destWorld.getWorldBorder().isWithinBounds(scaledPos)
@@ -128,7 +124,7 @@ public class GTPTeleporter implements ITeleporter {
     protected Optional<BlockPos> findSingleDimensionPCMAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
         PoiManager manager = destWorld.getPoiManager();
         manager.ensureLoadedAndValid(destWorld, scaledPos, 32);
-        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(TEST_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
+        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POITYPE_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
                 .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
                 .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
                 .findFirst();
@@ -137,35 +133,65 @@ public class GTPTeleporter implements ITeleporter {
 
     protected Optional<PortalInfo> createSingleDimensionPCMPortalInfo(Entity entity, ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
         Optional<BlockPos> machinePos = findSingleDimensionPCMAround(destWorld,scaledPos,worldBorder);
-        Optional<PortalInfo> info = Optional.empty();
         if (machinePos.isPresent()
                 && destWorld.getBlockEntity(machinePos.get()) instanceof MetaMachineBlockEntity machineEntity
                 && machineEntity.getMetaMachine() instanceof SingleDimensionPortalControllerMachine machine
                 && machine.isActive()){
-
-            info = Optional.of(new PortalInfo(
+            return Optional.of(new PortalInfo(
                     machine.applyRelativeOffset(offset)
                     ,Vec3.ZERO, entity.getYRot(), entity.getXRot()));
-            //info = Optional.of(makeOffsetPortalInfo(entity,machine.getPos().relative(machine.getFrontFacing())));
+        }else {
+            return Optional.empty();
         }
-        return info;
     }
 
-    protected Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> findPortalAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
+    protected Optional<BlockPos> findMultiDimensionPCMAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
         PoiManager manager = destWorld.getPoiManager();
         manager.ensureLoadedAndValid(destWorld, scaledPos, 32);
-        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POI_TYPE_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
+        Optional<PoiRecord> optionalPois = manager.getInSquare(poiType -> poiType.is(GTPPoiTypes.MULTI_PCM_POI.getKey()), scaledPos, 32, PoiManager.Occupancy.ANY)
                 .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
-                .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
-                .filter((poiRecord) -> destWorld.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.AXIS))
-                .findFirst();
-        return optionalPoi.map((poiRecord) -> {
-            BlockPos poiPos = poiRecord.getPos();
-            destWorld.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(poiPos), 3, poiPos);
-            BlockState blockstate = destWorld.getBlockState(poiPos);
-            return Pair.of(blockstate.getValue(BlockStateProperties.AXIS),BlockUtil.getLargestRectangleAround(poiPos, blockstate.getValue(BlockStateProperties.AXIS), 21, Direction.Axis.Y, 21, (blockPos) -> destWorld.getBlockState(blockPos) == blockstate));
-        });
+                .filter(poiRecord -> {
+                    BlockPos poiPos = poiRecord.getPos();
+                    destWorld.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(poiPos), 3, poiPos);
+                    return destWorld.getBlockEntity(poiPos) instanceof MetaMachineBlockEntity machineBlockEntity
+                            && machineBlockEntity.getMetaMachine() instanceof MultidimensionalPortalControllerMachine pcm
+                            && pcm.isActive() && currWorld.dimension().location().equals(pcm.getCache().getFirst());
+                })
+                .min(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()));
+        return optionalPois.map(PoiRecord::getPos);
+
     }
+
+    protected Optional<PortalInfo> createMultiDimensionPCMPortalInfo(Entity entity, ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
+        Optional<BlockPos> machinePos = findMultiDimensionPCMAround(destWorld,scaledPos,worldBorder);
+        if(machinePos.isPresent()
+                && destWorld.getBlockEntity(machinePos.get()) instanceof MetaMachineBlockEntity machineBlockEntity
+                && machineBlockEntity.getMetaMachine() instanceof MultidimensionalPortalControllerMachine pcm
+                && pcm.isActive()
+                && currWorld.dimension().location().equals(pcm.getCache().getFirst())) {
+            return Optional.of(new PortalInfo(
+                    pcm.applyRelativeOffset(offset)
+                    ,Vec3.ZERO, entity.getYRot(), entity.getXRot()));
+        }else {
+            return Optional.empty();
+        }
+    }
+
+//    protected Optional<Pair<Direction.Axis,BlockUtil.FoundRectangle>> findPortalAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
+//        PoiManager manager = destWorld.getPoiManager();
+//        manager.ensureLoadedAndValid(destWorld, scaledPos, 32);
+//        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POI_TYPE_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
+//                .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
+//                .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
+//                .filter((poiRecord) -> destWorld.getBlockState(poiRecord.getPos()).hasProperty(BlockStateProperties.AXIS))
+//                .findFirst();
+//        return optionalPoi.map((poiRecord) -> {
+//            BlockPos poiPos = poiRecord.getPos();
+//            destWorld.getChunkSource().addRegionTicket(TicketType.PORTAL, new ChunkPos(poiPos), 3, poiPos);
+//            BlockState blockstate = destWorld.getBlockState(poiPos);
+//            return Pair.of(blockstate.getValue(BlockStateProperties.AXIS),BlockUtil.getLargestRectangleAround(poiPos, blockstate.getValue(BlockStateProperties.AXIS), 21, Direction.Axis.Y, 21, (blockPos) -> destWorld.getBlockState(blockPos) == blockstate));
+//        });
+//    }
 
     protected Optional<BlockPos> safePortalEntrance(ServerLevel destWorld, Direction.Axis axis,BlockUtil.FoundRectangle rectangle){
         BlockPos corner = rectangle.minCorner;
@@ -177,7 +203,7 @@ public class GTPTeleporter implements ITeleporter {
         return Optional.empty();
     }
 
-    protected BlockPos searchDestPos(ServerLevel destWorld, BlockPos scaledPos){
+    protected BlockPos searchDestPos(Entity entity,ServerLevel destWorld, BlockPos scaledPos){
         for (var checkPos:BlockPos.spiralAround(scaledPos,16, Direction.EAST,Direction.SOUTH)){
             destWorld.getChunk(checkPos);
 

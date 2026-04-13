@@ -15,6 +15,7 @@ import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.PhyUtils;
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
@@ -65,6 +66,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
 
     @Nonnull
     @Getter
+    @Persisted
     protected Pair<ResourceLocation, Vec3i> cache = Pair.of(null,null);
     @Nullable
     private AABB portalBlockAABB;
@@ -280,7 +282,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         }
 
         getLevel().getEntities(null, portalBlockAABB).forEach(e->{
-            if (!(e instanceof Entity) ||!e.canChangeDimensions())
+            if (!(e instanceof Entity) ||!e.canChangeDimensions() || e.isOnPortalCooldown())
                 return;
 
             MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());

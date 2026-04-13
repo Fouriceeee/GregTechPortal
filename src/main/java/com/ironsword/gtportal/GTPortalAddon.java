@@ -37,7 +37,7 @@ public class GTPortalAddon implements IGTAddon {
                             (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
                                     entity.changeDimension(destWorld,new GTPTeleporter(offset,currWorld,contrllerPos,coordinate, Blocks.GLOWSTONE))
                     ));
-            GTPTeleporter.POI_TYPE_MAP.put(AetherDimensions.AETHER_LEVEL.location(), GTPPoiTypes.AETHER_PORTAL_POI.getKey());
+            GTPTeleporter.POITYPE_MAP.put(AetherDimensions.AETHER_LEVEL.location(),GTPPoiTypes.AETHER_PCM_POI.getKey());
         }
 
         if (LDLib.isModLoaded("twilightforest")){
@@ -46,9 +46,9 @@ public class GTPortalAddon implements IGTAddon {
                     Pair.of(
                             GTPBlocks.TWILIGHT_PORTAL_BLOCK,
                             (entity, offset,currWorld, destWorld,contrllerPos, coordinate) ->
-                                    entity.changeDimension(destWorld,new TwilightTeleporter(offset,currWorld,contrllerPos,coordinate, TFBlocks.ROOT_BLOCK.get(),entity))
+                                    entity.changeDimension(destWorld,new TwilightTeleporter(offset,currWorld,contrllerPos,coordinate, TFBlocks.ROOT_BLOCK.get()))
                     ));
-            GTPTeleporter.POI_TYPE_MAP.put(TFGenerationSettings.DIMENSION, GTPPoiTypes.TWILIGHT_PORTAL_POI.getKey());
+            GTPTeleporter.POITYPE_MAP.put(TFGenerationSettings.DIMENSION, GTPPoiTypes.TWILIGHT_PCM_POI.getKey());
         }
     }
 
