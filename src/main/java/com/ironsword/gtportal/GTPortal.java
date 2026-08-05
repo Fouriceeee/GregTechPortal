@@ -18,13 +18,10 @@ public class GTPortal
 
     public GTPortal(FMLJavaModLoadingContext context)
     {
-
         DistExecutor.unsafeRunForDist(()-> ClientProxy::new,()-> CommonProxy::new);
     }
-
 
     public static ResourceLocation id(String name){
         return ResourceLocation.tryBuild(MODID,name);
     }
-
 }

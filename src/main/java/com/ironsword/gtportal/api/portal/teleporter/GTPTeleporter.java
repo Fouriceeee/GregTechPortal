@@ -63,7 +63,7 @@ public class GTPTeleporter implements ITeleporter {
 
     @Override
     public @Nullable PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel, PortalInfo> defaultPortalInfo) {
-        //if coordinate is not null, teleport to there directly
+        //if coordinate is not null, teleport to the coordinate directly
         if (coordinate != null){
             BlockEntity blockEntity = destWorld.getBlockEntity(coordinate);
             if (blockEntity instanceof MetaMachineBlockEntity machineEntity && machineEntity.getMetaMachine() instanceof MultidimensionalPortalControllerMachine portalMachine){
@@ -73,7 +73,6 @@ public class GTPTeleporter implements ITeleporter {
         }
 
         //else, find a proper place to teleport
-
         BlockPos scaledPos = getScaledPos(destWorld,this.currPos);
 
         //find nearest single dimension pcm
