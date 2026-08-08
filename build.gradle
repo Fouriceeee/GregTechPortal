@@ -63,6 +63,10 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    flatDir{
+        dir 'libs'
+    }
+
     mavenCentral()
     maven {
         url = "https://maven.minecraftforge.net/"
@@ -138,7 +142,8 @@ dependencies {
     implementation fg.deobf("curse.maven:jade-324717:5640610")
 
     implementation fg.deobf("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") { transitive = false }
-    implementation fg.deobf("com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gregtech_version}:slim") { transitive = false }
+    implementation "name:gtceu-ctnh-1.20.1:26.7"
+    //implementation fg.deobf("com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gregtech_version}:slim") { transitive = false }
     implementation fg.deobf("dev.toma.configuration:configuration-forge-${minecraft_version}:${configuration_version}")
     implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
 
