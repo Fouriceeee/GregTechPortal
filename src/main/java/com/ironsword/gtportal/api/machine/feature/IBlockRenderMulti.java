@@ -1,6 +1,7 @@
 package com.ironsword.gtportal.api.machine.feature;
 
 import com.gregtechceu.gtceu.api.machine.feature.IMachineFeature;
+import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IWorkableMultiController;
 import net.minecraft.core.BlockPos;
 
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 @Deprecated
-public interface IBlockRenderMulti extends IWorkableMultiController, IMachineFeature {
+public interface IBlockRenderMulti extends IWorkableMultiController, IMachineFeature, IRecipeLogicMachine {
 
     @ApiStatus.NonExtendable
     default Set<BlockPos> getRenderBlockOffsets(){

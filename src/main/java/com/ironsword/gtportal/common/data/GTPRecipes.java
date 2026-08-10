@@ -68,28 +68,26 @@ public class GTPRecipes {
         CompoundTag tag = new CompoundTag();
         tag.putString("dimension",dimension.toString());
 
-        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id+"_data_stick")
+        // the ctnh fork of GTM rejects explicit EUt(0); omitting it means "no EU requirement" (equivalent)
+        var builder = GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id+"_data_stick")
                 .notConsumable(PartialNBTIngredient.of(tag,GTPItems.DIMENSION_DATA_STICK))
-                .EUt(eut)
-                .duration(duration)
-                .addData("dimension",dimension.getPath())
-                .save(provider);
+                .duration(duration);
+        if (eut > 0) builder.EUt(eut);
+        builder.addData("dimension",dimension.getPath()).save(provider);
 
-        GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id+"_data_recorder")
+        builder = GTPRecipeTypes.MULTIDIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id+"_data_recorder")
                 .notConsumable(PartialNBTIngredient.of(tag,GTPItems.DIMENSION_DATA_RECORDER))
-                .EUt(eut)
-                .duration(duration)
-                .addData("dimension",dimension.getPath())
-                .save(provider);
+                .duration(duration);
+        if (eut > 0) builder.EUt(eut);
+        builder.addData("dimension",dimension.getPath()).save(provider);
 
     }
 
     private static void registerSingleDimensionalTeleportRecipe(String id, ItemLike item,ResourceLocation dimension, long eut, int duration, Consumer<FinishedRecipe> provider){
-        GTPRecipeTypes.SINIGLE_DIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id)
+        var builder = GTPRecipeTypes.SINIGLE_DIMENSIONAL_TELEPORT_RECIPE_TYPE.recipeBuilder(id)
                 .notConsumable(item.asItem())
-                .EUt(eut)
-                .duration(duration)
-                .addData("dimension",dimension.toString())
-                .save(provider);
+                .duration(duration);
+        if (eut > 0) builder.EUt(eut);
+        builder.addData("dimension",dimension.toString()).save(provider);
     }
 }

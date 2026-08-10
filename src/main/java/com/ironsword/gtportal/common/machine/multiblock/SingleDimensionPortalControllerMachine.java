@@ -1,17 +1,17 @@
 package com.ironsword.gtportal.common.machine.multiblock;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.RecipeElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.PhyUtils;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -27,22 +27,15 @@ import java.util.Set;
 
 import static com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine.MAP;
 
-public class SingleDimensionPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
+public class SingleDimensionPortalControllerMachine extends RecipeElectricMultiblockMachine implements ITeleportMachine {
 
     private final ResourceLocation dimension;
     @Nullable
     private AABB portalBlockAABB;
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(SingleDimensionPortalControllerMachine.class,
-            WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
-
     public SingleDimensionPortalControllerMachine(IMachineBlockEntity holder, ResourceLocation dimension, Object... args) {
         super(holder, args);
         this.dimension = dimension;
-    }
-
-    public static ManagedFieldHolder getManagedFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override
@@ -93,15 +86,16 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     }
 
     @Override
-    public boolean beforeWorking(@Nullable GTRecipe recipe) {
-        if (recipe == null) return false;
-        if (!super.beforeWorking(recipe)) return false;
+    public Component beforeWorking(@Nullable GTRecipe recipe) {
+        if (recipe == null) return Component.translatable("gtportal.machine.tooltip.no_data");
+        Component result = super.beforeWorking(recipe);
+        if (result != null) return result;
 
         if (getLevel() == null || getLevel().dimension().location().equals(dimension) || !recipe.data.getString("dimension").equals(dimension.toString())){
-            return false;
+            return Component.translatable("gtportal.machine.tooltip.no_data");
         }else {
             placePortalBlock();
-            return true;
+            return null;
         }
     }
 

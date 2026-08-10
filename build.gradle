@@ -141,7 +141,12 @@ dependencies {
 
     implementation fg.deobf("curse.maven:jade-324717:5640610")
 
+    // ldlib 1.0.52+ required by the ctnh fork of GTM; served from libs/ (mapped dev jar) so
+    // the build works even when the maven is unreachable. Use the maven coordinate instead
+    // (fg.deobf) once the deobf artifact can be fetched and cached.
+    //implementation "name:ldlib-forge-${minecraft_version}:${ldlib_version}"
     implementation fg.deobf("com.lowdragmc.ldlib:ldlib-forge-${minecraft_version}:${ldlib_version}") { transitive = false }
+
     implementation "name:gtceu-ctnh-1.20.1:26.7"
     //implementation fg.deobf("com.gregtechceu.gtceu:gtceu-${minecraft_version}:${gregtech_version}:slim") { transitive = false }
     implementation fg.deobf("dev.toma.configuration:configuration-forge-${minecraft_version}:${configuration_version}")
@@ -161,6 +166,26 @@ dependencies {
 mixin {
     config "${mod_id}.mixins.json"
     add sourceSets.main, "${mod_id}.refmap.json"
+}
+
+// In dev runs the mixin bootstrap reads --mixin.config through the TCCL, which only covers the
+// legacy classpath file written by prepareRun*. That file omits the mod's own outputs, so the
+// mixin config can't be located before FML loads the mod. Append the outputs to those files.
+['Client', 'Server', 'Data', 'GameTestServer'].each { runName ->
+    tasks.matching { it.name == "prepareRun${runName}" }.configureEach {
+        doLast {
+            def classpathFile = layout.buildDirectory.file("classpath/run${runName}_minecraftClasspath.txt").get().asFile
+            if (!classpathFile.exists()) return
+            def entries = classpathFile.getText('UTF-8').split('\\r?\\n') as LinkedHashSet
+            def changed = false
+            [sourceSets.main.output.classesDirs.asPath, sourceSets.main.output.resourcesDir.absolutePath].each { path ->
+                if (entries.add(path)) changed = true
+            }
+            if (changed) {
+                classpathFile.text = entries.findAll { !it.isEmpty() }.join(System.lineSeparator()) + System.lineSeparator()
+            }
+        }
+    }
 }
 
 tasks.named('processResources', ProcessResources).configure {

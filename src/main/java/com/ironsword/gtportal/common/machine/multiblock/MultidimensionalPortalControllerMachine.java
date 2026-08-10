@@ -4,7 +4,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
 import com.gregtechceu.gtceu.api.capability.recipe.ItemRecipeCapability;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMachine;
+import com.gregtechceu.gtceu.api.machine.multiblock.RecipeElectricMultiblockMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
@@ -16,7 +16,6 @@ import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.PhyUtils;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
-import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
@@ -43,7 +42,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
+public class MultidimensionalPortalControllerMachine extends RecipeElectricMultiblockMachine implements ITeleportMachine {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
     public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity,offset,  currWorld, destWorld, controllerPos, coordinate) -> {});
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
@@ -61,9 +60,6 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
                             entity.changeDimension(destWorld,new EndTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
     ));
 
-    protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MultidimensionalPortalControllerMachine.class,
-            WorkableElectricMultiblockMachine.MANAGED_FIELD_HOLDER);
-
     @Nonnull
     @Getter
     @Persisted
@@ -73,10 +69,6 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
 
     public MultidimensionalPortalControllerMachine(IMachineBlockEntity holder, Object... args) {
         super(holder, args);
-    }
-
-    public static ManagedFieldHolder getManagedFieldHolder() {
-        return MANAGED_FIELD_HOLDER;
     }
 
     @Override
@@ -147,9 +139,10 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     }
 
     @Override
-    public boolean beforeWorking(@Nullable GTRecipe recipe) {
-        if (recipe == null) return false;
-        if (!super.beforeWorking(recipe)) return false;
+    public Component beforeWorking(@Nullable GTRecipe recipe) {
+        if (recipe == null) return Component.translatable("gtportal.machine.tooltip.no_data");
+        Component result = super.beforeWorking(recipe);
+        if (result != null) return result;
 
 //        ResourceLocation dimension = new ResourceLocation(recipe.data.getString("dimension"));
 //        if (getLevel().dimension().location().equals(dimension)) return false;
@@ -159,11 +152,11 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         cache = getFirstDimData(recipe);
 
         if (cache.getFirst() == null || getLevel().dimension().location().equals(cache.getFirst())){
-            return false;
+            return Component.translatable("gtportal.machine.tooltip.no_data");
         }
         else {
             placePortalBlock();
-            return true;
+            return null;
         }
         //return cache.getFirst() != null || getLevel().dimension().location().equals(cache.getFirst());
     }
@@ -222,7 +215,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         for (int i = 0; i < inputsSize; i++){
             var itemStack = itemInventory.get(i);
 
-            Ingredient recipeStack = ItemRecipeCapability.CAP.of(itemInputs.get(i).content);
+            Ingredient recipeStack = itemInputs.get(i).toVanillaIngredient();
             if (recipeStack.test(itemStack)){
                 return DimensionDataComponent.dataFromItemStack(itemStack);
             }
