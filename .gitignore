@@ -26,4 +26,4 @@ run-data
 forge*changelog.txt
 /src/generated/resources/.cache/
 /libs/*
-
+/src/test/java/*
