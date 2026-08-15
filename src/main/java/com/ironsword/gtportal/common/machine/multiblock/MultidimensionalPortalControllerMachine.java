@@ -245,7 +245,13 @@ public class MultidimensionalPortalControllerMachine extends RecipeElectricMulti
         );
     }
 
+    @Deprecated
     public Vec3 applyRelativeOffset(Vec3 offset){
+        return applyOffset(offset);
+    }
+
+    @Override
+    public Vec3 applyOffset(Vec3 offset) {
         Vec3 center = getPos().getCenter();
 
         Direction
@@ -280,6 +286,11 @@ public class MultidimensionalPortalControllerMachine extends RecipeElectricMulti
 
             MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
         });
+    }
+
+    @Override
+    public boolean canTeleport() {
+        return isActive();
     }
 
     @FunctionalInterface

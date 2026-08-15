@@ -123,7 +123,7 @@ public class GTPTeleporter implements ITeleporter {
     protected Optional<BlockPos> findSingleDimensionPCMAround(ServerLevel destWorld, BlockPos scaledPos, WorldBorder worldBorder){
         PoiManager manager = destWorld.getPoiManager();
         manager.ensureLoadedAndValid(destWorld, scaledPos, 32);
-        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POITYPE_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PORTAL_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
+        Optional<PoiRecord> optionalPoi = manager.getInSquare(poiType -> poiType.is(POITYPE_MAP.getOrDefault(currWorld.dimension().location(),GTPPoiTypes.OVERWORLD_PCM_POI.getKey())),scaledPos,32, PoiManager.Occupancy.ANY)
                 .filter((poiRecord) -> worldBorder.isWithinBounds(poiRecord.getPos()))
                 .sorted(Comparator.<PoiRecord>comparingDouble((poiRecord) -> poiRecord.getPos().distSqr(scaledPos)).thenComparingInt((poiRecord) -> poiRecord.getPos().getY()))
                 .findFirst();

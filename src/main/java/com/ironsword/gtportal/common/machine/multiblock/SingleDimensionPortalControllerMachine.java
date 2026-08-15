@@ -144,7 +144,13 @@ public class SingleDimensionPortalControllerMachine extends RecipeElectricMultib
         );
     }
 
+    @Deprecated
     public Vec3 applyRelativeOffset(Vec3 offset){
+        return applyOffset(offset);
+    }
+
+    @Override
+    public Vec3 applyOffset(Vec3 offset) {
         Vec3 center = getPos().getCenter();
 
         Direction
@@ -153,6 +159,11 @@ public class SingleDimensionPortalControllerMachine extends RecipeElectricMultib
                 right  = PhyUtils.getMachineRightFacing(front,up);
 
         return center.relative(front,offset.x).relative(up,offset.y).relative(right,offset.z);
+    }
+
+    @Override
+    public boolean canTeleport() {
+        return isActive();
     }
 
     @Override
