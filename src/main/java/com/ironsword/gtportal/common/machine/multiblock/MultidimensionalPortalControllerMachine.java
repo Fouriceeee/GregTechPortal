@@ -59,13 +59,13 @@ public class MultidimensionalPortalControllerMachine extends RecipeElectricMulti
             Level.END.location(),Pair.of(
                     GTPBlocks.END_PORTAL_BLOCK,
                     (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
-                            entity.changeDimension(destWorld,new EndTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
+                            entity.changeDimension(destWorld,new EndTeleporter(currWorld,offset,coordinate)))
     ));
 
     public static final Map<ResourceLocation, TeleportConsumer> TELE_MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(), TeleportConsumer.DEFAULT,
             Level.NETHER.location(), TeleportConsumer.DEFAULT,
-            Level.END.location(), TeleportConsumer.DEFAULT
+            Level.END.location(), (entity, destWorld, currLevel, offset, coordinate) -> entity.changeDimension(destWorld,new EndTeleporter(currLevel,offset,coordinate))
     ));
 
     public static final Map<ResourceLocation, Supplier<? extends Block>> BLOCK_MAP = new HashMap<>(Map.of(

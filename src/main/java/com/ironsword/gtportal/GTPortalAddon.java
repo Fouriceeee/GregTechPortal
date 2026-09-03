@@ -41,7 +41,7 @@ public class GTPortalAddon implements IGTAddon {
         if (LDLib.isModLoaded("twilightforest")){
             MultidimensionalPortalControllerMachine.addDimensionInfo(
                     TFGenerationSettings.DIMENSION,
-                    MultidimensionalPortalControllerMachine.TeleportConsumer.DEFAULT,
+                    (entity,destWorld, currLevel, offset,coordinate) -> entity.changeDimension(destWorld, new TwilightTeleporter(currLevel, offset, coordinate)),
                     GTPBlocks.TWILIGHT_PORTAL_BLOCK
             );
             DefaultTeleporter.MAP.put(TFGenerationSettings.DIMENSION, GTPPoiTypes.TWILIGHT_PCM_POI.getKey());
