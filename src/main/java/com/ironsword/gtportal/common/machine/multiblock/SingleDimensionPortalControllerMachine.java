@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine.MAP;
+import static com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine.TELE_MAP;
 
 public class SingleDimensionPortalControllerMachine extends RecipeElectricMultiblockMachine implements ITeleportMachine {
 
@@ -183,7 +184,8 @@ public class SingleDimensionPortalControllerMachine extends RecipeElectricMultib
             if (!(e instanceof Entity) ||!e.canChangeDimensions() || e.isOnPortalCooldown())
                 return;
 
-            MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),null);
+            //MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),null);
+            TELE_MAP.getOrDefault(dimension, MultidimensionalPortalControllerMachine.TeleportConsumer.EMPTY).teleport(e, serverLevel, (ServerLevel) getLevel(), getEntityRelativeOffset(e), null);
         });
 
     }

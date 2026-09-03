@@ -11,6 +11,7 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.api.portal.teleporter.EndTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
+import com.ironsword.gtportal.api.portal.teleporter.NewTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.item.component.DimensionDataComponent;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
@@ -40,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class MultidimensionalPortalControllerMachine extends RecipeElectricMultiblockMachine implements ITeleportMachine {
@@ -58,6 +60,12 @@ public class MultidimensionalPortalControllerMachine extends RecipeElectricMulti
                     GTPBlocks.END_PORTAL_BLOCK,
                     (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
                             entity.changeDimension(destWorld,new EndTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
+    ));
+
+    public static final Map<ResourceLocation, TeleportConsumer> TELE_MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(), TeleportConsumer.DEFAULT,
+            Level.NETHER.location(), TeleportConsumer.DEFAULT,
+            Level.END.location(), TeleportConsumer.DEFAULT
     ));
 
     @Nonnull
@@ -284,7 +292,8 @@ public class MultidimensionalPortalControllerMachine extends RecipeElectricMulti
             if (!(e instanceof Entity) ||!e.canChangeDimensions() || e.isOnPortalCooldown())
                 return;
 
-            MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
+            //MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
+            TELE_MAP.getOrDefault(dimension, TeleportConsumer.EMPTY).teleport(e, serverLevel, (ServerLevel) getLevel(), getEntityRelativeOffset(e), cache.getSecond());
         });
     }
 
@@ -296,6 +305,16 @@ public class MultidimensionalPortalControllerMachine extends RecipeElectricMulti
     @FunctionalInterface
     public interface TeleportFunction{
         void teleport(Entity entity,Vec3 offset, ServerLevel currWorld, ServerLevel destWorld, BlockPos controllerPos,@Nullable Vec3i coordinate);
+    }
+
+    @FunctionalInterface
+    public interface TeleportConsumer{
+        TeleportConsumer EMPTY = (entity,destWorld, currLevel, offset,coordinate) -> {};
+
+        TeleportConsumer DEFAULT = (entity,destWorld, currLevel, offset,coordinate) -> {
+            entity.changeDimension(destWorld, new NewTeleporter(currLevel, offset, coordinate));
+        };
+        void teleport(Entity entity, ServerLevel destWorld, ServerLevel currLevel,Vec3 offset, @Nullable Vec3i coordinate);
     }
 }
 
