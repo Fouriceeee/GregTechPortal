@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
+import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.PhyUtils;
 import net.minecraft.core.BlockPos;
@@ -109,7 +110,7 @@ public class SingleDimensionPortalControllerMachine extends RecipeElectricMultib
     protected void placePortalBlock(){
         if (getLevel() instanceof ServerLevel){
             for (var pos:getPortalPoses()){
-                getLevel().setBlockAndUpdate(pos,MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getFirst().get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
+                getLevel().setBlockAndUpdate(pos, MultidimensionalPortalControllerMachine.BLOCK_MAP.getOrDefault(dimension, GTPBlocks.EMPTY_PORTAL_BLOCK).get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
             }
         }
     }

@@ -3,14 +3,12 @@ package com.ironsword.gtportal.api.portal.teleporter;
 import com.gregtechceu.gtceu.api.blockentity.MetaMachineBlockEntity;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.common.data.GTPPoiTypes;
-import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
@@ -29,15 +27,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class NewTeleporter implements ITeleporter {
-    public static final Map<ResourceLocation, ResourceKey<PoiType>> MAP = GTPTeleporter.POITYPE_MAP;
+public class DefaultTeleporter implements ITeleporter {
+    public static final Map<ResourceLocation, ResourceKey<PoiType>> MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(), GTPPoiTypes.OVERWORLD_PCM_POI.getKey(),
+            Level.NETHER.location(), GTPPoiTypes.NETHER_PCM_POI.getKey(),
+            Level.END.location(), GTPPoiTypes.END_PCM_POI.getKey()
+    ));
 
     protected final ServerLevel level;
     protected final Vec3 offset;
     @Nullable
     protected final BlockPos coordinate;
 
-    public NewTeleporter(ServerLevel level, Vec3 offset, @Nullable Vec3i coordinate){
+    public DefaultTeleporter(ServerLevel level, Vec3 offset, @Nullable Vec3i coordinate){
         this.level = level;
         this.offset = offset;
         this.coordinate = coordinate == null ? null : new BlockPos(coordinate);
@@ -119,10 +121,9 @@ public class NewTeleporter implements ITeleporter {
                 && destWorld.getMaxBuildHeight() > destination.getY() + 2
                 ? destination : new BlockPos(destination.getX(), (int)(destWorld.getHeight() * 0.167f) + destWorld.getMinBuildHeight(), destination.getZ());
 
-        if(!destWorld.getBlockState(defaultPos.below()).entityCanStandOn(destWorld, defaultPos.below(), entity)){
+        if(!isPositionSafe(destWorld,defaultPos)){
             buildPlatForm(destWorld, Blocks.COBBLESTONE.defaultBlockState(), defaultPos);
         }
-
         return createPortalInfo(entity, defaultPos);
     }
 
