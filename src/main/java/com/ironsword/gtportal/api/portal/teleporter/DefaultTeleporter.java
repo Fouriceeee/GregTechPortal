@@ -38,11 +38,14 @@ public class DefaultTeleporter implements ITeleporter {
     protected final Vec3 offset;
     @Nullable
     protected final BlockPos coordinate;
+    @Nullable
+    protected final ITeleportMachine sourceMachine;
 
-    public DefaultTeleporter(ServerLevel level, Vec3 offset, @Nullable Vec3i coordinate){
+    public DefaultTeleporter(ServerLevel level, Vec3 offset, @Nullable Vec3i coordinate, @Nullable ITeleportMachine sourceMachine){
         this.level = level;
         this.offset = offset;
         this.coordinate = coordinate == null ? null : new BlockPos(coordinate);
+        this.sourceMachine = sourceMachine;
     }
 
     @Override
@@ -77,37 +80,79 @@ public class DefaultTeleporter implements ITeleporter {
                 height * verticalScale + destWorld.getMinBuildHeight(),
                 entity.blockPosition().getZ() * horizontalScale);
 
-        //load chunks
-        manager.ensureLoadedAndValid(destWorld, destination, searchRadius);
-
-        ResourceKey<PoiType> poiType = MAP.getOrDefault(level.dimension().location(), null);
-        if(poiType != null){
-            /*
-             * 1. get all the pois of single or multi PCM in the square of searchRadius
-             * 2. filter the pois within the world border
-             * 3. sort the pois to list
-             * 4. check each poi, if the machine can teleport, then return
-             */
-            List<PoiRecord> list = manager
-                    .getInSquare(holder -> holder.is(poiType) || holder.is(GTPPoiTypes.MULTI_PCM_POI.getKey()),
-                            destination,
-                            searchRadius,
-                            PoiManager.Occupancy.ANY)
-                    .filter(record -> destWorld.getWorldBorder().isWithinBounds(record.getPos()))
-                    .sorted(Comparator.<PoiRecord>comparingDouble(record -> record.getPos().distSqr(destination)).thenComparingInt(record -> record.getPos().getY()))
-                    .toList();
-            for(PoiRecord record: list){
-                if(destWorld.getBlockEntity(record.getPos()) instanceof MetaMachineBlockEntity machineBlockEntity
-                        && machineBlockEntity.getMetaMachine() instanceof ITeleportMachine teleportMachine
-                        && teleportMachine.canTeleport()){
-                    return new PortalInfo(teleportMachine.applyOffset(offset),Vec3.ZERO,entity.getYRot(), entity.getXRot());
+        /*
+         * 1. search cached portal link
+         */
+        if (sourceMachine != null){
+            TeleportCacheSavedData cache = TeleportCacheSavedData.get(destWorld);
+            TeleportCacheSavedData.PortalData source = new TeleportCacheSavedData.PortalData(level.dimension().location(), sourceMachine.getPos());
+            TeleportCacheSavedData.PortalData cachedTarget = cache.get(source);
+            if (cachedTarget != null){
+                ITeleportMachine machine = loadMachine(destWorld, cachedTarget);
+                if (machine != null){
+                    return new PortalInfo(machine.applyOffset(offset),Vec3.ZERO,entity.getYRot(), entity.getXRot());
                 }
+                cache.removeAllTo(cachedTarget);
             }
         }
 
-        //no pcm is found or poiType is not registered, then search a safe position to teleport
+        /*
+         * 2. find a portal machine near the destination;
+         * if found, teleport to it and save the link both ways
+         */
+        Optional<PortalInfo> machinePortal = findMachinePortal(entity, destWorld, destination, searchRadius);
+        if (machinePortal.isPresent()){
+            return machinePortal.get();
+        }
+
+        /*
+         * 3. no portal machine is found, search a safe position to teleport.
+         */
+        return searchProperPosNearby(entity, destWorld, destination, searchRadius);
+    }
+
+    protected Optional<PortalInfo> findMachinePortal(Entity entity, ServerLevel destWorld, BlockPos center, int searchRadius){
+        ResourceKey<PoiType> poiType = MAP.getOrDefault(level.dimension().location(), null);
+        if (poiType == null) return Optional.empty();
+
+        PoiManager manager = destWorld.getPoiManager();
+
+        //load chunks
+        manager.ensureLoadedAndValid(destWorld, center, searchRadius);
+
+        List<PoiRecord> list = manager
+                .getInSquare(holder -> holder.is(poiType) || holder.is(GTPPoiTypes.MULTI_PCM_POI.getKey()),
+                        center,
+                        searchRadius,
+                        PoiManager.Occupancy.ANY)
+                .filter(record -> destWorld.getWorldBorder().isWithinBounds(record.getPos()))
+                .sorted(Comparator.<PoiRecord>comparingDouble(record -> record.getPos().distSqr(center)).thenComparingInt(record -> record.getPos().getY()))
+                .toList();
+        for(PoiRecord record: list){
+            if(destWorld.getBlockEntity(record.getPos()) instanceof MetaMachineBlockEntity machineBlockEntity
+                    && machineBlockEntity.getMetaMachine() instanceof ITeleportMachine teleportMachine
+                    && teleportMachine.canTeleport()){
+                cacheLink(destWorld, record.getPos(), teleportMachine);
+                return Optional.of(new PortalInfo(teleportMachine.applyOffset(offset),Vec3.ZERO,entity.getYRot(), entity.getXRot()));
+            }
+        }
+        return Optional.empty();
+    }
+
+    protected PortalInfo searchProperPosNearby(Entity entity, ServerLevel destWorld, BlockPos destination, int searchRadius){
         for(BlockPos.MutableBlockPos pos: BlockPos.spiralAround(destination, 16, Direction.EAST, Direction.SOUTH)){
-            for (int y = Math.min(destination.getY(), destWorld.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ())); y > destWorld.getMinBuildHeight(); --y){
+            int startY = Math.min(destination.getY(), destWorld.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()));
+
+            //search downwards
+            for (int y = startY; y > destWorld.getMinBuildHeight(); --y){
+                pos.setY(y);
+                if (isPositionSafe(destWorld,pos)) {
+                    return createPortalInfo(entity, pos);
+                }
+            }
+
+            //search upwards
+            for (int y = startY + 1; y < destWorld.getMaxBuildHeight() - 2; ++y){
                 pos.setY(y);
                 if (isPositionSafe(destWorld,pos)) {
                     return createPortalInfo(entity, pos);
@@ -115,7 +160,6 @@ public class DefaultTeleporter implements ITeleporter {
             }
         }
 
-        //no safe position is found, return the default portal info
         BlockPos defaultPos = destWorld.getWorldBorder().isWithinBounds(destination)
                 && destWorld.getMinBuildHeight() < destination.getY() - 1
                 && destWorld.getMaxBuildHeight() > destination.getY() + 2
@@ -126,6 +170,50 @@ public class DefaultTeleporter implements ITeleporter {
         }
         return createPortalInfo(entity, defaultPos);
     }
+
+    // ===== two-way cache helpers =====
+
+    /**
+     * Writes the link into the cache both ways:
+     * <ul>
+     *     <li>forward : source machine -> destination machine, so later trips from the source
+     *     machine go to the same destination;</li>
+     *     <li>reverse : destination machine -> source machine, so the return trip from the
+     *     destination machine goes straight back.</li>
+     * </ul>
+     * The source machine is not looked up here: the machine itself passes its instance into the
+     * teleporter when the teleport starts.
+     */
+    private void cacheLink(ServerLevel destWorld, BlockPos destControllerPos, ITeleportMachine destMachine){
+        if (sourceMachine == null) return;
+        TeleportCacheSavedData cache = TeleportCacheSavedData.get(destWorld);
+        TeleportCacheSavedData.PortalData source = new TeleportCacheSavedData.PortalData(level.dimension().location(), sourceMachine.getPos());
+        TeleportCacheSavedData.PortalData target = new TeleportCacheSavedData.PortalData(destWorld.dimension().location(), destControllerPos);
+
+        //forward link: source machine -> dest machine
+        cache.put(source, target);
+        //reverse link: dest machine -> source machine
+        cache.put(target, source);
+    }
+
+    /**
+     * Loads the destination machine a cached link points to and checks whether it is still an
+     * available portal machine. Returns null (and the caller should drop the cache) when the
+     * machine is gone or not usable.
+     */
+    @Nullable
+    private ITeleportMachine loadMachine(ServerLevel destWorld, TeleportCacheSavedData.PortalData targetMachine){
+        if (!targetMachine.dimension().equals(destWorld.dimension().location())) return null;
+        destWorld.getChunkAt(targetMachine.controllerPos());
+        if (destWorld.getBlockEntity(targetMachine.controllerPos()) instanceof MetaMachineBlockEntity machineBlockEntity
+                && machineBlockEntity.getMetaMachine() instanceof ITeleportMachine teleportMachine
+                && teleportMachine.canTeleport()){
+            return teleportMachine;
+        }
+        return null;
+    }
+
+    // ===== position utils (shared by fallback implementations) =====
 
     protected boolean isPositionSafe(ServerLevel destWorld, BlockPos checkPos) {
         if (destWorld.getBlockState(checkPos.below()).isAir() || destWorld.getBlockState(checkPos.below()).liquid()) return false;
