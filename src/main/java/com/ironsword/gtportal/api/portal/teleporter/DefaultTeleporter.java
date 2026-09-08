@@ -73,7 +73,7 @@ public class DefaultTeleporter implements ITeleporter {
          * for example, if entity is at y = 200 in Nether, when calculating the destination position, use y = 128 instead of 200
          */
         double horizontalScale = DimensionType.getTeleportationScale(this.level.dimensionType(), destWorld.dimensionType());
-        double verticalScale = (double) destWorld.getHeight() / this.level.getHeight();
+        double verticalScale = (double) destWorld.getLogicalHeight() / this.level.getLogicalHeight();
         int height = Math.min(entity.blockPosition().getY() - this.level.getMinBuildHeight(), this.level.getLogicalHeight());
         BlockPos destination = destWorld.getWorldBorder().clampToBounds(
                 entity.blockPosition().getX() * horizontalScale,
@@ -152,7 +152,7 @@ public class DefaultTeleporter implements ITeleporter {
             }
 
             //search upwards
-            for (int y = startY + 1; y < destWorld.getMaxBuildHeight() - 2; ++y){
+            for (int y = startY + 1; y < destWorld.getMinBuildHeight() + destWorld.getLogicalHeight() - 2; ++y){
                 pos.setY(y);
                 if (isPositionSafe(destWorld,pos)) {
                     return createPortalInfo(entity, pos);
@@ -171,19 +171,6 @@ public class DefaultTeleporter implements ITeleporter {
         return createPortalInfo(entity, defaultPos);
     }
 
-    // ===== two-way cache helpers =====
-
-    /**
-     * Writes the link into the cache both ways:
-     * <ul>
-     *     <li>forward : source machine -> destination machine, so later trips from the source
-     *     machine go to the same destination;</li>
-     *     <li>reverse : destination machine -> source machine, so the return trip from the
-     *     destination machine goes straight back.</li>
-     * </ul>
-     * The source machine is not looked up here: the machine itself passes its instance into the
-     * teleporter when the teleport starts.
-     */
     private void cacheLink(ServerLevel destWorld, BlockPos destControllerPos, ITeleportMachine destMachine){
         if (sourceMachine == null) return;
         TeleportCacheSavedData cache = TeleportCacheSavedData.get(destWorld);
@@ -196,11 +183,6 @@ public class DefaultTeleporter implements ITeleporter {
         cache.put(target, source);
     }
 
-    /**
-     * Loads the destination machine a cached link points to and checks whether it is still an
-     * available portal machine. Returns null (and the caller should drop the cache) when the
-     * machine is gone or not usable.
-     */
     @Nullable
     private ITeleportMachine loadMachine(ServerLevel destWorld, TeleportCacheSavedData.PortalData targetMachine){
         if (!targetMachine.dimension().equals(destWorld.dimension().location())) return null;
@@ -212,8 +194,6 @@ public class DefaultTeleporter implements ITeleporter {
         }
         return null;
     }
-
-    // ===== position utils (shared by fallback implementations) =====
 
     protected boolean isPositionSafe(ServerLevel destWorld, BlockPos checkPos) {
         if (destWorld.getBlockState(checkPos.below()).isAir() || destWorld.getBlockState(checkPos.below()).liquid()) return false;
