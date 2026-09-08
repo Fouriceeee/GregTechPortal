@@ -20,7 +20,6 @@ public class TwilightTeleporter extends DefaultTeleporter{
 
     @Override
     protected PortalInfo searchProperPosNearby(Entity entity, ServerLevel destWorld, BlockPos destination, int searchRadius) {
-        //use TF API to find a safe position
         PortalInfo info = TFTeleportAccessor.callMoveToSafeCoords(destWorld, entity, destination);
         TFTeleportAccessor.callLoadSurroundingArea(destWorld, info.pos);
 
