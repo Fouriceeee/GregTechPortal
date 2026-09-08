@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+@Deprecated
 public class GTPTeleporter implements ITeleporter {
     public static final Map<ResourceLocation, ResourceKey<PoiType>> POITYPE_MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(), GTPPoiTypes.OVERWORLD_PCM_POI.getKey(),

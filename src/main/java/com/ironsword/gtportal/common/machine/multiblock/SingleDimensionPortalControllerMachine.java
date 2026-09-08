@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
+import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.machine.multiblock.logic.PortalLogic;
 import com.ironsword.gtportal.utils.PhyUtils;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
@@ -114,7 +115,7 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
     protected void placePortalBlock(){
         if (getLevel() instanceof ServerLevel){
             for (var pos:getPortalPoses()){
-                getLevel().setBlockAndUpdate(pos,MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getFirst().get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
+                getLevel().setBlockAndUpdate(pos,MultidimensionalPortalControllerMachine.BLOCK_MAP.getOrDefault(dimension, GTPBlocks.EMPTY_PORTAL_BLOCK).get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
             }
         }
     }
@@ -150,7 +151,13 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
         );
     }
 
+    @Deprecated
     public Vec3 applyRelativeOffset(Vec3 offset){
+        return applyOffset(offset);
+    }
+
+    @Override
+    public Vec3 applyOffset(Vec3 offset) {
         Vec3 center = getPos().getCenter();
 
         Direction
@@ -159,6 +166,11 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
                 right  = PhyUtils.getMachineRightFacing(front,up);
 
         return center.relative(front,offset.x).relative(up,offset.y).relative(right,offset.z);
+    }
+
+    @Override
+    public boolean canTeleport() {
+        return isActive();
     }
 
     @Override
@@ -178,7 +190,9 @@ public class SingleDimensionPortalControllerMachine extends WorkableElectricMult
             if (!(e instanceof Entity) ||!e.canChangeDimensions() || e.isOnPortalCooldown())
                 return;
 
-            MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),null);
+            //MAP.getOrDefault(dimension,MultidimensionalPortalControllerMachine.EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),null);
+            MultidimensionalPortalControllerMachine.TELE_MAP.getOrDefault(dimension, MultidimensionalPortalControllerMachine.TeleportConsumer.EMPTY).teleport(e, serverLevel, (ServerLevel) getLevel(), getEntityRelativeOffset(e), null, this);
+
         });
 
     }

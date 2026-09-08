@@ -1,81 +1,46 @@
 package com.ironsword.gtportal.api.portal.teleporter;
 
+import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
 import com.ironsword.gtportal.mixin.accessor.TFTeleportAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.portal.PortalInfo;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import twilightforest.world.registration.TFGenerationSettings;
+
+import java.util.Optional;
 
 
-public class TwilightTeleporter extends GTPTeleporter{
-    public TwilightTeleporter(Vec3 offset, ServerLevel world, BlockPos controllerPos, @Nullable Vec3i coordinate, Block block) {
-        super(offset, world, controllerPos, coordinate, block);
-    }
-
-
-    @Override
-    protected BlockPos getScaledPos(ServerLevel destWorld, BlockPos currentPos) {
-        ServerLevel tfDim = destWorld.getServer().getLevel(TFGenerationSettings.DIMENSION_KEY);
-        double scale = tfDim == null ? 0.125D : tfDim.dimensionType().coordinateScale();
-        scale = destWorld.dimension().equals(TFGenerationSettings.DIMENSION_KEY) ? 1F / scale : scale;
-        return destWorld.getWorldBorder().clampToBounds(currentPos.getX() * scale, currentPos.getY(), currentPos.getZ() * scale);
+public class TwilightTeleporter extends DefaultTeleporter{
+    public TwilightTeleporter(ServerLevel level, Vec3 offset, @Nullable Vec3i coordinate, @Nullable ITeleportMachine sourceMachine) {
+        super(level, offset, coordinate, sourceMachine);
     }
 
     @Override
-    protected BlockPos searchDestPos(Entity entity,ServerLevel destWorld, BlockPos scaledPos) {
+    protected PortalInfo searchProperPosNearby(Entity entity, ServerLevel destWorld, BlockPos destination, int searchRadius) {
+        PortalInfo info = TFTeleportAccessor.callMoveToSafeCoords(destWorld, entity, destination);
+        TFTeleportAccessor.callLoadSurroundingArea(destWorld, info.pos);
 
-        PortalInfo info = TFTeleportAccessor.callMoveToSafeCoords(destWorld,entity,scaledPos);
-        TFTeleportAccessor.callLoadSurroundingArea(destWorld,info.pos);
-
-        BlockPos spot = TFTeleportAccessor.callFindPortalCoords(destWorld,info.pos,
+        BlockPos spot = TFTeleportAccessor.callFindPortalCoords(destWorld, info.pos,
                 (blockPos)-> TFTeleportAccessor.callIsIdealForPortal(destWorld, blockPos));
-        if (spot != null){
-            return spot.above();
+        if (spot == null){
+            spot = TFTeleportAccessor.callFindPortalCoords(destWorld, info.pos,
+                    (blockPos)-> TFTeleportAccessor.callIsOkayForPortal(destWorld, blockPos));
         }
-        spot = TFTeleportAccessor.callFindPortalCoords(destWorld,info.pos,
-                (blockPos)-> TFTeleportAccessor.callIsOkayForPortal(destWorld, blockPos));
-        if (spot != null) {
-            return spot.above();
-        }
-        return super.searchDestPos(entity,destWorld,scaledPos);
 
-        //旧的反射写法
-//        Class<?> clazz = TFTeleporter.class;
-//        try {
-//            Method
-//                    moveToSafeCoords = clazz.getDeclaredMethod("moveToSafeCoords", ServerLevel.class, Entity.class, BlockPos.class),
-//                    findPortalCoords = clazz.getDeclaredMethod("findPortalCoords", ServerLevel.class, Vec3.class, Predicate.class),
-//                    isIdealForPortal = clazz.getDeclaredMethod("isIdealForPortal", ServerLevel.class, BlockPos.class),
-//                    isOkayForPortal = clazz.getDeclaredMethod("isOkayForPortal", ServerLevel.class, BlockPos.class),
-//                    loadSurroundingArea = clazz.getDeclaredMethod("loadSurroundingArea", ServerLevel.class, Vec3.class);
-//            moveToSafeCoords.setAccessible(true);
-//            findPortalCoords.setAccessible(true);
-//            isIdealForPortal.setAccessible(true);
-//            isOkayForPortal.setAccessible(true);
-//            loadSurroundingArea.setAccessible(true);
-//
-//            PortalInfo info = (PortalInfo) moveToSafeCoords.invoke(null,destWorld,entity,scaledPos);
-//            loadSurroundingArea.invoke(null,destWorld,info.pos);
-//
-//            Predicate<BlockPos> idealPredicate = (blockPos)-> {try {
-//                    return (boolean) isIdealForPortal.invoke(null, destWorld, blockPos);} catch (IllegalAccessException | InvocationTargetException e) {throw new RuntimeException(e);}};
-//            Predicate<BlockPos> okayPredicate = (blockPos)-> {try {
-//                    return (boolean) isOkayForPortal.invoke(null, destWorld, blockPos);} catch (IllegalAccessException | InvocationTargetException e) {throw new RuntimeException(e);}};
-//
-//            BlockPos spot = (BlockPos) findPortalCoords.invoke(null,destWorld,info.pos,idealPredicate);
-//            if (spot != null)
-//                return spot.above();
-//
-//            spot = (BlockPos) findPortalCoords.invoke(null,destWorld,info.pos,okayPredicate);
-//            if (spot!= null)
-//                return spot.above();
-//
-//        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {throw new RuntimeException(e);}
-//        return super.searchDestPos(destWorld,scaledPos);
+        if (spot != null){
+            BlockPos standPos = spot.above();
+            //search a portal machine around the spot again; if found, teleport to the machine
+            Optional<PortalInfo> machinePortal = findMachinePortal(entity, destWorld, standPos, searchRadius);
+            if (machinePortal.isPresent()){
+                return machinePortal.get();
+            }
+            //still no machine around the spot, teleport directly to it
+            return createPortalInfo(entity, standPos);
+        }
+
+        return super.searchProperPosNearby(entity, destWorld, destination, searchRadius);
     }
 }

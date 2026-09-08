@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.ironsword.gtportal.api.machine.feature.ITeleportMachine;
+import com.ironsword.gtportal.api.portal.teleporter.DefaultTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.EndTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
@@ -46,6 +47,7 @@ import java.util.function.Supplier;
 public class MultidimensionalPortalControllerMachine extends WorkableElectricMultiblockMachine implements ITeleportMachine {
     public static final Pair<ResourceLocation,Vec3i> EMPTY_PAIR = Pair.of(null,null);
     public static final Pair<Supplier<? extends Block>,TeleportFunction> EMPTY = Pair.of(GTPBlocks.EMPTY_PORTAL_BLOCK,(entity,offset,  currWorld, destWorld, controllerPos, coordinate) -> {});
+    @Deprecated
     public static final Map<ResourceLocation, Pair<Supplier<? extends Block>,TeleportFunction>> MAP = new HashMap<>(Map.of(
             Level.OVERWORLD.location(),Pair.of(
                     GTPBlocks.OVERWORLD_PORTAL_BLOCK,
@@ -54,11 +56,23 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
             Level.NETHER.location(),Pair.of(
                     GTPBlocks.NETHER_PORTAL_BLOCK,
                     (entity,offset, currWorld, destWorld,contrllerPos, coordinate) ->
-                            entity.changeDimension(destWorld,new GTPTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.NETHERRACK))),
-            Level.END.location(),Pair.of(
-                    GTPBlocks.END_PORTAL_BLOCK,
-                    (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
-                            entity.changeDimension(destWorld,new EndTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
+                            entity.changeDimension(destWorld,new GTPTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.NETHERRACK)))
+//            Level.END.location(),Pair.of(
+//                    GTPBlocks.END_PORTAL_BLOCK,
+//                    (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
+//                            entity.changeDimension(destWorld,new EndTeleporter(offset,currWorld,contrllerPos,coordinate,Blocks.OBSIDIAN)))
+    ));
+
+    public static final Map<ResourceLocation, TeleportConsumer> TELE_MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(), TeleportConsumer.DEFAULT,
+            Level.NETHER.location(), TeleportConsumer.DEFAULT,
+            Level.END.location(), (entity, destWorld, currLevel, offset, coordinate, sourceMachine) -> entity.changeDimension(destWorld,new EndTeleporter(currLevel,offset,coordinate,sourceMachine))
+    ));
+
+    public static final Map<ResourceLocation, Supplier<? extends Block>> BLOCK_MAP = new HashMap<>(Map.of(
+            Level.OVERWORLD.location(), GTPBlocks.OVERWORLD_PORTAL_BLOCK,
+            Level.NETHER.location(), GTPBlocks.NETHER_PORTAL_BLOCK,
+            Level.END.location(), GTPBlocks.END_PORTAL_BLOCK
     ));
 
     protected static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(MultidimensionalPortalControllerMachine.class,
@@ -110,6 +124,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         portalBlockAABB = PhyUtils.getPortalBlockBox(startingPos,endingPos,getFrontFacing().getAxis());
     }
 
+    @Override
     public Set<BlockPos> getPortalPoses(){
         Direction up = RelativeDirection.UP.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
         Direction clockwise = RelativeDirection.RIGHT.getRelative(getFrontFacing(), getUpwardsFacing(), isFlipped());
@@ -178,7 +193,7 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
     protected void placePortalBlock(){
         if (getLevel() instanceof ServerLevel){
             for (var pos:getPortalPoses()){
-                getLevel().setBlockAndUpdate(pos,MAP.getOrDefault(cache.getFirst(),EMPTY).getFirst().get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
+                getLevel().setBlockAndUpdate(pos,BLOCK_MAP.getOrDefault(cache.getFirst(),GTPBlocks.EMPTY_PORTAL_BLOCK).get().defaultBlockState().setValue(BlockStateProperties.AXIS,getFrontFacing().getAxis()));
             }
         }
     }
@@ -252,7 +267,13 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
         );
     }
 
+    @Deprecated
     public Vec3 applyRelativeOffset(Vec3 offset){
+        return applyOffset(offset);
+    }
+
+    @Override
+    public Vec3 applyOffset(Vec3 offset) {
         Vec3 center = getPos().getCenter();
 
         Direction
@@ -285,13 +306,35 @@ public class MultidimensionalPortalControllerMachine extends WorkableElectricMul
             if (!(e instanceof Entity) ||!e.canChangeDimensions() || e.isOnPortalCooldown())
                 return;
 
-            MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
+            //MAP.getOrDefault(dimension,EMPTY).getSecond().teleport(e,getEntityRelativeOffset(e),(ServerLevel) getLevel(),serverLevel,getPos(),cache.getSecond());
+            TELE_MAP.getOrDefault(dimension, TeleportConsumer.EMPTY).teleport(e, serverLevel, (ServerLevel) getLevel(), getEntityRelativeOffset(e), cache.getSecond(), this);
         });
     }
+
+    public static void addDimensionInfo(ResourceLocation dimension, TeleportConsumer consumer, Supplier<? extends Block> block){
+        TELE_MAP.put(dimension,consumer);
+        BLOCK_MAP.put(dimension,block);
+    }
+
+    @Override
+    public boolean canTeleport() {
+        return isActive();
+    }
+
 
     @FunctionalInterface
     public interface TeleportFunction{
         void teleport(Entity entity,Vec3 offset, ServerLevel currWorld, ServerLevel destWorld, BlockPos controllerPos,@Nullable Vec3i coordinate);
+    }
+
+    @FunctionalInterface
+    public interface TeleportConsumer{
+        TeleportConsumer EMPTY = (entity,destWorld, currLevel, offset,coordinate,sourceMachine) -> {};
+
+        TeleportConsumer DEFAULT = (entity,destWorld, currLevel, offset,coordinate,sourceMachine) -> {
+            entity.changeDimension(destWorld, new DefaultTeleporter(currLevel, offset, coordinate, sourceMachine));
+        };
+        void teleport(Entity entity, ServerLevel destWorld, ServerLevel currLevel, Vec3 offset, @Nullable Vec3i coordinate, ITeleportMachine sourceMachine);
     }
 }
 

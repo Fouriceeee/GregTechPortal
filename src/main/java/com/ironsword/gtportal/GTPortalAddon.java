@@ -4,7 +4,7 @@ import com.aetherteam.aether.data.resources.registries.AetherDimensions;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
-import com.ironsword.gtportal.api.portal.teleporter.GTPTeleporter;
+import com.ironsword.gtportal.api.portal.teleporter.DefaultTeleporter;
 import com.ironsword.gtportal.api.portal.teleporter.TwilightTeleporter;
 import com.ironsword.gtportal.common.data.GTPBlocks;
 import com.ironsword.gtportal.common.data.GTPPoiTypes;
@@ -12,10 +12,7 @@ import com.ironsword.gtportal.common.data.GTPRecipes;
 import com.ironsword.gtportal.common.machine.multiblock.MultidimensionalPortalControllerMachine;
 import com.ironsword.gtportal.common.registry.GTPRegistries;
 import com.lowdragmc.lowdraglib.LDLib;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.level.block.Blocks;
-import twilightforest.init.TFBlocks;
 import twilightforest.world.registration.TFGenerationSettings;
 
 import java.util.function.Consumer;
@@ -30,25 +27,20 @@ public class GTPortalAddon implements IGTAddon {
     @Override
     public void initializeAddon() {
         if (LDLib.isModLoaded("aether")){
-            MultidimensionalPortalControllerMachine.MAP.put(
+            MultidimensionalPortalControllerMachine.addDimensionInfo(
                     AetherDimensions.AETHER_LEVEL.location(),
-                    Pair.of(
-                            GTPBlocks.AETHER_PORTAL_BLOCK,
-                            (entity, offset,currWorld, destWorld, contrllerPos,coordinate) ->
-                                    entity.changeDimension(destWorld,new GTPTeleporter(offset,currWorld,contrllerPos,coordinate, Blocks.GLOWSTONE))
-                    ));
-            GTPTeleporter.POITYPE_MAP.put(AetherDimensions.AETHER_LEVEL.location(),GTPPoiTypes.AETHER_PCM_POI.getKey());
+                    MultidimensionalPortalControllerMachine.TeleportConsumer.DEFAULT,
+                    GTPBlocks.AETHER_PORTAL_BLOCK);
+            DefaultTeleporter.MAP.put(AetherDimensions.AETHER_LEVEL.location(),GTPPoiTypes.AETHER_PCM_POI.getKey());
         }
 
         if (LDLib.isModLoaded("twilightforest")){
-            MultidimensionalPortalControllerMachine.MAP.put(
+            MultidimensionalPortalControllerMachine.addDimensionInfo(
                     TFGenerationSettings.DIMENSION,
-                    Pair.of(
-                            GTPBlocks.TWILIGHT_PORTAL_BLOCK,
-                            (entity, offset,currWorld, destWorld,contrllerPos, coordinate) ->
-                                    entity.changeDimension(destWorld,new TwilightTeleporter(offset,currWorld,contrllerPos,coordinate, TFBlocks.ROOT_BLOCK.get()))
-                    ));
-            GTPTeleporter.POITYPE_MAP.put(TFGenerationSettings.DIMENSION, GTPPoiTypes.TWILIGHT_PCM_POI.getKey());
+                    (entity,destWorld, currLevel, offset,coordinate,sourceMachine) -> entity.changeDimension(destWorld, new TwilightTeleporter(currLevel, offset, coordinate, sourceMachine)),
+                    GTPBlocks.TWILIGHT_PORTAL_BLOCK
+            );
+            DefaultTeleporter.MAP.put(TFGenerationSettings.DIMENSION, GTPPoiTypes.TWILIGHT_PCM_POI.getKey());
         }
     }
 
